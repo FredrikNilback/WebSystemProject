@@ -6,19 +6,26 @@
         </title>
     </head>
     <body>
-        <div id="FormDiv">
-            <h2>Incident From</h2>
+        <header id="main-header">
+            <h2 id="title">NFV Incident Portal</h2>
+        </header>
+        <div id="login-div">
             <div>
-                <textarea id="IncidentTitle">Enter a title</textarea>
+                <div>
+                    <label class="login-class">E-mail</label>
+                </div>
+                <input id="login-email" class="login-class"></input>
             </div>
             <div>
-                <textarea id="">Provide a description</textarea>
+                <div class="login-class">
+                    <label class="login-class">Password</label>
+                </div>
+                <input id="login-pwd" type="password" class="login-class"></input>
             </div>
             <div>
-                <button id="Submit">Submit!</button>
+                <button id="login-btn" class="login-class">Log in</button>
             </div>
-
         </div>
-
     </body>
+<link rel="stylesheet" href="../css/index.css">
 </html>
