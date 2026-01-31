@@ -29,5 +29,5 @@ CREATE TABLE incident_users (
     PRIMARY KEY (incident_id, user_id, role),
 
     FOREIGN KEY (incident_id) REFERENCES incidents(incident_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
