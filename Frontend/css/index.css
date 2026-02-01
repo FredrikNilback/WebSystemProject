@@ -33,10 +33,48 @@ body {
     margin-top: 10vh;
     background-color:beige;
     padding-top: 2vh;
-    padding-bottom: 10vh;
+    padding-bottom: 4vh;
     margin-left: auto;
     margin-right: auto;
+    border: 2px solid grey;
+    border-radius: 10px;
+}
+
+#welcome {
+    margin-bottom: 5vh;
+    font-size: 3.5vh;
+}
+#login-email {
+    margin-bottom: 1vh;
 }
 .login-class {
     margin-top: 1vh;
+    font-size: 2.5vh;
+}
+.login-textbox {
+    border-radius: 10px;
+    width: 15vw;
+    height: 3vh;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+#login-btn {
+    border-radius: 10px;
+    margin-top: 10vh;
+    width: 15vw;    
+    height: auto;   
+    aspect-ratio: 8;
+
+    background-image: url('../images/login_button.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+#login-btn:hover {
+    background-image: url('../images/login_button_hover.png');
 }
