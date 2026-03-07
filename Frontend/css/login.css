@@ -89,6 +89,9 @@ main {
     text-decoration: none;
     color: gray;
 }
+#forgot-pwd:hover {
+    text-decoration: underline;
+}
 #login-btn {
     margin-top: 4vh;
     width: 40%;
@@ -100,9 +103,7 @@ main {
     border-radius: 8px;
 }
 #login-btn:hover {
-    background-color: #08024c;
-    color: #e4e4e4;
-    border-color: #aeacac;
+    filter: brightness(75%)
 }
 .column {
     display: inline-flex;
