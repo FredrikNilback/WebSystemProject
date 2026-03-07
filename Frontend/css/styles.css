@@ -1,0 +1,153 @@
+body {
+    margin: 0;
+    background-image: url('../images/login_background.png');
+}
+
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: #0b026c;
+    padding: 1vh 0vw;
+    color: white;
+    border: #0b026c solid;
+}
+
+#company-logo {
+    display: inline;
+    width: 4vw;
+    position: absolute;
+    left: 0;
+}
+
+main,
+#company-logo {
+    margin-left: 10vw;
+}
+
+header h1 {
+    display: inline;
+}
+
+.content {
+    display: inline-flex;
+    margin-top: 1.5vh;
+}
+
+main,
+aside {
+    display: inline-flex;
+    vertical-align: top;
+    flex-direction: column;
+    height: 84vh;
+    background-color: whitesmoke;
+    padding: 1vh 0vw 2vh 0vw;
+    border-top: #0b026c solid;
+    border-bottom: #0b026c solid;
+}
+
+main {
+    width: 50%;
+    border-left: #0b026c solid;
+    border-bottom-left-radius: 6px;
+    border-top-left-radius: 6px;
+}
+
+main h2 {
+    width: 100%;
+    text-align: center;
+    font-size: xx-large;
+}
+
+.navigation-button {
+    display: block;
+    margin-right: auto;
+    margin-left: 6vw;
+}
+
+.navigation-button button {
+    display: inline-block;
+    width: 24vw;
+    height: 10vh;
+    margin-top: 5vh;
+    font-size: xx-large;
+    border-radius: 6px;
+}
+
+.notification-div {
+    display: inline-block;
+    position: relative;
+    left: -2.5vw;
+    pointer-events: none;
+}
+
+.notification-div img {
+    display: block;
+    width: 84px;
+}
+
+.notification-div span {
+    position: relative;
+    color: white;
+    top: -5vh;
+    left: 1.85vw;
+}
+
+#create-btn {
+    background-color: #00d5ff;
+}
+
+#create-btn:hover {
+    background-color: #00bfe5;
+    outline: #0b026c solid;
+}
+
+#current-btn {
+    background-color: #00ff55;
+}
+
+#current-btn:hover {
+    background-color: #00d045;
+    outline: #0b026c solid;
+}
+
+#history-btn {
+    background-color: gold;
+}
+
+#history-btn:hover {
+    background-color: #f4cf00;
+    outline: #0b026c solid;
+}
+
+#logout-btn {
+    display: block;
+    margin-top: auto;
+    width: 12vw;
+    height: 5vh;
+    font-size: large;
+    background-color: red;
+    margin: auto auto 4vh 6vw;
+    border-radius: 6px;
+}
+
+aside {
+    width: 30%;
+    border-right: #0b026c solid;
+    border-bottom-right-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+#current-events-div {
+    display: inline-block;
+    margin: 2vh 2vw;
+    padding: 0vh 1vw;
+    border: orange solid;
+    background-color: beige;
+}
+
+#current-events-div h3 {
+    font-size: x-large;
+    text-align: center;
+}
