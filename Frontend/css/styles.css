@@ -1,6 +1,7 @@
 body {
     margin: 0;
     background-image: url('../images/login_background.png');
+    align-items: center;
 }
 
 header {
@@ -17,22 +18,20 @@ header {
 #company-logo {
     display: inline;
     width: 4vw;
+    min-width: 64px;
     position: absolute;
     left: 0;
-}
-
-main,
-#company-logo {
     margin-left: 10vw;
 }
 
 header h1 {
     display: inline;
 }
-
 .content {
-    display: inline-flex;
+    display: flex;
+    margin: 0px auto;
     margin-top: 1.5vh;
+    width: 80%;
 }
 
 main,
@@ -48,7 +47,7 @@ aside {
 }
 
 main {
-    width: 50%;
+    width: 67%;
     border-left: #0b026c solid;
     border-bottom-left-radius: 6px;
     border-top-left-radius: 6px;
@@ -71,9 +70,10 @@ main h2 {
     position: relative;
     text-align: center;
     width: 24vw;
+    min-width: 280px;
     height: 10vh;
     margin-top: 5vh;
-    font-size: xx-large;
+    font-size: clamp(1.5rem, 2vw, 3rem);
     border-radius: 6px;
     padding: 0;
     background-color: #4C546B;
@@ -89,9 +89,9 @@ main h2 {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 64px;
-    height: 64px;
-    right: 2.25vw;
+    width: clamp(44px, 3.5vw, 256px);
+    height: auto;
+    right: 2vw;
 }
 
 .notification-div {
@@ -103,7 +103,9 @@ main h2 {
 
 .notification-div img {
     display: block;
-    width: 84px;
+    width: 4vw;
+    min-width: 58px;
+    height: auto;
 }
 
 .notification-div span {
@@ -119,7 +121,7 @@ main h2 {
     color: #d9d9d9;
     width: 12vw;
     height: 5vh;
-    font-size: x-large;
+    font-size: clamp(1rem, 1.2vw, 3rem);
     background-color: #b50202;
     margin: auto auto 4vh 6vw;
     border-radius: 6px;
@@ -133,7 +135,7 @@ main h2 {
 }
 
 aside {
-    width: 30%;
+    width: 33%;
     border-right: #0b026c solid;
     border-bottom-right-radius: 6px;
     border-top-right-radius: 6px;
@@ -170,4 +172,13 @@ aside {
 
 .current-event {
     border-bottom: #c3c3ac solid;
+}
+
+@media (orientation: portrait) {
+    .content {
+        width: 100vw;
+    }
+    #company-logo {
+        margin-left: 1vw;
+    }
 }
