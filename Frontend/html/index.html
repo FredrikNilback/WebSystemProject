@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset='utf-8'>
     <title>NFV incident report portal - login screen</title>
     <link rel='stylesheet' href='../css/login.css'>
 </head>
+
 <body>
     <header>
         <h1>NFV incident report portal</h1>
@@ -27,19 +29,21 @@
                 <source src='../audio/forgot_password.mp3' type='audio/mpeg'>
             </audio>
             <!-------------------------->
-            <button onclick='location.href="user-homepage.html"' id='login-btn'>LOGIN</button> <!-- Will be updated with JS later -->
+            <button onclick='location.href="user-homepage.html"' id='login-btn'>LOGIN</button>
+            <!-- Will be updated with JS later -->
         </div>
     </main>
 </body>
+
 </html>
 <!-- will be removed, duh -->
 <script>
-  const link = document.getElementById('forgot-pwd');
-  const audio = document.getElementById('forgot-pwd-audio');
+    const link = document.getElementById('forgot-pwd');
+    const audio = document.getElementById('forgot-pwd-audio');
 
-  link.addEventListener('click', function(e) {
-    e.preventDefault();
-    audio.currentTime = 0;
-    audio.play();          
-  });
+    link.addEventListener('click', function (e) {
+        e.preventDefault();
+        audio.currentTime = 0;
+        audio.play();
+    });
 </script>

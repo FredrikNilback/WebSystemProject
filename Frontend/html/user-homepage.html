@@ -4,7 +4,7 @@
 <head>
     <meta charset='utf-8'>
     <title>NFV incident report portal - user homepage</title>
-    <link rel='stylesheet' href='../css/styles.css'>
+    <link rel='stylesheet' href='../css/user-homepage.css'>
 </head>
 
 <body>
@@ -15,37 +15,61 @@
     <div class='content'>
         <main>
             <h2>Welcome Wagner!</h2> <!-- Will be updated with JS later -->
-            <div id='navigation-buttons'>
-                <div class='navigation-button'>
-                    <button onclick='location.href="new-case.html"' id='create-btn'>New Case<img src='../images/create-btn.png' alt=''></button>
-                    <div class='notification-div'>
-                        <img src='../images/no_notification.png' alt='notification'> <!-- Static as new will never have notifications -->
-                    </div>
+            <div class='main-column'>
+                <div id='navigation-buttons'>
+                    <button onclick='location.href="new-case.html"' id='create-btn' class='navigation-button'>
+                        <div class='notification-div'>
+                            <img src='../images/no_notification.png' alt='notification' class='navigation-notification'>
+                            <span id='new-cases-update-count' class='update-count hidden'>0</span>
+                        </div>
+                        <span class='button-center'>
+                            <span>New Case</span>
+                        </span>
+                        <img src='../images/create-btn.png' alt='New'>
+                    </button>
+
+                    <button onclick='location.href="current-cases.html"' id='current-btn' class='navigation-button'>
+                        <div class='notification-div'>
+                            <img src='../images/notification.png' alt='notification' class='navigation-notification'>
+                            <span id='current-cases-update-count' class='update-count'>5</span>
+                        </div>
+                        <span class='button-center'>
+                            <span>Current Cases</span>
+                        </span>
+                        <img src='../images/current-btn.png' alt='Current'>
+                    </button>
+
+                    <button onclick='location.href="case-history.html"' id='history-btn' class='navigation-button'>
+                        <div class='notification-div'>
+                            <img src='../images/notification.png' alt='notification' class='navigation-notification'>
+                            <span id='historical-cases-update-count' class='update-count'>2</span>
+                        </div>
+                        <span class='button-center'>
+                            <span>History</span>
+                        </span>
+                        <img src='../images/history-btn.png' alt='History'>
+                    </button>
                 </div>
-                <div class='navigation-button'>
-                    <button onclick='location.href="current-cases.html"' id='current-btn'>Current Cases<img src='../images/current-btn.png' alt=''></button>
-                    <div class='notification-div'>
-                        <img src='../images/notification.png' alt='notification'> <!-- Will be set with JS later -->
-                        <span id='current-cases-update-count' class='update-count'>5</span> <!-- Will be updated with JS later -->
-                    </div>
-                </div>
-                <div class='navigation-button'>
-                    <button onclick='location.href="case-history.html"' id='history-btn'>History<img src='../images/history-btn.png' alt=''></button>
-                    <div class='notification-div'>
-                        <img src='../images/notification.png' alt='notification'> <!-- Will be set with JS later -->
-                        <span id='case-history-update-count' class='update-count'>2</span> <!-- Will be updated with JS later -->
-                    </div>
-                </div>
+            </div>
+            <div class='main-column'>
+                <h3 id='incident-title'>Incident Report Overview</h3>
+                <img src='../images/placeholder_graph.png' alt='Statistical Overview' id='statistic-graph'>
             </div>
             <button onclick='location.href="index.html"' id='logout-btn'>LOGOUT</button>
         </main>
         <aside>
             <div id='current-events-div'>
-                <H3>Current Events</H3>
+                <h3>Current Events</h3>
                 <!-- these events will be fetched from the DB -->
                 <div id='current-events'>
-                    <div class='current-event'>
-                        <h4><em>10/4-26</em> &nbsp; Our CEO and founder Viktoria Thålin visiting</h4>
+                    <details class='current-event'>
+                        <summary>
+                            <span class='event-title'>
+                                <u><em>10/4-26</em></u><br>
+                                <strong>Our CEO and founder Viktoria Thålin comes to visit!<br></strong>
+                            </span>
+                            <span class='read-more'><em>read more...</em></span>
+                        </summary>
                         <p>On April 10th our CEO and founder, Viktoria Thålin, will be visiting. <br>
                             During her visit, she will meet with teams across the company, share her insights and
                             experiences, and discuss strategies to foster innovation, collaboration, and growth.<br>
@@ -54,10 +78,15 @@
                             organization.<br><br>
                             We’re excited to welcome her and look forward to an inspiring and productive day together!
                         </p>
-                    </div>
-                    <div class='current-event'>
-                        <h4><em>12/1-26</em> &nbsp; Nike Borgström: employee of the year for the 10th consecutive year!
-                        </h4>
+                    </details>
+                    <details class='current-event'>
+                        <summary>
+                            <span class='event-title'>
+                                <u><em>12/1-26</em></u><br>
+                                <strong>Nike Borgström: employee of the year for the 10th consecutive year!<br></strong>
+                            </span>
+                            <span class='read-more'><em>read more...</em></span>
+                        </summary>
                         <p>We are thrilled to announce that Nike Borgström has been named Employee of the Year for the
                             10th consecutive year!<br>
                             Her dedication, tireless commitment, and ability to make every meeting feel like a
@@ -69,9 +98,15 @@
                             serious dedication!<br>
                             Her work is invaluable to the company and without her we would not have made it this far!
                         </p>
-                    </div>
-                    <div class='current-event'>
-                        <h4><em>12/12-25</em> &nbsp; Fredrik Nilback retires at the ripe age of 29</h4>
+                    </details>
+                    <details class='current-event'>
+                        <summary>
+                            <span class='event-title'>
+                                <u><em>12/12-25</em></u><br>
+                                <strong>Fredrik Nilback retires at the ripe age of 29<br></strong>
+                            </span>
+                            <span class='read-more'><em>read more...</em></span>
+                        </summary>
                         <p>After 2 years at NFV, Fredrik Nilback is finally retiring. After solving our entire technical
                             debt and backlog he has now made the choice to retire from the IT profession to pursue
                             farming.<br>
@@ -80,11 +115,14 @@
                             We will miss you Fredrik, and we hope that your future endeavours bring you the happiness
                             that you are seeking!
                         </p>
-                    </div>
+                    </details>
                 </div>
             </div>
         </aside>
     </div>
+    <footer>
+        <p>the footer</p>
+    </footer>
 </body>
 
 </html>
