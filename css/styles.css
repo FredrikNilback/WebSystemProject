@@ -64,8 +64,6 @@ main {
 aside {
     grid-column: 2;
     border-right: #0b026c solid;
-    border-bottom-right-radius: 6px;
-    border-top-right-radius: 6px;
 }
 
 footer {
