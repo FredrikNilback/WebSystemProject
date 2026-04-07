@@ -4,7 +4,7 @@
 <head>
     <meta charset='utf-8'>
     <title>NFV incident report portal - login screen</title>
-    <link rel='stylesheet' href='../css/login.css'>
+    <link rel='stylesheet' href='css/login.css'>
 </head>
 
 <body>
@@ -13,24 +13,22 @@
     </header>
     <main>
         <div id='login-form'>
-            <img src='../images/company_logo.png' alt='company logo' id='login-company-logo'>
+            <img src='images/company_logo.png' alt='company logo' id='login-company-logo'>
             <h2>USER LOGIN</h2>
             <label class='input-wrapper'>
-                <img src='../images/user.png' alt='password key'>
-                <input type="text" class='login-input' placeholder='Enter your email...'></input>
+                <img src='images/user.png' alt='password key'>
+                <input type='text' class='login-input' placeholder='Enter your email...'>
             </label>
             <label class='input-wrapper'>
-                <img src='../images/key.png' alt='password key'>
-                <input type="password" class='login-input' placeholder='Enter your password...'></input>
+                <img src='images/key.png' alt='password key'>
+                <input type='password' class='login-input' placeholder='Enter your password...'>
             </label>
             <a href='' id='forgot-pwd'>I forgot my password</a>
             <!-- will be removed, duh -->
-            <audio id="forgot-pwd-audio">
-                <source src='../audio/forgot_password.mp3' type='audio/mpeg'>
+            <audio id='forgot-pwd-audio'>
+                <source src='audio/forgot_password.mp3' type='audio/mpeg'>
             </audio>
-            <!-------------------------->
             <button onclick='location.href="user-homepage.html"' id='login-btn'>LOGIN</button>
-            <!-- Will be updated with JS later -->
         </div>
     </main>
 </body>

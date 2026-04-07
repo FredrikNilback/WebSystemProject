@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>Incident Management - Raw HTML</title>
+</head>
+<body>
+
+    <div>
+        
+        <section>
+            <h2>Incident Overview</h2>
+            
+            <div>
+                <div>
+                    <h6>STATUS</h6>
+                    <h3>Pending</h3>
+                    <div>0</div>
+                </div>
+                <div>
+                    <h6>STATUS</h6>
+                    <h3>In Progress</h3>
+                    <div>0</div>
+                </div>
+                <div>
+                    <h6>STATUS</h6>
+                    <h3>Resolved</h3>
+                    <div>0</div>
+                </div>
+            </div>
+
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Incident.nr</th>
+                            <th>Urgency</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#1127</td>
+                            <td>computer not starting</td>
+                            <td>Pending</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">Select a case to view details</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            
+            <article>
+                <div>
+                    <h2>Incident Detail: #1127</h2>
+                </div>
+                
+                <div>
+                    <p>No messages yet.</p>
+                </div>
+
+                <div>
+                    <input type="text" placeholder="Write to responder/reporter...">
+                    <button type="button">Send</button>
+                </div>
+            </article>
+
+            <aside>
+                <div>
+                    <span>Urgency & Status</span>
+                    <div>Medium Priority</div>
+                    
+                    <form action="update_status.php" method="POST">
+                        <input type="hidden" name="case_id" value="1127">
+                        
+                        <label>Change Status:</label>
+                        <select name="new_status">
+                            <option value="pending">Pending</option>
+                            <option value="in progress">In Progress</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                        
+                        <button type="submit">Update Status</button>
+                    </form>
+                </div>
+            </aside>
+
+        </section>
+    </div>
+
+</body>
+</html>

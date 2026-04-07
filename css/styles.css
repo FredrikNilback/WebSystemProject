@@ -1,0 +1,87 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    background-image: url('../images/background.png');
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    display: flex;
+    background-color: #0b026c;
+    color: white;
+    padding: 4vh 0vw;
+}
+
+#company-logo {
+    display: inline-block;
+    width: 4vw;
+    min-width: 64px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 2vh 10vw;
+}
+
+header h1 {
+    display: inline;
+    margin: auto;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    width: 80%;
+    margin: 1vh auto;
+    background-color: whitesmoke;
+    border-radius: 6px;
+    border: #0b026c solid 4px;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* for easy debugging
+.content > * {
+    border: red 4px solid;
+}
+*/
+
+main {
+    grid-column: 1;
+}
+
+aside {
+    grid-column: 2;
+    border-right: #0b026c solid;
+    border-bottom-right-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+footer {
+    bottom: 0;
+    display: flex;
+    background-color: #0b026c;
+    color: white;
+}
+
+
+@media (orientation: portrait) {
+    .content {
+        width: 100vw;
+    }
+
+    #company-logo {
+        margin-left: 1vw;
+    }
+}

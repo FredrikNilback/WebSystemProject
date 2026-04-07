@@ -1,0 +1,7 @@
+".vscode"
+"*.pass"
+"*.sql"
+"*.zip"
+"secrets.json"
+"SQL_scripts"
+"project_report"

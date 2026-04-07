@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>Incident Report - Raw HTML</title>
+</head>
+<body>
+
+    <main>
+        <form action="submit_incident.php" method="post" enctype="multipart/form-data">
+
+            <h2>Incident Report</h2>
+
+            <div>
+                <label>Date and time of the incident:</label>
+                <input type="datetime-local" name="incident_time">
+            </div>
+
+            <div>
+                <label>ID.nr:</label>
+                <input type="text" name="id_nr">
+            </div>
+
+            <div>
+                <label>Describe incident:</label>
+                <textarea name="description" rows="5"></textarea>
+            </div>
+
+            <div>
+                <label>File attachments:</label>
+                <input type="file" name="attachment">
+            </div>
+
+            <h2>Urgency Level</h2>
+
+            <div>
+                <label>
+                    <input type="radio" name="urgency" value="critical"> Critical
+                </label>
+                <br>
+                <label>
+                    <input type="radio" name="urgency" value="high"> High
+                </label>
+                <br>
+                <label>
+                    <input type="radio" name="urgency" value="medium"> Medium
+                </label>
+                <br>
+                <label>
+                    <input type="radio" name="urgency" value="low"> Low
+                </label>
+            </div>
+
+            <button type="submit">Submit Report</button>
+
+        </form>
+    </main>
+
+</body>
+</html>

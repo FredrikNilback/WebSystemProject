@@ -38,7 +38,7 @@ main {
     display: flex;
     flex-direction: column;
     width: 40%;
-    height: 10vh;
+    height: 20vh;
     align-items: center;
     justify-content: center;
     padding: 20% 0 20% 0;
@@ -64,8 +64,9 @@ main {
     border: 2px solid #c5c3c3;
     border-radius: 6px;
     width: 75%;
-    height: 4vh;
+    min-height: 4vh;
     margin-top: 2vh;
+    overflow: hidden;
 }
 
 .input-wrapper img {
@@ -115,12 +116,4 @@ main {
 
 #login-btn:hover {
     filter: brightness(75%)
-}
-
-.column {
-    display: inline-flex;
-    width: 50%;
-    justify-content: center;
-    align-items: center;
-    border: red solid;
 }
