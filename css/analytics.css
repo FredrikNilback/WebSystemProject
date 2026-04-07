@@ -1,0 +1,125 @@
+.analytics-page .layout {
+    display: flex;
+}
+
+.analytics-page .sidebar {
+    width: 120px;
+    min-height: 100vh;
+    background-color:#0b026ccc;
+    color: white;
+    padding: 20px;
+}
+
+.analytics-page .sidebar a {
+    display: block;
+    color: white;
+}
+
+
+.analytics-page main {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    padding-bottom: 40px;
+}
+
+.analytics-page .top-part {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.analytics-page .filters {                               /*filterraderna*/
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 2px;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.analytics-page .filters input {                         /*för att ändra input-raderna*/
+    width: 285px;
+    padding: 5px;
+    border-radius: 5px;
+    border: #0b026c solid;
+}
+
+
+.analytics-page .cards {                                /*Raden med knapparna med resolution-time osv, de tre högst upp*/
+    display: flex;
+    gap: 10px;
+    margin: 10px;
+    flex-wrap: wrap;
+}
+
+.analytics-page .card {                                   /*Knapparna med resolution-time osv, tre högst upp*/
+    flex: 40;
+    min-width: 150px;
+    background-color: whitesmoke;
+    border: #0b026c solid;
+    padding: 35px;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.analytics-page .dashboard-structure {                          /*Layouten för alla charts*/
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 10px;
+    align-items: start;
+    margin-bottom: 60px;
+}
+
+.analytics-page .chart {                                          /*Varje chart, diagram*/
+    height: 220px;
+    background-color: whitesmoke;
+    border: #0b026c solid;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    border-radius: 5px;
+}
+
+
+.analytics-page canvas {                                        /*Här ritas graferna, canvasen för det*/
+    width: 100%;
+    max-height: 140px;
+}
+
+.analytics-page .content {
+    width: 85%;
+    margin: 0 auto;
+}
+
+.analytics-page * {
+    box-sizing: border-box;
+}
+
+body {
+    padding-bottom: 80px;
+}
+
+.analytics-page {
+    min-height: 120vh;
+}
+
+.analytics-page table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 5px;
+    background-color: whitesmoke;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 100px;
+}
+
+.analytics-page th,
+.analytics-page td {
+    border: 1px solid #0b026c;
+    padding: 12px;
+    text-align: left;
+}

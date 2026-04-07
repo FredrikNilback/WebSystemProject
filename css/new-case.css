@@ -1,0 +1,103 @@
+body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f4f8;
+        padding: 20px;
+    }
+
+    main {
+        background-color: white;
+        max-width: 900px;
+        margin: auto;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .section-header {
+        background-color: #00215e;
+        color: white;
+        padding: 10px 20px;
+        font-size: 24px;
+        margin-bottom: 25px;
+        margin-top: 30px;
+    }
+
+    .section-header:first-child { margin-top: 0; }
+
+    .row {
+        display: flex;
+        margin-bottom: 15px;
+        align-items: flex-start;
+    }
+
+    .label-col {
+        flex: 30%;
+        color: #333;
+        font-size: 16px;
+    }
+
+    .colon-col {
+        flex: 5%;
+        color: #00215e;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .input-col {
+        flex: 65%;
+    }
+
+    input[type=text], input[type=datetime-local], textarea {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background-color: #f2f2f2;
+        font-size: 16px;
+    }
+
+    /* Urgency Checkboxes */
+    .checkbox-group {
+        padding-left: 10px;
+    }
+
+    .custom-check {
+        display: block;
+        position: relative;
+        padding-left: 45px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 25px;
+    }
+
+    .custom-check input { position: absolute; opacity: 0; cursor: pointer; }
+
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 25px;
+        width: 25px;
+        background-color: #e0e0e0;
+        border: 1px solid #ccc;
+    }
+
+    .custom-check input:checked ~ .checkmark { background-color: #00215e; }
+
+
+    .btn-submit {
+        background-color: #00215e;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        float: right;
+        margin-top: 20px;
+    }
+
+    @media (max-width: 600px) {
+        .row { flex-direction: column; }
+        .colon-col { display: none; }
+        .form-card { padding: 20px; }
+    }
