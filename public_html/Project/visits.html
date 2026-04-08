@@ -10,183 +10,137 @@
 <body class="analytics-page">
 
 <header>
-<h1>NFV Visits overview</h1>
+    <img src='images/company_logo.png' alt='company logo' id='company-logo'>
+    <h1>NFV incident report portal</h1>
 </header>
+    
+<div class="content">
+    <main>
 
-<div class="layout">
-    <nav class="sidebar">
-        <h3>Menu</h3>
-        <a href="analytics.html">Dashboard</a>
-        <a href="visits.html">Visits</a>
-    </nav>
-
-    <div class="content">
-        <main>
-            <div class="top-part">
-                <div class="filters">
-                    <input placeholder="Filter 1">
-                    <input placeholder="Filter 2">
-                    <input placeholder="Filter 3">
-                </div>
-
-                <div class="cards">
-                    <div class="card">Todays visits</div>
-                    <div class="card">Avg Daily Visits</div>
-                    <div class="card">Avg Weekly Visits</div>
-                    <div class="card">Avg Monthly Visits</div>
-                </div>
+        <h3>Analytics Dashboard</h3>
+        <nav class="analytics-dashboard">
+            <a href="analytics.html">Incidents</a>
+            <a href="visits.html">Page Visits</a>
+        </nav>
+    
+        <div class="top-part">
+            <div class="filters">
+                <input placeholder="Filter 1">
+                <input placeholder="Filter 2">
+                <input placeholder="Filter 3">
             </div>
 
-            <div class="dashboard-structure">
-                <div class="chart">
-                    <h3>History</h3>
-                    <canvas id="Visits_History_lineChart"></canvas>
-                </div>
-                <div class="chart">
-                    <h3>Visits Weekly</h3>
-                    <canvas id="Visits_Weekly_barChart"></canvas>
-                </div>
-                <div class="chart">
-                    <h3>Visits Daily</h3>
-                    <canvas id="Visits_Daily_barChart"></canvas>
-                </div>
-                <div class="chart">
-                    <h3>Visits Browser</h3>
-                    <canvas id="Browser_Daily_barChart"></canvas>
-                </div>
+            <div class="cards">
+                <div class="card">Todays visits</div>
+                <div class="card">Avg Daily Visits</div>
+                <div class="card">Avg Weekly Visits</div>
+                <div class="card">Avg Monthly Visits</div>
             </div>
+        </div>
 
-            <div class="table-container">
-                <table>
-                    <tr>
-                        <th>Page-ID</th>
-                        <th>Tracking-ID</th>
-                        <th>Browser Type ID</th>
-                        <th>Host IP</th>
-                        <th>Time-stamp</th>
-                    </tr>
-                    <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                </table>
+        <div class="dashboard-structure">
+            <div class="chart">
+                <h3>History</h3>
+                <canvas id="Visits_History_lineChart"></canvas>
             </div>
+            <div class="chart">
+                <h3>Visits Weekly</h3>
+                <canvas id="Visits_Weekly_barChart"></canvas>
+            </div>
+            <div class="chart">
+                <h3>Visits Daily</h3>
+                <canvas id="Visits_Daily_barChart"></canvas>
+            </div>
+            <div class="chart">
+                <h3>Visits Browser</h3>
+                <canvas id="Browser_Daily_barChart"></canvas>
+            </div>
+        </div>
 
-        </main>
-    </div>
+        <div class="table-container">
+            <table>
+                <tr>
+                    <th>Page-ID</th>
+                    <th>Tracking-ID</th>
+                    <th>Browser Type ID</th>
+                    <th>Host IP</th>
+                    <th>Time-stamp</th>
+                </tr>
+                <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+            </table>
+        </div>
+    </main>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
-<script>
-
-new Chart(document.getElementById('Visits_History_lineChart'), {       //linecharten
-    type: 'line', 
-    data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'],
-        datasets: [{
-            label: 'Visits over time',
-            data: [34, 67, 230, 134, 128, 56, 46, 32, 56, 78, 114, 137]
-        }]
-    }
-});
-
-
-new Chart(document.getElementById('Visits_Weekly_barChart'), {       //barcharten
-    type: 'bar', 
-    data: {
-        labels: ['Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17'],
-        datasets: [{
-            label: 'Visits Weekly',
-            data: [48, 34, 23, 25, 78, 45, 36, 23, 25]
-        }]
-    }
-});
-
-new Chart(document.getElementById('Visits_Daily_barChart'), {       //barcharten
-    type: 'bar', 
-    data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{
-            label: 'Visits Daily',
-            data: [3, 5, 2, 14, 17, 4, 8]
-        }]
-    }
-});
-
-new Chart(document.getElementById('Browser_Daily_barChart'), {       //barcharten
-    type: 'bar', 
-    data: {
-        labels: ['Firefox', 'Chrome', 'Safari', 'Microsoft Edge', 'Opera'],
-        datasets: [{
-            label: 'Visits Browser',
-            data: [28, 32, 12, 45, 17]
-        }]
-    }
-});
-
-</script>
+<script src="js/visits.js"></script>
 
 
 </body>
 
 </html>
+
+
+
