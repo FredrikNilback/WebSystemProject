@@ -1,79 +1,77 @@
-.analytics-page .layout {
+
+
+.analytics-dashboard {
+    color: black;
     display: flex;
+    gap: 10px;
 }
 
-.analytics-page .sidebar {
-    width: 120px;
-    min-height: 100vh;
-    background-color:#0b026ccc;
-    color: white;
-    padding: 20px;
+.analytics-dashboard a {
+    color: #0b026c;
 }
 
-.analytics-page .sidebar a {
-    display: block;
-    color: white;
+.top-part {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    flex-direction: column;
+}
+
+.filters {                               /*filterraderna*/
+    display: flex;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.filters input {                         /*för att ändra input-raderna*/
+    width: 221px;
+    padding: 2px;
+    border-radius: 5px;
+    border: #0b026c solid;
+}
+
+.content {
+    grid-template-columns: 1fr;
+    padding: 15px 20px;
 }
 
 
-.analytics-page main {
+main {
     width: 100%;
     background-color: transparent;
     border: none;
     padding-bottom: 40px;
+    overflow-y: scroll;
 }
 
-.analytics-page .top-part {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-}
 
-.analytics-page .filters {                               /*filterraderna*/
-    display: flex;
-    flex-direction: column;
+.cards {                                /*Raden med knapparna med resolution-time osv, de tre högst upp*/
+    margin: 10px 0;
     gap: 10px;
-    margin: 2px;
-    margin-top: 10px;
-    margin-left: 10px;
-    margin-right: 10px;
-}
-
-.analytics-page .filters input {                         /*för att ändra input-raderna*/
-    width: 285px;
-    padding: 5px;
-    border-radius: 5px;
-    border: #0b026c solid;
-}
-
-
-.analytics-page .cards {                                /*Raden med knapparna med resolution-time osv, de tre högst upp*/
-    display: flex;
-    gap: 10px;
-    margin: 10px;
     flex-wrap: wrap;
+    display: flex;
 }
 
-.analytics-page .card {                                   /*Knapparna med resolution-time osv, tre högst upp*/
-    flex: 40;
+.card {                                   /*Knapparna med resolution-time osv, tre högst upp*/
+    flex: 1;
     min-width: 150px;
     background-color: whitesmoke;
     border: #0b026c solid;
-    padding: 35px;
+    padding: 20px;
     text-align: center;
     border-radius: 5px;
 }
 
-.analytics-page .dashboard-structure {                          /*Layouten för alla charts*/
+.dashboard-structure {                          /*Layouten för alla charts*/
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    margin: 10px;
+    margin: 10px 0;
     align-items: start;
     margin-bottom: 60px;
 }
 
-.analytics-page .chart {                                          /*Varje chart, diagram*/
+.chart {                                          /*Varje chart, diagram*/
     height: 220px;
     background-color: whitesmoke;
     border: #0b026c solid;
@@ -85,29 +83,18 @@
 }
 
 
-.analytics-page canvas {                                        /*Här ritas graferna, canvasen för det*/
+canvas {                                        /*Här ritas graferna, canvasen för det*/
     width: 100%;
     max-height: 140px;
 }
 
-.analytics-page .content {
-    width: 85%;
-    margin: 0 auto;
-}
 
-.analytics-page * {
+* {
     box-sizing: border-box;
 }
 
-body {
-    padding-bottom: 80px;
-}
 
-.analytics-page {
-    min-height: 120vh;
-}
-
-.analytics-page table {
+table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 5px;
@@ -117,8 +104,8 @@ body {
     margin-bottom: 100px;
 }
 
-.analytics-page th,
-.analytics-page td {
+th,
+td {
     border: 1px solid #0b026c;
     padding: 12px;
     text-align: left;
