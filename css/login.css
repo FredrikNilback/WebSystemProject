@@ -9,7 +9,7 @@ main {
 }
 
 main {
-    background: linear-gradient(to bottom right,#0b026c 0%, #4a0ab9 30%, #ff933a 90%);
+    background: linear-gradient(to bottom right, #0b026c 0%, #4a0ab9 30%, #ff933a 90%);
     display: flex;
 }
 
@@ -59,7 +59,7 @@ aside>* {
     background: white;
     height: 4vh;
     margin-top: 3vh;
-    cursor:text;
+    cursor: text;
 }
 
 .input-wrapper:focus-within {

@@ -1,18 +1,8 @@
-<!DOCTYPE html>
-<html>
+<?php
+    $activePage = 'user-homepage';
+?>
 
-<head>
-    <meta charset='utf-8'>
-    <title>NFV incident report portal - user homepage</title>
-    <link rel='stylesheet' href='css/styles.css'>
-    <link rel='stylesheet' href='css/user-homepage.css'>
-</head>
-
-<body>
-    <header>
-        <img src='images/company_logo.png' alt='company_logo' id='company-logo'>
-        <h1>NFV incident report portal</h1>
-    </header>
+<?php require_once 'includes/header.php'?>
     <div class='content'>
         <main>
             <h2>Welcome Wagner!</h2>
@@ -50,7 +40,7 @@
                     <img src='images/placeholder_graph.png' alt='Statistical Overview' id='statistic-graph'>
                 </a>
             </div>
-            <button onclick='location.href="index.html"' id='logout-btn'>LOGOUT</button>
+            <button onclick='location.href="index.php"' id='logout-btn'>LOGOUT</button>
         </main>
         <aside>
             <h3>Current Events</h3>

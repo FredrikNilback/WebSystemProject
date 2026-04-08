@@ -1,19 +1,8 @@
-<!DOCTYPE html>
-<html>
+<?php
+    $activePage = 'login';
+?>
 
-<head>
-    <meta charset='utf-8'>
-    <title>NFV incident report portal - login screen</title>
-    <link rel='stylesheet' href='css/styles.css'>
-    <link rel='stylesheet' href='css/login.css'>
-    <script src='js/login.js'></script>
-</head>
-
-<body>
-    <header>
-        <img src='images/company_logo.png' alt='company logo' id='company-logo'>
-        <h1>NFV incident report portal</h1>
-    </header>
+<?php require_once 'includes/header.php' ?>
     <div class='content'>
         <main>
             <img src="" alt="A very cool image">
@@ -38,7 +27,7 @@
                 <audio id='forgot-pwd-audio'>
                     <source src='audio/forgot_password.mp3' type='audio/mpeg'>
                 </audio>
-                <button onclick='location.href="user-homepage.html"' id='login-btn'>LOGIN</button>
+                <button onclick='location.href="user-homepage.php"' id='login-btn'>LOGIN</button>
             </div>
         </aside>
     </div>
