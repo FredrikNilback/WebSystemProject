@@ -1,3 +1,7 @@
+main, aside {
+    min-height: 0;
+}
+
 main {
     display: grid;
     grid-template-columns: 1fr 1fr;

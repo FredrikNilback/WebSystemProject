@@ -9,8 +9,6 @@
             <div class='main-column'>
                 <div id='navigation-buttons'>
                     <button onclick='location.href="new-case.html"' id='create-btn' class='navigation-button'>
-                        <div class='notification-div'>
-                        </div>
                         <span>New Case</span>
                         <img src='images/create-btn.png' alt='New'>
                     </button>
@@ -20,17 +18,13 @@
                             <img src='images/notification.png' alt='notification'>
                             <span id='current-cases-update-count' class='update-count'>5</span>
                         </div>
-                        <span>Current Cases</span>
+                        <span>Incidents</span>
                         <img src='images/current-btn.png' alt='Current'>
                     </button>
 
-                    <button onclick='location.href="case-history.html"' id='history-btn' class='navigation-button'>
-                        <div class='notification-div'>
-                            <img src='images/notification.png' alt='notification'>
-                            <span id='historical-cases-update-count' class='update-count'>2</span>
-                        </div>
-                        <span>History</span>
-                        <img src='images/history-btn.png' alt='History'>
+                    <button onclick='location.href="manage-users.php"' id='user-btn' class='navigation-button'>
+                        <span>Manage Users</span>
+                        <img src='images/user-btn.png' alt='user'>
                     </button>
                 </div>
             </div>
@@ -103,9 +97,4 @@
             </div>
         </aside>
     </div>
-    <footer>
-        <p>the footer</p>
-    </footer>
-</body>
-
-</html>
+<?php require_once 'includes/footer.php'?>

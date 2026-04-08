@@ -6,9 +6,6 @@
 main {
     border-top-right-radius: 100px;
     border-bottom-right-radius: 100px;
-}
-
-main {
     background: linear-gradient(to bottom right, #0b026c 0%, #4a0ab9 30%, #ff933a 90%);
     display: flex;
 }
@@ -32,13 +29,13 @@ aside>* {
 }
 
 #greeting-div h1 {
-    margin: auto auto auto 2vw;
+    margin: auto 0 ;
     width: 10vw;
 }
 
 #greeting-div img {
     height: 80%;
-    margin: auto 1vw auto auto;
+    margin: auto auto auto 0;
 }
 
 #login-form {

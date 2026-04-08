@@ -77,6 +77,16 @@ footer {
     display: flex;
     background-color: #0b026c;
     color: white;
+    padding: 0.5rem 0;
+}
+
+#footer-company-name {
+    font-size: clamp(1px, 0.7rem, 9999px);
+    margin: 0.5vh auto auto 2vw;
+}
+
+#footer-developer-names {
+    margin: auto 2vw 0.5vh auto;
 }
 
 

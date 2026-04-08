@@ -31,10 +31,4 @@
             </div>
         </aside>
     </div>
-
-    <footer>
-        <p>the footer</p>
-    </footer>
-</body>
-
-</html>
+<?php require_once 'includes/footer.php' ?>
