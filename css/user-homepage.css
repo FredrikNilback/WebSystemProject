@@ -74,6 +74,10 @@ main h2 {
     align-self: center;
 }
 
+.update-count {
+    color: white;
+}
+
 #statistic-graph {
     width: 80%;
     margin: 0 auto;
