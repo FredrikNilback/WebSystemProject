@@ -2,31 +2,35 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <title>Incident Management - Raw HTML</title>
+    <title>Incident Management</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/cases.css">
 </head>
 <body>
+    <header>
+        <img src='images/company_logo.png' alt='company logo' id='company-logo'>
+        <h1>NFV incident report portal</h1>
+    </header>
 
-    <div>
+    <div class="content">
         
-        <section>
+        <aside>
             <h2>Incident Overview</h2>
             
             <div>
-                <div>
-                    <h6>STATUS</h6>
+                <div onclick="filterTable('Pending')" class="status-card">
                     <h3>Pending</h3>
-                    <div>0</div>
+                    <div>1</div>
                 </div>
-                <div>
-                    <h6>STATUS</h6>
+                <div onclick="filterTable('In-Progress')" class="status-card">
                     <h3>In Progress</h3>
                     <div>0</div>
                 </div>
-                <div>
-                    <h6>STATUS</h6>
+                    <div onclick="filterTable('Resolved')" class="status-card">
                     <h3>Resolved</h3>
                     <div>0</div>
                 </div>
+                <button onclick="filterTable('all')" class="filter-all-btn">All statuses</button>
             </div>
 
             <div>
@@ -36,12 +40,13 @@
                             <th>Incident.nr</th>
                             <th>Urgency</th>
                             <th>Status</th>
+                            <th>Assign case</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr class="incident-row Pending">
                             <td>#1127</td>
-                            <td>computer not starting</td>
+                            <td>Medium</td>
                             <td>Pending</td>
                         </tr>
                         <tr>
@@ -50,36 +55,33 @@
                     </tbody>
                 </table>
             </div>
-        </section>
+        </aside>
 
-        <section>
-            
+        <main>
             <article>
                 <div>
                     <h2>Incident Detail: #1127</h2>
                 </div>
                 
                 <div>
-                    <p>No messages yet.</p>
+                    <p>No messages.</p>
                 </div>
 
                 <div>
-                    <input type="text" placeholder="Write to responder/reporter...">
+                    <input type="text" placeholder="Write...">
                     <button type="button">Send</button>
                 </div>
             </article>
 
-            <aside>
+            <section>
                 <div>
-                    <span>Urgency & Status</span>
+                    <span>Urgency</span>
                     <div>Medium Priority</div>
                     
                     <form action="update_status.php" method="POST">
-                        <input type="hidden" name="case_id" value="1127">
-                        
+                        <input type="hidden" name="case_id" value="1127">  
                         <label>Change Status:</label>
                         <select name="new_status">
-                            <option value="pending">Pending</option>
                             <option value="in progress">In Progress</option>
                             <option value="resolved">Resolved</option>
                         </select>
@@ -87,10 +89,28 @@
                         <button type="submit">Update Status</button>
                     </form>
                 </div>
-            </aside>
-
-        </section>
+            </section>
+        </main>
     </div>
+
+    <script>
+    function filterTable(status) {
+        const rows = document.querySelectorAll('.incident-row');
+        
+        rows.forEach(row => {
+            if (status === 'all') {
+                row.style.display = ''; // Visar alla rader
+            } else {
+                // Kontrollerar om raden har klassen som matchar statusen
+                if (row.classList.contains(status)) {
+                    row.style.display = ''; // Visar matchande
+                } else {
+                    row.style.display = 'none'; // Döljer resten
+                }
+            }
+        });
+    }
+    </script>
 
 </body>
 </html>

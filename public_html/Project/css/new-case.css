@@ -1,103 +1,145 @@
-body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f0f4f8;
-        padding: 20px;
-    }
+/* Grundlayout */
+.content {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
 
-    main {
-        background-color: white;
-        max-width: 900px;
-        margin: auto;
-        padding: 40px;
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
+main {
+    background-color: white;
+    max-width: 900px;
+    width: 100%;
+    /* MINSKAD PADDING: Från 40px till 20px uppe/nere för att spara plats */
+    padding: 20px 40px; 
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    display: flow-root !important; 
+    height: auto !important;
+}
 
-    .section-header {
-        background-color: #00215e;
-        color: white;
-        padding: 10px 20px;
-        font-size: 24px;
-        margin-bottom: 25px;
-        margin-top: 30px;
-    }
+main h2 {
+    background-color: #00215e;
+    color: white;
+    /* TAJTARE RUBRIKER: Sparar vertikalt utrymme */
+    padding: 10px 20px;
+    font-size: 20px;
+    margin: 15px 0 10px 0;
+}
 
-    .section-header:first-child { margin-top: 0; }
+main h2:first-of-type { margin-top: 0; }
 
-    .row {
-        display: flex;
-        margin-bottom: 15px;
-        align-items: flex-start;
-    }
+/* De vanliga raderna (Datum, ID, Beskrivning) */
+main form > div:not(.urgency-selection) {
+    display: flex;
+    margin-bottom: 12px;
+    align-items: center;
+}
 
-    .label-col {
-        flex: 30%;
-        color: #333;
-        font-size: 16px;
-    }
+main form > div > label:not(.custom-radio) {
+    flex: 0 0 30%;
+    font-weight: bold;
+    font-size: 15px;
+}
 
-    .colon-col {
-        flex: 5%;
-        color: #00215e;
-        font-weight: bold;
-        text-align: center;
-    }
+main form > div > input:not([type="radio"]), 
+main form > div > textarea {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background-color: #f2f2f2;
+    font-size: 15px;
+}
 
-    .input-col {
-        flex: 65%;
-    }
+/* --- RADIOCIRKLARNA PÅ EN RAD (Urgency) --- */
 
-    input[type=text], input[type=datetime-local], textarea {
-        width: 100%;
-        padding: 10px;
-        border: none;
-        background-color: #f2f2f2;
-        font-size: 16px;
-    }
+.urgency-selection {
+    display: flex !important;
+    flex-direction: row;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding-left: 10px;
+    margin-bottom: 15px;
+}
 
-    /* Urgency Checkboxes */
-    .checkbox-group {
-        padding-left: 10px;
-    }
+.custom-radio {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 32px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: normal !important;
+}
 
-    .custom-check {
-        display: block;
-        position: relative;
-        padding-left: 45px;
-        margin-bottom: 15px;
-        cursor: pointer;
-        font-size: 18px;
-        line-height: 25px;
-    }
+/* Göm original-knappen */
+.custom-radio input {
+    position: absolute;
+    opacity: 0;
+}
 
-    .custom-check input { position: absolute; opacity: 0; cursor: pointer; }
+/* Skapa cirkeln */
+.checkmark {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+}
 
-    .checkmark {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 25px;
-        width: 25px;
-        background-color: #e0e0e0;
-        border: 1px solid #ccc;
-    }
+/* När man klickar i cirkeln */
+.custom-radio input:checked ~ .checkmark {
+    background-color: #00215e;
+    border-color: #00215e;
+}
 
-    .custom-check input:checked ~ .checkmark { background-color: #00215e; }
+/* Den vita pricken inuti */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
 
+.custom-radio input:checked ~ .checkmark:after {
+    display: block;
+}
 
-    .btn-submit {
-        background-color: #00215e;
-        color: white;
-        padding: 12px 30px;
-        border: none;
-        cursor: pointer;
-        font-size: 18px;
-        float: right;
-        margin-top: 20px;
-    }
+.checkmark:after {
+    top: 6px;
+    left: 6px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+}
 
-    @media (max-width: 600px) {
-        .row { flex-direction: column; }
-        .colon-col { display: none; }
-        .form-card { padding: 20px; }
-    }
+/* --- SUBMIT-KNAPPEN --- */
+button[type="submit"] {
+    background-color: #00215e;
+    color: white;
+    padding: 10px 30px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: block;
+    /* POSITIONERING: Flyttar knappen till höger utan float-problem */
+    margin: 10px 0 10px auto; 
+}
+
+/* Säkerhetsmarginal för botten */
+main::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+/*stora beskrivningsrutan*/
+.text-box {
+    resize: none;
+    height: 140px;
+    display: block;
+}
