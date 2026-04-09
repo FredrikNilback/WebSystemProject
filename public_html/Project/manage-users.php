@@ -14,20 +14,20 @@
 ?>
 
 <?php require_once 'includes/header.php' ?>
-    <div class="content">
-        <form method="POST">
-            <input type="text" name="username" placeholder="Username" required />
-            <input type="text" name="firstname" placeholder="First Name" required />
-            <input type="text" name="lastname" placeholder="Last Name" required />
-            <input type="email" name="email" placeholder="Email" required />
-            <input type="password" name="password" placeholder="Password" required />
-            <select name="role" required>
-                <option value="">Select role</option>
-                <option value="reporter">Reporter</option>
-                <option value="responder">Responder</option>
-                <option value="administrator">Administrator</option>
+    <div class='content'>
+        <form method='POST'>
+            <input type='text' name='username' placeholder='Username' required />
+            <input type='text' name='firstname' placeholder='First Name' required />
+            <input type='text' name='lastname' placeholder='Last Name' required />
+            <input type='email' name='email' placeholder='Email' required />
+            <input type='password' name='password' placeholder='Password' required />
+            <select name='role' required>
+                <option value=''>Select role</option>
+                <option value='reporter'>Reporter</option>
+                <option value='responder'>Responder</option>
+                <option value='administrator'>Administrator</option>
             </select>
-            <button type="submit">Create User</button>
+            <button type='submit'>Create User</button>
         </form>
     </div>
 <?php require_once 'includes/footer.php' ?>
