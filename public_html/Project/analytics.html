@@ -7,110 +7,71 @@
     <link rel="stylesheet" href="css/analytics.css">
 </head>
 
-<body class="analytics-page">
+<body>
 
 <header>
-<h1>NFV Analytics Dashboard</h1>
+    <img src='images/company_logo.png' alt='company logo' id='company-logo'>
+    <h1>NFV incident report portal</h1>
 </header>
 
-<div class="layout">
-    <div class="content">
-        <nav class="sidebar">
-            <h3>Menu</h3>
-            <a href="analytics.html">Dashboard</a>
-            <a href="visits.html">Visits</a>
+<div class="content">
+    <main>
+
+        <h3>Analytics Dashboard</h3>
+        <nav class="analytics-dashboard">
+            <a href="analytics.html">Incidents</a>
+            <a href="visits.html">Page Visits</a>
         </nav>
-
-        <main>
-            <div class="top-part">
-                <div class="filters">
-                    <input placeholder="Filter 1">
-                    <input placeholder="Filter 2">
-                    <input placeholder="Filter 3">
-                </div>
-
-                <div class="cards">
-                    <div class="card">Incidents Pending</div>
-                    <div class="card">Resolved Incidents</div>
-                    <div class="card">Avg Resolution Time</div>
-                    <div class="card">Avg Visits</div>
-                </div>
+    
+        <div class="top-part">
+            <div class="filters">
+                <input placeholder="Filter 1">
+                <input placeholder="Filter 2">
+                <input placeholder="Filter 3">
             </div>
 
-            <div class="dashboard-structure">
-                <div class="chart">
-                    <h3>History</h3>
-                    <canvas id="History_lineChart"></canvas>
-                </div>
-                <div class="chart">
-                    <h3>Top Incidents</h3>
-                    <canvas id="Top_Incidents_pieChart"></canvas>
-                </div>
-                <div class="chart">
-                    <h3>Incident Overview</h3>
-                    <canvas id="Incident_Overview_barChart"></canvas>
-                </div>
-                <div class="chart">
-                    <h3>Resolution Time</h3>
-                    <canvas id="Resolution_Time_barChart"></canvas>
-                </div>
+            <div class="cards">
+                <div class="card">Incidents Pending</div>
+                <div class="card">Resolved Incidents</div>
+                <div class="card">Avg Resolution Time</div>
+                <div class="card">Avg Visits</div>
+            </div>
+        </div>
+
+        <div class="dashboard-structure">
+             <div class="chart">
+                <h3>History</h3>
+                <canvas id="History_lineChart"></canvas>
             </div>
 
-        </main>
-    </div>
+            <div class="chart">
+                <h3>Top Incidents</h3>
+                <canvas id="Top_Incidents_pieChart"></canvas>
+            </div>
+
+            <div class="chart">
+                <h3>Incident Overview</h3>
+                <canvas id="Incident_Overview_barChart"></canvas>
+            </div>
+
+            <div class="chart">
+                <h3>Resolution Time</h3>
+                <canvas id="Resolution_Time_barChart"></canvas>
+            </div>
+        </div>
+
+    </main>
+</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
-<script>
-
-new Chart(document.getElementById('History_lineChart'), {       //linecharten
-    type: 'line', 
-    data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'],
-        datasets: [{
-            label: 'Incidents',
-            data: [45, 35, 26, 22, 15, 35, 46, 32, 11, 17, 29, 48]
-        }]
-    }
-});
-
-new Chart(document.getElementById('Top_Incidents_pieChart'), {       //piecharten
-    type: 'pie', 
-    data: {
-        labels: ['Phishing Attacks', 'Malware', 'Ransomware', 'Unautharized Access'],
-        datasets: [{
-            label: 'Top Incidents',
-            data: [5, 10, 3, 6]
-        }]
-    }
-});
-
-new Chart(document.getElementById('Incident_Overview_barChart'), {       //barcharten
-    type: 'bar', 
-    data: {
-        labels: ['Low', 'Medium', 'High', 'Critical'],
-        datasets: [{
-            label: 'Incident Overview',
-            data: [17, 27, 6, 4]
-        }]
-    }
-});
-
-new Chart(document.getElementById('Resolution_Time_barChart'), {       //barcharten
-    type: 'bar', 
-    data: {
-        labels: ['Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15'],
-        datasets: [{
-            label: 'Avarage Resolution Time',
-            data: [3, 5, 2, 14, 17, 4, 8]
-        }]
-    }
-});
-
-</script>
+<script src="js/analytics.js"></script>
 
 
 </body>
 
 </html>
+
+
+
+ 

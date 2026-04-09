@@ -10,21 +10,21 @@
                 <div id='navigation-buttons'>
                     <button onclick='location.href="new-case.html"' id='create-btn' class='navigation-button'>
                         <span>New Case</span>
-                        <img src='images/create-btn.png' alt='New'>
+                        <img src='images/homepage/create-btn.png' alt='New'>
                     </button>
 
                     <button onclick='location.href="current-cases.html"' id='current-btn' class='navigation-button'>
                         <div class='notification-div'>
-                            <img src='images/notification.png' alt='notification'>
+                            <img src='images/homepage/notification.png' alt='notification'>
                             <span id='current-cases-update-count' class='update-count'>5</span>
                         </div>
                         <span>Incidents</span>
-                        <img src='images/current-btn.png' alt='Current'>
+                        <img src='images/homepage/current-btn.png' alt='Current'>
                     </button>
 
                     <button onclick='location.href="manage-users.php"' id='user-btn' class='navigation-button'>
                         <span>Manage Users</span>
-                        <img src='images/user-btn.png' alt='user'>
+                        <img src='images/homepage/user-btn.png' alt='user'>
                     </button>
                 </div>
             </div>
@@ -54,7 +54,7 @@
                         This is a unique opportunity for everyone to engage directly with Viktoria, gain inspiration
                         from her vision, and participate in meaningful conversations about the future of our
                         organization.<br><br>
-                        We’re excited to welcome her and look forward to an inspiring and productive day together!
+                        We're excited to welcome her and look forward to an inspiring and productive day together!
                     </p>
                 </details>
                 <details class='current-event'>
@@ -71,7 +71,7 @@
                         masterclass in excellence have truly set her apart.<br>
                         To commemorate this remarkable milestone, we will be hosting a pizza party in her
                         honor.<br><br>
-                        Join us in celebrating Nike’s continued brilliance, unmatched consistency, and her inspiring
+                        Join us in celebrating Nike's continued brilliance, unmatched consistency, and her inspiring
                         ability to keep showing up year after year, without asking for pay raises. Now that's some
                         serious dedication!<br>
                         Her work is invaluable to the company and without her we would not have made it this far!

@@ -29,7 +29,7 @@ aside>* {
 }
 
 #greeting-div h1 {
-    margin: auto 0 ;
+    margin: auto 0;
     width: 10vw;
 }
 
@@ -38,12 +38,13 @@ aside>* {
     margin: auto auto auto 0;
 }
 
-#login-form {
+#login-div,
+#login-div form {
     display: flex;
     flex-direction: column;
 }
 
-#login-form h2 {
+#login-div h2 {
     margin-top: 15vh;
     text-align: center;
 }
@@ -104,4 +105,8 @@ aside>* {
 #login-btn:hover {
     outline: none;
     filter: brightness(75%);
+}
+
+#login-error-msg {
+    margin: auto;
 }
