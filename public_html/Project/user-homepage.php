@@ -1,11 +1,15 @@
 <?php
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: unauthorized.php');
+    }
     $activePage = 'user-homepage';
 ?>
 
 <?php require_once 'includes/header.php'?>
     <div class='content'>
         <main>
-            <h2>Welcome Wagner!</h2>
+            <h2>Welcome, <?= htmlspecialchars($_SESSION['first_name']) ?>!</h2>
             <div class='main-column'>
                 <div id='navigation-buttons'>
                     <button onclick='location.href="new-case.html"' id='create-btn' class='navigation-button'>
@@ -13,13 +17,13 @@
                         <img src='images/homepage/create-btn.png' alt='New'>
                     </button>
 
-                    <button onclick='location.href="current-cases.html"' id='current-btn' class='navigation-button'>
+                    <button onclick='location.href="cases.html"' id='cases-btn' class='navigation-button'>
                         <div class='notification-div'>
                             <img src='images/homepage/notification.png' alt='notification'>
-                            <span id='current-cases-update-count' class='update-count'>5</span>
+                            <span id='cases-update-count' class='update-count'>5</span>
                         </div>
                         <span>Incidents</span>
-                        <img src='images/homepage/current-btn.png' alt='Current'>
+                        <img src='images/homepage/cases-btn.png' alt='Cases'>
                     </button>
 
                     <button onclick='location.href="manage-users.php"' id='user-btn' class='navigation-button'>
@@ -34,7 +38,7 @@
                     <img src='images/placeholder_graph.png' alt='Statistical Overview' id='statistic-graph'>
                 </a>
             </div>
-            <button onclick='location.href="index.php"' id='logout-btn'>LOGOUT</button>
+            <button onclick='location.href="logout.php"' id='logout-btn'>LOGOUT</button>
         </main>
         <aside>
             <h3>Current Events</h3>
