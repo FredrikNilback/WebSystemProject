@@ -106,4 +106,26 @@
         return $users;
     }
 
+    function getUserCount($role) {
+        $mysqli = getDataBase();
+        $count = 0;
+
+        if ($role) {
+            $stmt = $mysqli->prepare(
+                'SELECT COUNT(*) AS count 
+                 FROM user 
+                 WHERE user_role = ?');
+            $stmt->bind_param('s', $role);
+            $stmt->execute();
+            $count = $stmt->get_result()->fetch_assoc()['count'];
+            $stmt->close();
+        } else {
+            $count = $mysqli->query('SELECT COUNT(*) AS count FROM user')->fetch_assoc()['count'];
+        }
+
+        $mysqli->close();
+
+        return (int)$count;
+    }
+
 ?>
