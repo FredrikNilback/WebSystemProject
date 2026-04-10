@@ -15,16 +15,16 @@
     <title>NFV incident report portal - <?=$activePage?></title>
     <link rel='stylesheet' href='css/styles.css'>
     <link rel='stylesheet' href='css/<?=$activePage?>.css'>
-    <script src='js/<?=$activePage?>.js'></script>
+    <script src='js/<?=$activePage?>.js' defer></script>
 </head>
 
 <body>
     <header>
         <?php 
-            if (!($activePage == 'login')) {
-                echo $anchorHeaderImg;
-            } else {
+            if ($activePage == 'login' || $activePage == 'unauthorized') {
                 echo "<img src='images/company_logo.png' alt='company logo' id='company-logo'>";
+            } else {
+                echo $anchorHeaderImg;
             }
         ?>
 

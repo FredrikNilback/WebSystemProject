@@ -3,7 +3,7 @@
         $secretsPath = __DIR__ . '/../secrets.json';
         $secrets = json_decode(file_get_contents($secretsPath));
 
-        $host = "localhost";
+        $host = 'localhost';
         $username = $secrets->db_usr;
         $dbName = $secrets->db_name;
         $password = $secrets->db_pwd;
@@ -11,7 +11,7 @@
         $mysqli = new mysqli($host, $username, $password, $dbName);
 
         if ($mysqli->connect_error) {
-            die("Could not establish database connection");
+            die('Could not establish database connection');
         }
 
         return $mysqli;
@@ -22,12 +22,12 @@
         $passwordHash =  password_hash($password, PASSWORD_DEFAULT);
 
         $stmt = $mysqli->prepare(
-            "INSERT INTO user (username, first_name, last_name, user_email, password_hash, user_role)
-             VALUES (?, ?, ?, ?, ?, ?)"
+            'INSERT INTO user (username, first_name, last_name, user_email, password_hash, user_role)
+             VALUES (?, ?, ?, ?, ?, ?)'
         );
 
         $stmt->bind_param(
-            "ssssss",
+            'ssssss',
             $username,
             $firstname,
             $lastname,
@@ -45,9 +45,9 @@
         $mysqli = getDataBase();
 
         $stmt = $mysqli->prepare(
-            "SELECT * 
+            'SELECT * 
              FROM user
-             WHERE username = ?"
+             WHERE username = ?'
         );
         $stmt->bind_param('s', $username);
         $stmt->execute();
@@ -61,6 +61,49 @@
         }
 
         return $user; 
+    }
+
+    function getUsers($role, $limit, $offset) {
+        $mysqli = getDataBase();
+        
+        if (!$role) {
+            $stmt = $mysqli->prepare(
+                'SELECT 
+                    user_id, 
+                    CONCAT(first_name," ", last_name) AS full_name,
+                    username,
+                    user_email,
+                    user_role
+                FROM user
+                ORDER BY username
+                LIMIT ? OFFSET ?'
+            );
+
+            $stmt->bind_param('ii', $limit, $offset);
+        } else {
+            $stmt = $mysqli->prepare(
+                'SELECT 
+                    user_id, 
+                    CONCAT(first_name," ", last_name) AS full_name,
+                    username,
+                    user_email,
+                    user_role
+                FROM user
+                WHERE user_role = ?
+                ORDER BY username
+                LIMIT ? OFFSET ?'
+            );
+
+            $stmt->bind_param('sii', $role, $limit, $offset);
+        }
+
+        $stmt->execute();
+        $users = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+        $stmt->close();
+        $mysqli->close();
+
+        return $users;
     }
 
 ?>
