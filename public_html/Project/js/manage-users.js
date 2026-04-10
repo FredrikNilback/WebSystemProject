@@ -1,4 +1,4 @@
-const addUserBtn = document.getElementById('add-user-btn');
+const addUserBtn = document.getElementById('open-create-user-panel-btn');
 
 addUserBtn.addEventListener('click', () => {
     const mainClass = document.querySelector('main').classList;
@@ -18,5 +18,3 @@ addUserBtn.addEventListener('click', () => {
         asideClass.add('hidden');
     }
 });
-
-

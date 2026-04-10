@@ -18,7 +18,27 @@
         createUser($username, $firstname, $lastname, $email, $password, $role);
     }
 
-    $users = getUsers('', 20, 0);
+    $page = $_GET['page'] ?? 1;
+    $limit = $_GET['limit'] ?? 24;
+
+    $allowedLimits = [12, 24, 48];
+
+    if (!in_array($limit, $allowedLimits)) {
+        $limit = 24;
+    }
+
+    $userCount = getUserCount('');
+    $totalPages =  ceil($userCount / $limit);
+    
+    if ($page > $totalPages) {
+        $page = $totalPages;
+    }
+    if ($page < 1) {
+        $page = 1;
+    }
+        
+    $offset = ($page - 1) * $limit;
+    $users = getUsers('', $limit, $offset);
 ?>
 
 <?php require_once 'includes/header.php' ?>
@@ -35,9 +55,28 @@
                         </div>
                     </div>
                 <?php endforeach; ?>
+                <div id='pag'>
+                    <nav class='pagination'>
+                        <a href='?page=1&limit=<?= $limit ?>'><<</a>
+                        <a href='?page=<?= max(1, $page - 1); ?>&limit=<?= $limit ?>'><</a>
+                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                            <a href='?page=<?= $i ?>&limit=<?= $limit ?>' class='<?= $i == $page ? "active" : "" ?>'><?= $i ?></a>
+                        <?php endfor; ?>
+                        <a href='?page=<?= min($totalPages, $page + 1); ?>&limit=<?= $limit ?>'>></a>
+                        <a href='?page=<?= $totalPages ?>&limit=<?= $limit ?>'>>></a>
+                    </nav>
+                </div>
             </div>
             <div id='options-panel'>
-                <button id='add-user-btn'>Add user</button>
+                <form method='GET' id='limit-form'>
+                    <label for='limit'>Users per page:</label>
+                    <select name='limit' id='limit' onchange='this.form.submit()'>
+                        <option value='12' <?= $limit == 12 ? 'selected' : '' ?>>12</option>
+                        <option value='24' <?= $limit == 24 ? 'selected' : '' ?>>24</option>
+                        <option value='48' <?= $limit == 48 ? 'selected' : '' ?>>48</option>
+                    </select>
+                </form>
+                <button type='button' id='open-create-user-panel-btn'>Add user</button>
             </div>
 
         </main>

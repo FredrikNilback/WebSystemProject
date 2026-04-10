@@ -35,23 +35,24 @@ aside h1 {
     overflow-y: scroll;
 }
 
-
-
 .user-card {
     border: 2px dotted gold;
     margin: 1vh 1vw;
+    height: 15vh;
 }
 
 .user-card-header {
     border-bottom: 1px solid gray;
+    display: flex;
+    align-items: baseline;
 }
 
 .user-card-header h2 {
-    display: inline;
+    margin: 0 auto 0 1vw;
 }
 
 .user-card-header p {
-    display: inline;
+    margin: 0 1vw 0 auto;
 }
 
 #options-panel {
@@ -59,6 +60,10 @@ aside h1 {
     border: 2px dotted purple;
     display: flex;
     flex-direction: column;
+}
+
+#open-create-user-panel-btn {
+    margin-top: auto;
 }
 
 .hidden {
