@@ -30,7 +30,7 @@
 <?php require_once 'includes/header.php' ?>
     <div class='content'>
         <main>
-            <img src="" alt="A very cool image">
+            <img src="images/login_hero.png" alt="A very cool image">
         </main>
         <aside>
             <div id='greeting-div'>

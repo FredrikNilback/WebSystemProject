@@ -26,10 +26,12 @@
                         <img src='images/homepage/cases-btn.png' alt='Cases'>
                     </button>
 
-                    <button onclick='location.href="manage-users.php"' id='user-btn' class='navigation-button'>
-                        <span>Manage Users</span>
-                        <img src='images/homepage/user-btn.png' alt='user'>
-                    </button>
+                    <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'administrator'): ?>
+                        <button onclick='location.href="manage-users.php"' id='user-btn' class='navigation-button'>
+                            <span>Manage Users</span>
+                            <img src='images/homepage/user-btn.png' alt='user'>
+                        </button>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class='main-column'>

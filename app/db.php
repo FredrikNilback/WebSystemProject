@@ -14,6 +14,7 @@
             die('Could not establish database connection');
         }
 
+        $mysqli->query("SET time_zone = '+00:00'");
         return $mysqli;
     }
 
@@ -54,11 +55,12 @@
         $user = $stmt->get_result()->fetch_object();
 
         $stmt->close();
-        $mysqli->close();
 
         if (!$user || !password_verify($password, $user->password_hash)) {
             return false;
         }
+
+        updateLastSeen($user->user_id, $mysqli);
 
         return $user; 
     }
@@ -73,7 +75,8 @@
                     CONCAT(first_name," ", last_name) AS full_name,
                     username,
                     user_email,
-                    user_role
+                    user_role,
+                    last_seen
                 FROM user
                 ORDER BY username
                 LIMIT ? OFFSET ?'
@@ -87,7 +90,8 @@
                     CONCAT(first_name," ", last_name) AS full_name,
                     username,
                     user_email,
-                    user_role
+                    user_role,
+                    last_seen
                 FROM user
                 WHERE user_role = ?
                 ORDER BY username
@@ -126,6 +130,21 @@
         $mysqli->close();
 
         return (int)$count;
+    }
+
+    function updateLastSeen($user_id, $mysqli = null) {
+    
+        if (!$mysqli) {
+            $mysqli = getDataBase();
+        }
+    
+        $user_id = (int)$user_id;
+    
+        $mysqli->query("
+            UPDATE user
+            SET last_seen = NOW()
+            WHERE user_id = $user_id
+        ");
     }
 
 ?>
