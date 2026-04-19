@@ -20,7 +20,7 @@
 
     function createUser($username, $firstname, $lastname, $email, $password, $role) {
         $mysqli = getDataBase();
-        $passwordHash =  password_hash($password, PASSWORD_DEFAULT);
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
         $stmt = $mysqli->prepare(
             'INSERT INTO user (username, first_name, last_name, user_email, password_hash, user_role)
@@ -60,12 +60,12 @@
             return false;
         }
 
-        updateLastSeen($user->user_id, $mysqli);
-
+        $stmt->close();
+        $mysqli->close();
         return $user; 
     }
 
-    function getUsers($role, $limit, $offset) {
+    function getUsers($limit, $offset, $role=NULL) {
         $mysqli = getDataBase();
         
         if (!$role) {
@@ -110,7 +110,7 @@
         return $users;
     }
 
-    function getUserCount($role) {
+    function getUserCount($role=NULL) {
         $mysqli = getDataBase();
         $count = 0;
 
@@ -132,19 +132,53 @@
         return (int)$count;
     }
 
-    function updateLastSeen($user_id, $mysqli = null) {
-    
+    function updateUserRole($userId, $role) {
+        $allowedRoles = ['reporter', 'responder', 'administrator'];
+        if (!in_array($role, $allowedRoles, true)) {
+            return false;
+        }
+
+        $userId = (int)$userId;
+        $mysqli = getDataBase();
+
+        $mysqli->query(
+            "UPDATE user
+             SET user_role = '$role'
+             WHERE user_id = $userId"
+        );
+
+        $mysqli->close();
+    }
+
+    function deleteUser($userId) {
+        $mysqli = getDataBase();
+
+        $userId = (int)$userId;
+
+        $mysqli->query(
+            "DELETE FROM user
+             WHERE user_id=$userId"
+        );
+        $mysqli->close();
+    }
+
+    function getCurrentEvents() {
+
+    }
+
+    function updateLastSeen($userId, $mysqli = null) {
         if (!$mysqli) {
             $mysqli = getDataBase();
         }
     
-        $user_id = (int)$user_id;
+        $userId = (int)$userId;
     
-        $mysqli->query("
-            UPDATE user
-            SET last_seen = NOW()
-            WHERE user_id = $user_id
-        ");
+        $mysqli->query(
+            "UPDATE user
+             SET last_seen = NOW()
+             WHERE user_id = $userId"
+        );
+        $mysqli->close();
     }
 
 ?>

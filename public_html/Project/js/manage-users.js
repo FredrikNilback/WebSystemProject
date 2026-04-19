@@ -18,3 +18,16 @@ addUserBtn.addEventListener('click', () => {
         asideClass.add('hidden');
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.role-select').forEach(select => {
+        const button = select.form.querySelector('.update-role-btn');
+        const original = select.value;
+
+        button.disabled = true;
+
+        select.addEventListener('change', () => {
+            button.disabled = (select.value === original);
+        });    
+    });
+});

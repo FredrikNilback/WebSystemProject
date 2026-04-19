@@ -3,6 +3,8 @@
     if (!isset($_SESSION['user_id'])) {
         header('Location: unauthorized.php');
     }
+    require_once '../../app/db.php';
+    updateLastSeen($_SESSION['user_id']);
     $activePage = 'user-homepage';
 ?>
 

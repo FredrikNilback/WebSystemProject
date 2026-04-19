@@ -1,13 +1,21 @@
 <?php
     session_start();
-
     if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'administrator') {
         header('Location: unauthorized.php');
+        exit;
     }
 
     $activePage = 'manage-users';
     require_once '../../app/db.php';
+    updateLastSeen($_SESSION['user_id']);
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        if ($_SESSION['user_role'] != 'administrator') {
+            http_response_code(401);
+            exit();
+        }
+
         $action = $_POST['action'];
 
         switch ($action) {
@@ -19,18 +27,22 @@
                 $password  = $_POST['password'] ?? '';
                 $role      = $_POST['role'] ?? '';
                 createUser($username, $firstname, $lastname, $email, $password, $role);
+                updateLastSeen($_SESSION['user_id']);
                 break;
             case 'update-role':
                 $userId = (int)$_POST['user_id'];
                 $newRole = $_POST['new_role'] ?? '';
-                //updateUserRole($userId, $newRole);
+                updateUserRole($userId, $newRole);
+                updateLastSeen($_SESSION['user_id']);
                 break;
             case 'delete-user':
                 $userId = (int)$_POST['user_id'];
-                //deleteUser($userId);
+                deleteUser($userId);
+                updateLastSeen($_SESSION['user_id']);
                 break;
             default:
-                die('Invalid Action');
+                http_response_code(400);
+                exit();
         }
     }
 
@@ -43,7 +55,7 @@
         $limit = 24;
     }
 
-    $userCount = getUserCount('');
+    $userCount = getUserCount();
     $totalPages =  ceil($userCount / $limit);
     
     if ($page > $totalPages) {
@@ -54,7 +66,7 @@
     }
         
     $offset = ($page - 1) * $limit;
-    $users = getUsers('', $limit, $offset);
+    $users = getUsers($limit, $offset);
     $now = time();
 ?>
 
@@ -75,28 +87,29 @@
                             <?php else: ?>
                             <div class='user-card-header offline'>
                             <?php endif; ?>
-                                <h2><?= htmlspecialchars($user['username']) ?> <?php if($user['user_id'] === $_SESSION['user_id']) {echo '(you)';} ?></h2>
+                                <h2><?= htmlspecialchars($user['username']) ?> <?php if($user['user_id'] === $_SESSION['user_id']) {echo '(me)';} ?></h2>
                                 <p><?= htmlspecialchars($user['user_role']) ?></p>
                             </div>
                             <div class='user-card-info'>
                                 <p>Name: <?= $user['full_name'] ?></p>
                                 <p>E-mail: <?= $user['user_email'] ?></p>
+                                <p>ID: <?= $user['user_id'] ?></p>
                             </div>
                             <div class='user-card-options'>
                                 <form method='POST'>
                                     <input type='hidden' name='action' value='update-role'>
                                     <input type='hidden' name='user_id' value='<?= $user['user_id'] ?>'>
-                                    <select name='new_role'>
+                                    <select name='new_role' class='role-select'>
                                         <option value='reporter' <?php if($user['user_role'] === 'reporter') {echo 'selected="selected"';} ?>>Reporter</option>
                                         <option value='responder' <?php if($user['user_role'] === 'responder') {echo 'selected="selected"';} ?>>Responder</option>
                                         <option value='administrator' <?php if($user['user_role'] === 'administrator') {echo 'selected="selected"';} ?>>Administrator</option>
                                     </select>
-                                    <button type='submit'>Update role</button>
+                                    <button type='submit' class='update-role-btn' disabled>Update role</button>
                                 </form>
-                                <form method='POST' onsubmit='return confirm("Are you sure you want to delete user: <?= htmlspecialchars($user["username"]) ?>?");'>
+                                <form class='delete-user-form' method='POST' onsubmit='return confirm("Are you sure you want to delete user: <?= htmlspecialchars($user["username"]) ?>?");'>
                                     <input type='hidden' name='action' value='delete-user'>
                                     <input type='hidden' name='user_id' value='<?= $user['user_id'] ?>'>
-                                    <button type='submit'>Delete User</button>
+                                    <button type='submit' class='delete-user-btn'>Delete User</button>
                                 </form>
                             </div>
                         </div>
