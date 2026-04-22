@@ -60,73 +60,97 @@
             return false;
         }
 
-        $stmt->close();
         $mysqli->close();
         return $user; 
     }
 
-    function getUsers($limit, $offset, $role=NULL) {
-        $mysqli = getDataBase();
-        
-        if (!$role) {
-            $stmt = $mysqli->prepare(
-                'SELECT 
-                    user_id, 
-                    CONCAT(first_name," ", last_name) AS full_name,
-                    username,
-                    user_email,
-                    user_role,
-                    last_seen
-                FROM user
-                ORDER BY username
-                LIMIT ? OFFSET ?'
-            );
+    function getUsers($limit, $offset, $abc='ASC', $roles=NULL) {
+        $allowedAbc = ['ASC', 'DESC'];
+        if (!in_array($abc, $allowedAbc, TRUE)) {
+            $abc = 'ASC';
+        }
+        $limit = (int)$limit;
+        $offset = (int)$offset;
 
-            $stmt->bind_param('ii', $limit, $offset);
-        } else {
-            $stmt = $mysqli->prepare(
-                'SELECT 
-                    user_id, 
-                    CONCAT(first_name," ", last_name) AS full_name,
-                    username,
-                    user_email,
-                    user_role,
-                    last_seen
-                FROM user
-                WHERE user_role = ?
-                ORDER BY username
-                LIMIT ? OFFSET ?'
-            );
-
-            $stmt->bind_param('sii', $role, $limit, $offset);
+        if (empty($roles) || !is_array($roles)) {
+            $roles = NULL;
         }
 
-        $stmt->execute();
-        $users = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        if ($roles) {
+            $allowedRoles = ['reporter', 'responder', 'administrator'];
+            for ($i = 0; $i < count($roles); $i++) {
+                if (!in_array($roles[$i], $allowedRoles, TRUE)) {
+                    $roles = NULL;
+                    break;
+                }
+            }
+        }
 
-        $stmt->close();
+        $mysqli = getDataBase();
+
+        $sql =
+            "SELECT 
+                 user_id, 
+                 CONCAT(first_name,' ', last_name) AS full_name,
+                 username,
+                 user_email,
+                 user_role,
+                 last_seen
+             FROM user
+             ";
+        
+        if ($roles) {
+            $sql .= "WHERE ";
+            $iterations = count($roles);
+            for ($i = 0; $i < $iterations - 1; $i++) {
+                $sql .= "user_role = '" . $roles[$i]. "' OR ";
+            }
+            $sql .= "user_role = '" . $roles[$iterations - 1] . "' ";
+        }
+
+        $sql .= 
+            "ORDER BY username $abc
+             LIMIT $limit OFFSET $offset";
+
+        $query = $mysqli->query($sql);
+        $users = $query->fetch_all(MYSQLI_ASSOC);
+
         $mysqli->close();
 
         return $users;
     }
 
-    function getUserCount($role=NULL) {
-        $mysqli = getDataBase();
-        $count = 0;
-
-        if ($role) {
-            $stmt = $mysqli->prepare(
-                'SELECT COUNT(*) AS count 
-                 FROM user 
-                 WHERE user_role = ?');
-            $stmt->bind_param('s', $role);
-            $stmt->execute();
-            $count = $stmt->get_result()->fetch_assoc()['count'];
-            $stmt->close();
-        } else {
-            $count = $mysqli->query('SELECT COUNT(*) AS count FROM user')->fetch_assoc()['count'];
+    function getUserCount($roles=NULL) {
+        if (empty($roles) || !is_array($roles)) {
+            $roles = NULL;
+        }
+        if ($roles) {
+            $allowedRoles = ['reporter', 'responder', 'administrator'];
+            for ($i = 0; $i < count($roles); $i++) {
+                if (!in_array($roles[$i], $allowedRoles, TRUE)) {
+                    $roles = NULL;
+                    break;
+                }
+            }
         }
 
+        $mysqli = getDataBase();
+        $count = 0;
+        $sql = 
+            "SELECT COUNT(*) AS count
+             FROM user
+             ";
+
+        if ($roles) {
+            $sql .= "WHERE ";
+            $iterations = count($roles);
+            for ($i = 0; $i < $iterations - 1; $i++) {
+                $sql .= "user_role = '" . $roles[$i]. "' OR ";
+            }
+            $sql .= "user_role = '" . $roles[$iterations - 1] . "' "; 
+        }
+
+        $count = $mysqli->query($sql)->fetch_assoc()['count'];
         $mysqli->close();
 
         return (int)$count;
