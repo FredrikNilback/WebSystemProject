@@ -6,15 +6,14 @@
 main {
     border-top-right-radius: 100px;
     border-bottom-right-radius: 100px;
-    background: linear-gradient(to bottom right, #0b026c 0%, #4a0ab9 30%, #ff933a 90%);
+    background: linear-gradient(to top left, #0b026c 0%, #4a0ab9 30%, #ff933a 90%);
     display: flex;
 }
 
 main img {
     display: block;
     width: 38vw;
-    height: 65vh;
-    border: 2px solid black;
+    height: auto;
     margin: auto auto auto 4vw;
 }
 

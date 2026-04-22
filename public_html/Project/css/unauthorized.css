@@ -1,0 +1,22 @@
+.content {
+    grid-template-columns: 1fr;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+}
+
+#access-denied {
+    margin: 2vh auto;
+}
+
+#denied-img {
+    width: 40%;
+    margin: auto;
+}
+
+a {
+    margin: auto auto 2vh 1vw;
+}

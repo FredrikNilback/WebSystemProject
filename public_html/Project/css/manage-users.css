@@ -1,0 +1,156 @@
+.fullscreen {
+    grid-column: 1 / -1;
+}
+
+.resized {
+    grid-column: 1;
+}
+
+.fullscreen #user-cards {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.resized #user-cards {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+main {
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    grid-template-rows: 1fr;
+    min-height: 0;
+}
+
+#user-card-area {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#user-card-area h1 {
+    text-align: center;
+    background-color: #b8b8b8;
+    margin: 0;
+    padding: 1vh 0;
+    border-top-left-radius: 6px;
+}
+
+#user-cards {
+    display: grid;
+    overflow-y: scroll;
+    flex: 1;
+    align-content: start;
+}
+
+.user-card {
+    margin: 1vh 1vw;
+    height: 15vh;
+    border-radius: 8px;
+    background-color: #4a5d74;
+    color: white;
+}
+
+.you {
+    border-bottom: 2px solid #0081f2;
+}
+
+.online {
+    border-bottom: 2px solid #3BD975;
+}
+
+.idle {
+    border-bottom: 2px solid #f8ec00;
+}
+
+.offline {
+    border-bottom: 2px solid #b8b8b8;
+}
+.user-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-card-header {
+    display: flex;
+    align-items: baseline;
+}
+
+.user-card-header h2 {
+    margin: 0 auto 0 1vw;
+}
+
+.user-card-header p {
+    margin: 0 1vw 0 auto;
+}
+
+.user-card-info p {
+    margin: 0.5vh auto 0.5vh 1vw;
+}
+.user-card-options {
+    display: flex;
+    flex-direction: column;
+    border-top:#b8b8b8 1px solid;
+    margin-top: auto;
+}
+.update-role-btn {
+
+}
+.delete-user-form {
+    margin-left: auto;
+}
+.delete-user-btn {
+    color: white;
+    background-color: red;
+    filter:brightness(50%);
+    border-radius: 6px;
+}
+.delete-user-btn:hover {
+    filter: none;
+}
+
+#pagination-div {
+    margin-top: auto;
+    display: flex;
+}
+#pagination-div nav {
+    margin: 0 auto
+}
+#pagination-div nav a {
+    padding: 0 0.1vw;
+    text-decoration: none;
+    color: #0081f2;
+}
+#pagination-div nav .active {
+    background-color: #3BD975;
+    border-radius: 6px;
+    text-decoration: underline;
+}
+
+#options-panel {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    border-left: 2px solid #b8b8b8;
+}
+
+#open-create-user-panel-btn {
+    margin-top: auto;
+}
+
+.hidden {
+    display: none;
+    grid-column: 1;
+}
+
+.shown {
+    display: flex;
+    grid-column: 2;
+}
+
+aside {
+    border-left: 2px solid gray;
+    background-color: #b8b8b8;
+    display: flex;
+    flex-direction: column;
+}
