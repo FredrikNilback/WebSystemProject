@@ -25,9 +25,42 @@
     
         <div class="top-part">
             <div class="filters">
-                <input placeholder="Filter 1">
-                <input placeholder="Filter 2">
-                <input placeholder="Filter 3">
+                <div class="filter-group">
+                    <label for="dateRange">Date</label>
+                    <select id="dateRange">
+                        <option value="Today">Today</option>
+                        <option value="Yesterday">Yesterday</option>
+                        <option value="Current Week">Current Week</option>
+                        <option value="Current Month">Current Month</option>
+                        <option value="Custom">Custom</option>
+                    </select>
+                    <input type="date" id="Custom" style="display:none;">
+                </div>
+
+                <div class="filter-group">
+                    <label for="Browser">Browser</label>
+                    <select id="BrowserUsed">
+                        <option value="AllBrowsers">All</option>
+                        <option value="Chrome">Chrome</option>
+                        <option value="MicrosoftEdge">Microsoft Edge</option>
+                        <option value="Opera">Opera</option>
+                        <option value="Safari">Safari</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+
+                <label for="UserVisit">User</label>
+                    <select id="User">
+                        <option value="all">All</option>
+                        <option value="User1">User 1</option>
+                        <option value="User2">User 2</option>
+                        <option value="User3">User 3</option>
+                        <option value="User4">User 4</option>
+                    </select>
+                </div>
+
+                <button id="ApplyFilters">Apply</button>
             </div>
 
             <div class="cards">
@@ -44,15 +77,15 @@
                 <canvas id="Visits_History_lineChart"></canvas>
             </div>
             <div class="chart">
-                <h3>Visits Weekly</h3>
+                <h3>Weekly</h3>
                 <canvas id="Visits_Weekly_barChart"></canvas>
             </div>
             <div class="chart">
-                <h3>Visits Daily</h3>
+                <h3>Daily</h3>
                 <canvas id="Visits_Daily_barChart"></canvas>
             </div>
             <div class="chart">
-                <h3>Visits Browser</h3>
+                <h3>Browser</h3>
                 <canvas id="Browser_Daily_barChart"></canvas>
             </div>
         </div>

@@ -23,11 +23,27 @@
     gap: 10px;
 }
 
-.filters input {                         /*för att ändra input-raderna*/
+.filters input,
+.filters select {                         /*för att ändra input-raderna*/
     width: 221px;
     padding: 2px;
     border-radius: 5px;
     border: #0b026c solid;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    font-size: 15px;
+    margin: 4px;
+}
+
+#ApplyFilters {
+    padding: 1px 10px;
+    font-size: 12px;
 }
 
 .content {

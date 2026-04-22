@@ -5,7 +5,7 @@ new Chart(document.getElementById('History_lineChart'), {       //linecharten
     data: {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'],
         datasets: [{
-            label: 'Incidents',
+            label: 'Number of incidents',
             data: [45, 35, 26, 22, 15, 35, 46, 32, 11, 17, 29, 48]
         }]
     }
@@ -27,7 +27,7 @@ new Chart(document.getElementById('Incident_Overview_barChart'), {       //barch
     data: {
         labels: ['Low', 'Medium', 'High', 'Critical'],
         datasets: [{
-            label: 'Incident Overview',
+            label: 'Number of incidents per severity',
             data: [17, 27, 6, 4]
         }]
     }
