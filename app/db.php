@@ -57,9 +57,11 @@
         $stmt->close();
 
         if (!$user || !password_verify($password, $user->password_hash)) {
+            $mysqli->close();
             return false;
         }
-
+        
+        unset($user->password_hash);
         $mysqli->close();
         return $user; 
     }
@@ -190,11 +192,8 @@
 
     }
 
-    function updateLastSeen($userId, $mysqli = null) {
-        if (!$mysqli) {
-            $mysqli = getDataBase();
-        }
-    
+    function updateLastSeen($userId) {
+        $mysqli = getDataBase();
         $userId = (int)$userId;
     
         $mysqli->query(
