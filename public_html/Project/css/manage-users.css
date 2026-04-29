@@ -93,8 +93,11 @@ main {
     border-top:#b8b8b8 1px solid;
     margin-top: auto;
 }
-.update-role-btn {
-
+.role-select {
+    cursor: pointer;
+}
+.update-role-btn:disabled {
+    cursor: default;
 }
 .delete-user-form {
     margin-left: auto;
@@ -139,7 +142,6 @@ main {
 }
 
 .hidden {
-    display: none;
     grid-column: 1;
 }
 

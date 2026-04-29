@@ -34,8 +34,10 @@
         </main>
         <aside>
             <div id='greeting-div'>
-                <h1 id='greeting'>Greetings!</h1>
-                <img src="images/time_of_day/morning.png" id='time-of-day-img' alt="time of day img">
+                <div id='greeting-animation-wrapper'>
+                    <h1 id='greeting'>Greetings!</h1>
+                    <img src="images/time_of_day/morning.png" id='time-of-day-img' alt="time of day img">
+                </div>
             </div>
             <div id='login-div'>
                 <h2>Login to your account!</h2>

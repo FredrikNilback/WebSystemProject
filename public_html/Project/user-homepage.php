@@ -12,7 +12,7 @@
 
 <?php require_once 'includes/header.php'?>
     <div class='content'>
-        <main>
+        <main class=''>
             <h2>Welcome, <?= htmlspecialchars($_SESSION['first_name']) ?>!</h2>
             <div class='main-column'>
                 <div id='navigation-buttons'>
@@ -45,9 +45,9 @@
                 </a>
             </div>
             <button onclick='location.href="logout.php"' id='logout-btn'>LOGOUT</button>
+            <button id='open-aside-btn' class='hidden'>current events</button>
         </main>
-        <aside>
-            
+        <aside class=''>
             <h3>Current Events</h3>
             <div id='current-events'>
                 <?php foreach ($currentEvents as $event): ?>
@@ -64,6 +64,9 @@
                         </p>
                     </details>
                 <?php endforeach; ?>
+            </div>
+            <div id='minimize-btn-div'>
+                <button id='minimize-btn'>minimize</button>
             </div>
         </aside>
     </div>
