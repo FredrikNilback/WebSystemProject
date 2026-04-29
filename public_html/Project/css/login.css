@@ -1,3 +1,12 @@
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
 .content {
     grid-template-columns: 2fr 1fr;
     background-color: #ebebeb;
@@ -30,6 +39,14 @@ aside {
     display: flex;
     border-left: solid 2px rgba(50,50,50,0.5);
     padding: 0vh 1vw;
+    overflow: hidden;
+}
+#greeting-animation-wrapper {
+    display: flex;
+    align-items: center;
+
+    transform: translateX(-100%);
+    animation: slideIn 0.75s ease-out forwards;
 }
 
 #greeting-div h1 {
@@ -107,7 +124,6 @@ aside {
     color: white;
     border-radius: 6px;
     outline: 2px solid black;
-    cursor: pointer;
 }
 
 #login-btn:hover {

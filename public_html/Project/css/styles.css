@@ -8,6 +8,13 @@ h2,
 h3 {
     cursor: default;
 }
+button {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
 
 body {
     display: flex;
@@ -67,6 +74,8 @@ aside {
     grid-column: 2;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
+    display: flex;
+    flex-direction: column;
 }
 
 footer {
