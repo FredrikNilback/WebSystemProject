@@ -1,6 +1,8 @@
 .content {
-    grid-template-columns: 3fr 2fr;
+    grid-template-columns: 2fr 1fr;
     background-color: #ebebeb;
+    margin-top: 5vh;
+    margin-bottom: 2vh;
 }
 
 main {
@@ -17,24 +19,32 @@ main img {
     margin: auto auto auto 4vw;
 }
 
-aside>* {
-    margin: 0 4vw;
+aside {
+    display: flex;
+    flex-direction: column;
 }
 
 #greeting-div {
-    margin-top: 8vh;
+    margin: 16vh auto auto 4vw;
     height: 12vh;
     display: flex;
+    border-left: solid 2px rgba(50,50,50,0.5);
+    padding: 0vh 1vw;
 }
 
 #greeting-div h1 {
-    margin: auto 0;
     width: 10vw;
+    margin: auto 0;
 }
 
 #greeting-div img {
     height: 80%;
     margin: auto auto auto 0;
+}
+
+#login-div {
+    margin: 10vh auto auto auto;
+    width: 70%;
 }
 
 #login-div,
@@ -44,7 +54,6 @@ aside>* {
 }
 
 #login-div h2 {
-    margin-top: 15vh;
     text-align: center;
 }
 

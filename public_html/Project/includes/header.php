@@ -1,10 +1,13 @@
 <?php
     $headerImg = "<img src='images/company_logo.png' alt='company logo' id='company-logo'>";
-    $anchorHeaderImg = 
+    $header = 
     <<<HTML
-    <a href='user-homepage.php'>
-                $headerImg
-            </a>
+    <header>
+        <a href='user-homepage.php'>
+            $headerImg
+        </a>
+        <h1>NFV incident report portal</h1>
+    </header>
     HTML;
 ?>
 
@@ -21,14 +24,8 @@
 </head>
 
 <body>
-    <header>
-        <?php 
-            if ($activePage == 'login' || $activePage == 'unauthorized') {
-                echo $headerImg;
-            } else {
-                echo $anchorHeaderImg;
-            }
-        ?>
-
-        <h1>NFV incident report portal</h1>
-    </header>
+    <?php 
+        if (!($activePage == 'login' || $activePage == 'unauthorized')) {
+            echo $header;
+        }
+    ?>

@@ -47,6 +47,7 @@
             <button onclick='location.href="logout.php"' id='logout-btn'>LOGOUT</button>
         </main>
         <aside>
+            
             <h3>Current Events</h3>
             <div id='current-events'>
                 <?php foreach ($currentEvents as $event): ?>
