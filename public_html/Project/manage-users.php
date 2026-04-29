@@ -168,7 +168,7 @@
             <div id='options-panel'>
                 <form method='GET' id='options-form'>
                     <label for='limit'>Users per page:</label>
-                    <select name='limit' id='limit' onchange='this.form.submit()'>
+                    <select name='limit' id='limit'>
                         <option value='12' <?= $limit == 12 ? 'selected' : '' ?>>12</option>
                         <option value='24' <?= $limit == 24 ? 'selected' : '' ?>>24</option>
                         <option value='48' <?= $limit == 48 ? 'selected' : '' ?>>48</option>

@@ -188,10 +188,6 @@
         $mysqli->close();
     }
 
-    function getCurrentEvents() {
-
-    }
-
     function updateLastSeen($userId) {
         $mysqli = getDataBase();
         $userId = (int)$userId;
@@ -202,6 +198,21 @@
              WHERE user_id = $userId"
         );
         $mysqli->close();
+    }
+
+    function getCurrentEvents() {
+        $mysqli = getDataBase();
+
+        $query = $mysqli->query(
+            "SELECT event_date, event_title, event_text
+             FROM current_event
+             ORDER BY event_date DESC
+             LIMIT 5"
+        );
+        $events = $query->fetch_all(MYSQLI_ASSOC);
+        $mysqli->close();
+
+        return $events;
     }
 
 ?>
