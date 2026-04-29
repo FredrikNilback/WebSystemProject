@@ -25,7 +25,7 @@ header {
     top: 0;
     z-index: 999;
     display: flex;
-    background-color: #0b026c;
+    background: linear-gradient(to right, #ff933a 0%, #4a0ab9 30%, #0b026c 75%);
     color: white;
     padding: 4vh 0vw;
 }
@@ -54,7 +54,7 @@ header h1 {
     border-radius: 6px;
     flex: 1 1 auto;
     min-height: 0;
-    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.55);
+    box-shadow: -10px 5px 10px rgba(0, 0, 0, 0.55);
 }
 
 main {
@@ -72,7 +72,7 @@ aside {
 footer {
     bottom: 0;
     display: flex;
-    background-color: #0b026c;
+    background: linear-gradient(to right, #0b026c 0%, #4a0ab9 35%, #ff933a 95%);
     color: white;
     padding: 0.5rem 0;
 }
@@ -84,6 +84,7 @@ footer {
 
 #footer-developer-names {
     margin: auto 2vw 0.5vh auto;
+    color: black;
 }
 
 
