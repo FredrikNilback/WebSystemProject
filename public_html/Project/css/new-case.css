@@ -2,15 +2,14 @@
 .content {
     display: flex;
     justify-content: center;
-    padding: 20px;
+    padding: 15px;
 }
 
 main {
     background-color: white;
-    max-width: 900px;
+    max-width: 950px;
     width: 100%;
-    /* MINSKAD PADDING: Från 40px till 20px uppe/nere för att spara plats */
-    padding: 20px 40px; 
+    padding: 1px 10px; 
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     display: flow-root !important; 
@@ -20,7 +19,6 @@ main {
 main h2 {
     background-color: #00215e;
     color: white;
-    /* TAJTARE RUBRIKER: Sparar vertikalt utrymme */
     padding: 10px 20px;
     font-size: 20px;
     margin: 15px 0 10px 0;
@@ -28,7 +26,7 @@ main h2 {
 
 main h2:first-of-type { margin-top: 0; }
 
-/* De vanliga raderna (Datum, ID, Beskrivning) */
+/* de vanliga raderna (Datum, ID, Beskrivning) */
 main form > div:not(.urgency-selection) {
     display: flex;
     margin-bottom: 12px;
@@ -50,7 +48,7 @@ main form > div > textarea {
     font-size: 15px;
 }
 
-/* --- RADIOCIRKLARNA PÅ EN RAD (Urgency) --- */
+/* --- RADIOCIRKLARNA PÅ EN RAD (severity) --- */
 
 .urgency-selection {
     display: flex !important;
@@ -58,7 +56,6 @@ main form > div > textarea {
     gap: 20px;
     flex-wrap: wrap;
     padding-left: 10px;
-    margin-bottom: 15px;
 }
 
 .custom-radio {
@@ -71,13 +68,13 @@ main form > div > textarea {
     font-weight: normal !important;
 }
 
-/* Göm original-knappen */
+/* original-knappen,gömd */
 .custom-radio input {
     position: absolute;
     opacity: 0;
 }
 
-/* Skapa cirkeln */
+/* cirkeln */
 .checkmark {
     position: absolute;
     top: 50%;
@@ -90,13 +87,13 @@ main form > div > textarea {
     border-radius: 50%;
 }
 
-/* När man klickar i cirkeln */
+/* det som fylls i cirkeln man klickar i */
 .custom-radio input:checked ~ .checkmark {
     background-color: #00215e;
     border-color: #00215e;
 }
 
-/* Den vita pricken inuti */
+/* vita pricken inuti, kanske ska ta bort? */
 .checkmark:after {
     content: "";
     position: absolute;
@@ -126,11 +123,10 @@ button[type="submit"] {
     font-size: 16px;
     font-weight: bold;
     display: block;
-    /* POSITIONERING: Flyttar knappen till höger utan float-problem */
-    margin: 10px 0 10px auto; 
+    margin-left: auto; 
 }
 
-/* Säkerhetsmarginal för botten */
+/* säkerhetsmarginal för botten */
 main::after {
     content: "";
     display: block;
@@ -143,3 +139,48 @@ main::after {
     height: 140px;
     display: block;
 }
+
+/* meddelandet som kommer upp (på skärmen) när det är skickat*/
+.success-banner {
+    display: none; /* egentligen dold, visas med js */
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    text-align: center;
+    border-top: none;
+}
+
+/* behållaren som håller båda listorna */
+.form-row {
+    display: flex;
+    gap: 30px;          /* detta är avstådet mellan listorna */
+    margin-top: 2px;
+    margin-bottom: 2px;
+    align-items: flex-start; /* gör det jämnt */
+}
+
+/* varje box och deras layout */
+.form-row .input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column; /* texten ligger ovanför */
+    gap: 1px;              /* avstånd med text och rullis*/
+}
+
+/* text o strl */
+.form-row .input-group label {
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+    display: block;        /* egen rad till varje rullis */
+}
+
+/* rullisar */
+.form-row .input-group select {
+    width: 100%;
+    padding: 2px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    background-color: #fff;
+}
+

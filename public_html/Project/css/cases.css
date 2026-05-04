@@ -1,11 +1,11 @@
 .content {
-    grid-template-columns: 2fr 3fr;
-    background-color: #f5f5f5;
+    grid-template-columns: 2fr 3fr; 
+    gap: 0px;
+    align-items: start;
 }
 
-/* vänster, där alla ärenden listas(aside)*/
+/* vänster, där alla ärenden listas (aside) */
 aside {
-    background-color: #f5f5f5;
     display: flex;
     flex-direction: column;
     grid-column: 1;
@@ -14,14 +14,15 @@ aside {
     padding-right: 10px;
     border-right: none !important; /* Tvinga bort linjen på höger sida */
 }
-/*incident overview*/
+
+/* incident overview rubrik */
 aside h2 {
     color: #0b026c;
     margin-top: 0;
     font-size: 1.4rem;
 }
 
-/* Status-korten (divarna i aside) */
+/* Status-korten (behållarna i aside) */
 aside > div:first-of-type {
     display: flex;
     flex-direction: column;
@@ -44,7 +45,7 @@ aside > div > div {
 
 aside > div > div:hover { transform: translateX(5px); }
 
-/* Färgerna på kanterna */
+/* Färgerna på kanterna för status-korten */
 aside > div > div:nth-child(1) { border-left-color: #666; } /* Pending */
 aside > div > div:nth-child(2) { border-left-color: #666; } /* In Progress */
 aside > div > div:nth-child(3) { border-left-color: #666; } /* Resolved */
@@ -52,7 +53,7 @@ aside > div > div:nth-child(3) { border-left-color: #666; } /* Resolved */
 aside h3 { margin: 0; font-size: 15px; color: #666; text-transform: uppercase; }
 aside div div div { font-size: 20px; font-weight: bold; color: #0b026c; }
 
-/* Tabellen */
+/* Tabellen för incidenter */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -70,39 +71,43 @@ main {
     padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 5px;
     grid-column: 2;
     max-height: 75vh;
+    padding-right: 0px;
 }
 
 /* Chatt-boxen (article) */
 article {
-background: white;
-    border-radius: 2px;
+    background: white;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
-    min-height: 300px; 
-    border: 1px solid #ddd;
+    min-height: 210px; 
+    
+    
+    /* viktig rad för att inte sabba allt */
+    margin-top: -20px !important; 
+    /* Justera siffran -30 tills den nuddar det blå strecket perfekt */
 }
 
 article h2 {
     margin: 0;
     font-size: 16px;
-    padding: 12px 15px;
+    padding: 10px 12px;
     background-color: #0b026c;
     color: white;
-    border-radius: 4px 4px 0 0;
+    
 }
 
-/* Meddelandeytan */
+/* Meddelandeytan inuti chatten */
 article div:nth-child(2) {
     flex: 1;
     padding: 15px;
     background: #fff;
 }
 
-/* Input-ytan längst ner i article */
+/* Input-ytan för meddelanden längst ner */
 article div:nth-child(3) {
     padding: 15px;
     border-top: 1px solid #eee;
@@ -127,42 +132,66 @@ article button {
     font-weight: bold;
 }
 
-/* Status-kontrollerna (section) */
+/* --- Status-kontrollerna (den nedre vita boxen till höger) --- */
 section {
     background: white;
-    padding: 20px;
+    padding: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
+/* Rubrikerna för fälten (Change status, Add comment etc) */
 section span {
     font-size: 11px;
     font-weight: bold;
-    color: white;
+    color: #0b026c; /* Ändrat från vit till grå för att synas mot vitt */
     text-transform: uppercase;
     display: block;
     margin-bottom: 5px;
+    margin-top: 5px;
 }
 
-/* Den blå rutan som visar Medium Priority */
+/* Den grå rutan för prioritet */
 section div:first-of-type {
-    padding: 8px;
+    padding: 4px;
     text-align: center;
     border-radius: 4px;
     font-weight: bold;
-    background: #83898f;
+    background: #0b026c;
     color: white;
     margin-bottom: 15px;
 }
 
+/* Dropdown-menyn för status */
 section select {
     width: 100%;
-    padding: 8px;
+    padding: 2px;
     border-radius: 4px;
     border: 1px solid #ddd;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
+/* rutan där man kan skriva kommentar */
+section textarea {
+    width: 100%;
+    height: 35px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    resize: none; /* Gör rutan fixerad så den inte kan dras ut */
+    box-sizing: border-box; /* Ser till att rutan inte sticker ut utanför boxen */
+    margin-bottom: 10px;
+    font-family: inherit;
+}
+
+/* ladda upp en fil */
+section input[type="file"] {
+    display: block;
+    margin-bottom: 15px;
+    font-size: 13px;
+}
+
+/* knappen "Update Incident" */
 section button {
     background: #0b026c;
     color: white;
@@ -173,12 +202,13 @@ section button {
     cursor: pointer;
     font-weight: bold;
 }
-/* Gör status-korten klickbara */
+
+/* gör så status-korten blir klickbara */
 .status-card {
     cursor: pointer;
 }
 
-/* All statuses-länken/knappen */
+/* all statuses-länken/knappen */
 .filter-all-btn {
     cursor: pointer;
     border: none;
@@ -187,13 +217,54 @@ section button {
     text-decoration: underline;
     font-size: 13px;
     margin-top: 10px;
-    padding: 0; /* Bra att nollställa padding på knappar */
-    display: block;      /* Gör att knappen tar upp en egen rad */
-    margin-left: 20px;   /* Justera denna siffra för att flytta den precis dit du vill */
+    padding: 0; 
+    display: block;      
+    margin-left: 20px;   
     margin-top: 10px;
-    text-align: left;    /* Tvingar texten till vänster */
+    text-align: left;    
 }
 
 .filter-all-btn:hover {
-    color: #0b026c; /* Bonus: den byter färg när man hovrar! */
+    color: #0b026c; 
+}
+/* färgen blå vid klick */
+.status-card.active {
+    background-color: #0b026c !important;
+    color: white !important;
+}
+
+/* texten blir vit när filtret är iklickat */
+.status-card.active h3, 
+.status-card.active div {
+    color: white !important;
+}
+/* detalj-boxen för alla cases som kommer upp */
+section .case-details-box {
+    background-color: #ffffff !important; /*måste ha important för funkat inte annars pga skitsection */
+    border: 1px solid #ccc !important;
+    padding: 1px !important;
+    text-align: left !important;
+    color: #333 !important;
+    background-image: none !important; /* För säkerhets skull */
+}
+
+/* Fixa så rubriken ser bra ut */
+section .case-details-box strong {
+    color: #0b026c;
+    display: block;
+    padding-top: 0px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    font-size: 11px;
+}
+
+/* Fixa texten inuti */
+section .case-details-box p {
+    text-align: left !important;
+    font-weight: normal !important;
+}
+
+/* knappen till alla statusar */
+.status-card.active div {
+border-left-color: #0b026c;
 }
