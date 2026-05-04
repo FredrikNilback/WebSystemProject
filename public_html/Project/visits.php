@@ -1,3 +1,24 @@
+<?php
+$conn = new mysqli("localhost", "username", "password", "nfv_irp_db_nike");
+
+$page = $_SERVER['PHP_SELF'];
+$ip = $_SERVER['REMOTE_ADDR'];
+
+$result = $conn->query("SELECT id FROM page WHERE page_name = '$page'");
+$row = $result->fetch_assoc();
+
+if ($row) {
+    $page_id = $row['id'];
+    $browser_id = 1;
+
+    $conn->query("
+        INSERT INTO visit_tracking (page_id, browser_type_id, host_ip)
+        VALUES ($page_id, $browser_id, INET_ATON('$ip'))
+    ");
+}
+?>
+
+
 <!DOCTYPE html>
 <html>
 
