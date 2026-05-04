@@ -2,13 +2,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const abcToggleBtn = document.getElementById('abc-toggle');
     const addUserBtn = document.getElementById('open-create-user-panel-btn');
-    const roleForm = document.getElementById('options-form');
+    const limitSelect = document.getElementById('limit');
+    const optionsForm = document.getElementById('options-form');
+
+    limitSelect.addEventListener('change', () => {
+        optionsForm.submit();
+    });
 
     abcToggleBtn.addEventListener('click', () => {
         const abcValue = document.getElementById('abc-value');
 
         abcValue.value = (abcValue.value === 'ASC') ? 'DESC' : 'ASC';
-        roleForm.submit();
+        optionsForm.submit();
     });
 
     addUserBtn.addEventListener('click', () => {
@@ -43,8 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('#role-filtering input[type="checkbox"]').forEach(cb => {
         cb.addEventListener('change', () => {
-            roleForm.submit();
+            optionsForm.submit();
         });
     });
-
 });

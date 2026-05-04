@@ -6,3 +6,4 @@ secrets.json
 SQL_scripts/
 project_report
 public_html/a[0-9]
+*_backup.png
