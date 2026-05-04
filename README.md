@@ -8,7 +8,7 @@ Users can report incidents, and depending on access level users can also assign 
 There is no self registration, this is handled fully by the admins of the page.
 
 frontend: HTML, CSS, JavaScript.
-backend: php.
+backend: PHP.
 database: MySQL.
 
 Server environment is maintained by the university.
