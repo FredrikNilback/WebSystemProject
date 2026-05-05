@@ -3,35 +3,62 @@ document.addEventListener('DOMContentLoaded', () => {
     const abcToggleBtn = document.getElementById('abc-toggle');
     const addUserBtn = document.getElementById('open-create-user-panel-btn');
     const limitSelect = document.getElementById('limit');
+    const search = document.getElementById('search-user');
     const optionsForm = document.getElementById('options-form');
 
+    const main = document.querySelector('main');
+    const aside = document.querySelector('aside');
+
     limitSelect.addEventListener('change', () => {
+        const pageInput = document.querySelector('[name="page"]');
+        if (pageInput) pageInput.value = 1;
         optionsForm.submit();
     });
 
     abcToggleBtn.addEventListener('click', () => {
         const abcValue = document.getElementById('abc-value');
-
         abcValue.value = (abcValue.value === 'ASC') ? 'DESC' : 'ASC';
         optionsForm.submit();
     });
 
+    let searchTimeout = null;
+
+    search.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+
+        searchTimeout = setTimeout(() => {
+
+            const pageInput = document.querySelector('[name="page"]');
+            if (pageInput) pageInput.value = 1;
+
+            sessionStorage.setItem('searchSelection', JSON.stringify({
+                start: search.selectionStart,
+                end: search.selectionEnd,
+                value: search.value
+            }));
+
+            optionsForm.submit();
+
+        }, 1000);
+    });
+
     addUserBtn.addEventListener('click', () => {
-        const mainClass = document.querySelector('main').classList;
-        const asideClass = document.querySelector('aside').classList;
 
-        if (mainClass[0] === 'fullscreen') {
-            mainClass.remove('fullscreen');
-            mainClass.add('resized');
+        const isOpen = !aside.classList.contains('hidden');
+        sessionStorage.setItem('createUserOpen', isOpen ? '0' : '1');
 
-            asideClass.remove('hidden');
-            asideClass.add('shown');
+        if (main.classList.contains('fullscreen')) {
+            main.classList.remove('fullscreen');
+            main.classList.add('resized');
+
+            aside.classList.remove('hidden');
+            aside.classList.add('shown');
         } else {
-            mainClass.remove('resized');
-            mainClass.add('fullscreen');
+            main.classList.remove('resized');
+            main.classList.add('fullscreen');
 
-            asideClass.remove('shown');
-            asideClass.add('hidden');
+            aside.classList.remove('shown');
+            aside.classList.add('hidden');
         }
     });
 
@@ -51,4 +78,25 @@ document.addEventListener('DOMContentLoaded', () => {
             optionsForm.submit();
         });
     });
+
+    const savedSearch = sessionStorage.getItem('searchSelection');
+
+    if (savedSearch) {
+        const data = JSON.parse(savedSearch);
+
+        search.focus();
+        search.setSelectionRange(data.start, data.end);
+
+        sessionStorage.removeItem('searchSelection');
+    }
+
+    const panelState = sessionStorage.getItem('createUserOpen');
+
+    if (panelState === '1') {
+        main.classList.remove('fullscreen');
+        main.classList.add('resized');
+
+        aside.classList.remove('hidden');
+        aside.classList.add('shown');
+    }
 });

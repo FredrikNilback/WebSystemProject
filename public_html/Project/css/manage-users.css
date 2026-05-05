@@ -35,6 +35,11 @@ main {
     border-top-left-radius: 6px;
 }
 
+#empty-result {
+    text-align: center;
+    margin-top: 20vh;
+}
+
 #user-cards {
     display: grid;
     overflow-y: scroll;
@@ -134,6 +139,11 @@ main {
     display: flex;
     flex-direction: column;
     border-left: 2px solid #b8b8b8;
+}
+
+#role-filtering {
+    display: flex;
+    flex-direction: column;
 }
 
 #open-create-user-panel-btn {

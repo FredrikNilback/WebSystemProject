@@ -66,7 +66,7 @@
         return $user; 
     }
 
-    function getUsers($limit, $offset, $abc='ASC', $roles=NULL) {
+    function getUsers($limit, $offset, $abc='ASC', $roles=NULL, $search=NULL) {
         $allowedAbc = ['ASC', 'DESC'];
         if (!in_array($abc, $allowedAbc, TRUE)) {
             $abc = 'ASC';
@@ -101,28 +101,53 @@
              FROM user
              ";
         
-        if ($roles) {
+        if ($roles || $search) {
             $sql .= "WHERE ";
+        }
+
+        if ($roles) {
+            $sql .= "(";
             $iterations = count($roles);
             for ($i = 0; $i < $iterations - 1; $i++) {
                 $sql .= "user_role = '" . $roles[$i]. "' OR ";
             }
-            $sql .= "user_role = '" . $roles[$iterations - 1] . "' ";
+            $sql .= "user_role = '" . $roles[$iterations - 1] . "'";
+            $sql .= ") ";
+        }
+
+        if ($roles && $search) {
+            $sql .= "AND ";
+        }
+
+        if ($search) {
+            $sql .= "username LIKE ? ";
         }
 
         $sql .= 
             "ORDER BY username $abc
              LIMIT $limit OFFSET $offset";
 
-        $query = $mysqli->query($sql);
-        $users = $query->fetch_all(MYSQLI_ASSOC);
+        $users = NULL;
+        if ($search) {
+            $search = "%" . $search . "%";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param('s', $search);
+            $stmt->execute();
+
+            $result = $stmt->get_result();
+            $users = $result->fetch_all(MYSQLI_ASSOC);
+            $stmt->close();
+        } else {
+            $query = $mysqli->query($sql);
+            $users = $query->fetch_all(MYSQLI_ASSOC);
+        }
 
         $mysqli->close();
 
         return $users;
     }
 
-    function getUserCount($roles=NULL) {
+    function getUserCount($roles=NULL, $search=NULL) {
         if (empty($roles) || !is_array($roles)) {
             $roles = NULL;
         }
@@ -143,16 +168,37 @@
              FROM user
              ";
 
-        if ($roles) {
+        if ($roles || $search) {
             $sql .= "WHERE ";
+        }
+
+        if ($roles) {
+            $sql .= "(";
             $iterations = count($roles);
             for ($i = 0; $i < $iterations - 1; $i++) {
                 $sql .= "user_role = '" . $roles[$i]. "' OR ";
             }
-            $sql .= "user_role = '" . $roles[$iterations - 1] . "' "; 
+            $sql .= "user_role = '" . $roles[$iterations - 1] . "'";
+            $sql .= ") ";
         }
 
-        $count = $mysqli->query($sql)->fetch_assoc()['count'];
+        if ($roles && $search) {
+            $sql .= "AND ";
+        }
+
+        $count = 0;
+        if ($search) {
+            $sql .= "username LIKE ? ";
+            $search = "%" . $search . "%";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param('s', $search);
+            $stmt->execute();
+            $stmt->bind_result($count);
+            $stmt->fetch();
+            $stmt->close();
+        } else {
+            $count = $mysqli->query($sql)->fetch_assoc()['count'];
+        }
         $mysqli->close();
 
         return (int)$count;

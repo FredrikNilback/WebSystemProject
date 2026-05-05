@@ -1,5 +1,5 @@
 # NFV Incident report portal
-#### developed by Nike Borgström, Fredrik Nilback & Viktoria Thålin
+#### Developed by Nike Borgström, Fredrik Nilback & Viktoria Thålin
 This is a school project for course: Web Systems Fundamentals and Databases. At Halmstad Högskola.
 
 The goal is to create an incident report portal for a fictional company specializing in cyber security.

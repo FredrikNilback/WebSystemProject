@@ -30,10 +30,12 @@
 <?php require_once 'includes/header.php' ?>
     <div class='content'>
         <main>
-            <div class='hero' id='login-hero'>
-                <img id='hexagon' src="images/login_hero.png" alt="hexagon">
-            </div>
+            <div class='hero-wrapper'>
+                <div class='hero' id='login-hero'>
+                    <img id='hexagon' src="images/login_hero.png" alt="hexagon">
+                </div>
             <img id='letters' src="images/login_hero_letters.png" alt="NFV">
+            </div>
             <div id='hero-text'>
                 <h2>Next Frontier Virtualization</h2>
                 <h3>Software Inc.</h3>

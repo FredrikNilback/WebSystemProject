@@ -50,10 +50,11 @@
         }
     }
 
-    $page = (int)$_GET['page'] ?? 1;
-    $limit = (int)$_GET['limit'] ?? 24;
+    $page = (int)($_GET['page'] ?? 1);
+    $limit = (int)($_GET['limit'] ?? 24);
     $abc = $_GET['abc'] ?? 'ASC';
     $roleFilter = $_GET['role_filter'] ?? NULL;
+    $search = $_GET['search-user'] ?? NULL;
 
     $allowedAbc = ['ASC', 'DESC'];
     if (!in_array($abc, $allowedAbc, TRUE)) {
@@ -80,7 +81,7 @@
         }
     }
 
-    $userCount = getUserCount($roleFilter);
+    $userCount = getUserCount($roleFilter, $search);
     $totalPages =  max(1, ceil($userCount / $limit));
     
     if ($page > $totalPages) {
@@ -91,7 +92,7 @@
     }
         
     $offset = ($page - 1) * $limit;
-    $users = getUsers($limit, $offset, $abc, $roleFilter);
+    $users = getUsers($limit, $offset, $abc, $roleFilter, $search);
     $now = time();
 
     function roleQuery($roles) {
@@ -106,6 +107,13 @@
 
         return $query;
     }
+
+    function searchQuery($search) {
+        if (!$search) {
+            return '';
+        }
+        return '&search-user=' . urlencode($search);
+}
 ?>
 
 <?php require_once 'includes/header.php' ?>
@@ -113,17 +121,20 @@
         <main class='fullscreen'>
             <div id='user-card-area'>
                 <h1>User management</h1>
+                    <?php if(!$users): ?>
+                        <p id='empty-result'>Your search did not match any users.</p>
+                    <?php endif; ?>
                 <div id='user-cards'>
                     <?php foreach ($users as $user): ?>
                         <div class='user-card'>
                             <?php if($user['user_id'] == $_SESSION['user_id']): ?>
-                            <div class='user-card-header you'>
+                                <div class='user-card-header you'>
                             <?php elseif($now - strtotime($user['last_seen']) <= 600): ?>
-                            <div class='user-card-header online'>
+                                <div class='user-card-header online'>
                             <?php elseif($now - strtotime($user['last_seen']) <= 1800): ?>
-                            <div class='user-card-header idle'>
+                                <div class='user-card-header idle'>
                             <?php else: ?>
-                            <div class='user-card-header offline'>
+                                <div class='user-card-header offline'>
                             <?php endif; ?>
                                 <h2><?= htmlspecialchars($user['username']) ?> <?php if($user['user_id'] == $_SESSION['user_id']) {echo '(me)';} ?></h2>
                                 <p><?= htmlspecialchars($user['user_role']) ?></p>
@@ -155,13 +166,13 @@
                 </div>
                 <div id='pagination-div'>
                     <nav class='pagination'>
-                        <a href='?page=1&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) ?>' id='back-to-start'><<</a>
-                        <a href='?page=<?= max(1, $page - 1); ?>&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) ?>' id='next'><</a>
+                        <a href='?page=1&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' id='back-to-start'><<</a>
+                        <a href='?page=<?= max(1, $page - 1); ?>&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' id='next'><</a>
                         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                            <a href='?page=<?= $i ?>&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) ?>' class='<?= $i == $page ? "active" : "" ?>'><?= $i ?></a>
+                            <a href='?page=<?= $i ?>&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' class='<?= $i == $page ? "active" : "" ?>'><?= $i ?></a>
                         <?php endfor; ?>
-                        <a href='?page=<?= min($totalPages, $page + 1); ?>&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) ?>' id='previous'>></a>
-                        <a href='?page=<?= $totalPages ?>&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) ?>' id='skip-to-end'>>></a>
+                        <a href='?page=<?= min($totalPages, $page + 1); ?>&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' id='previous'>></a>
+                        <a href='?page=<?= $totalPages ?>&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' id='skip-to-end'>>></a>
                     </nav>
                 </div>
             </div>
@@ -175,10 +186,15 @@
                     </select>
 
                     <input type='hidden' name='abc' id='abc-value' value="<?= $abc ?>">
-                    <button type='button' id='abc-toggle'>
-                        abc <?= $abc ?>
+                    <button type='button' id='abc-toggle' name='abc-toggle-btn'>
+                        <?php if($abc == 'ASC'): ?>
+                        A-Z
+                        <?php else: ?>
+                        Z-A
+                        <?php endif; ?>
                     </button>
                     <div id='role-filtering'>
+                        <label>Filtering: </label>
                         <label>
                             <input type='checkbox' name='role_filter[]' value='administrator'
                                 <?= in_array('administrator', $_GET['role_filter'] ?? []) ? 'checked' : '' ?>>
@@ -197,7 +213,8 @@
                             Reporter
                         </label>                    
                     </div>
-                    
+                    <label for="search-user">Search</label>
+                    <input type="text" id='search-user' name='search-user' value="<?= htmlspecialchars($_GET['search-user'] ?? '') ?>" placeholder="type to search...">
                 </form>
                 <button type='button' id='open-create-user-panel-btn'>Add user</button>
             </div>
