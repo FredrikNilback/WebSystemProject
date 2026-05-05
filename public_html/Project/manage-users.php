@@ -178,43 +178,50 @@
             </div>
             <div id='options-panel'>
                 <form method='GET' id='options-form'>
-                    <label for='limit'>Users per page:</label>
-                    <select name='limit' id='limit'>
-                        <option value='12' <?= $limit == 12 ? 'selected' : '' ?>>12</option>
-                        <option value='24' <?= $limit == 24 ? 'selected' : '' ?>>24</option>
-                        <option value='48' <?= $limit == 48 ? 'selected' : '' ?>>48</option>
-                    </select>
-
                     <input type='hidden' name='abc' id='abc-value' value="<?= $abc ?>">
-                    <button type='button' id='abc-toggle' name='abc-toggle-btn'>
-                        <?php if($abc == 'ASC'): ?>
-                        A-Z
-                        <?php else: ?>
-                        Z-A
-                        <?php endif; ?>
-                    </button>
-                    <div id='role-filtering'>
-                        <label>Filtering: </label>
-                        <label>
-                            <input type='checkbox' name='role_filter[]' value='administrator'
-                                <?= in_array('administrator', $_GET['role_filter'] ?? []) ? 'checked' : '' ?>>
-                            Administrator
-                        </label>
+                    <h2>Search & Filter</h2>
+                    <input type="text" id='search-user' name='search-user' value="<?= htmlspecialchars($_GET['search-user'] ?? '') ?>" placeholder="Search users...">
+                    <div id='options-filtering-div'>
+                        <h3>Role Filtering</h3>
+                        <div id='role-filtering'>
+                            <label>
+                                <input type='checkbox' name='role_filter[]' value='administrator'
+                                    <?= in_array('administrator', $_GET['role_filter'] ?? []) ? 'checked' : '' ?>>
+                                Administrator
+                            </label>
 
-                        <label>
-                            <input type='checkbox' name='role_filter[]' value='responder'
-                                <?= in_array('responder', $_GET['role_filter'] ?? []) ? 'checked' : '' ?>>
-                            Responder
-                        </label>
+                            <label>
+                                <input type='checkbox' name='role_filter[]' value='responder'
+                                    <?= in_array('responder', $_GET['role_filter'] ?? []) ? 'checked' : '' ?>>
+                                Responder
+                            </label>
 
-                        <label>
-                            <input type='checkbox' name='role_filter[]' value='reporter'
-                                <?= in_array('reporter', $_GET['role_filter'] ?? []) ? 'checked' : '' ?>>
-                            Reporter
-                        </label>                    
+                            <label>
+                                <input type='checkbox' name='role_filter[]' value='reporter'
+                                    <?= in_array('reporter', $_GET['role_filter'] ?? []) ? 'checked' : '' ?>>
+                                Reporter
+                            </label>
+                        </div>
                     </div>
-                    <label for="search-user">Search</label>
-                    <input type="text" id='search-user' name='search-user' value="<?= htmlspecialchars($_GET['search-user'] ?? '') ?>" placeholder="type to search...">
+                    <div id='options-sorting-div'>
+                    <h3>Sorting</h3>
+                        <button type='button' id='abc-toggle' name='abc-toggle-btn'>
+                            <?php if($abc == 'ASC'): ?>
+                            A-Z
+                            <?php else: ?>
+                            Z-A
+                            <?php endif; ?>
+                        </button>
+                    </div>
+                    <div id='options-display-div'>
+                        <h3>Display</h3>
+                        <label for='limit'>Users per page:</label>
+                        <select name='limit' id='limit'>
+                            <option value='12' <?= $limit == 12 ? 'selected' : '' ?>>12</option>
+                            <option value='24' <?= $limit == 24 ? 'selected' : '' ?>>24</option>
+                            <option value='48' <?= $limit == 48 ? 'selected' : '' ?>>48</option>
+                        </select>
+                    </div>
                 </form>
                 <button type='button' id='open-create-user-panel-btn'>Add user</button>
             </div>
