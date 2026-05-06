@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const abcToggleBtn = document.getElementById('abc-toggle');
+    const sortButtons = document.querySelectorAll('.sort-btn');
     const addUserBtn = document.getElementById('open-create-user-panel-btn');
     const limitSelect = document.getElementById('limit');
     const search = document.getElementById('search-user');
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.innerWidth <= 1920) {
             params.set('limit', '9');
         } else {
-            params.set('limit', '24');
+            params.set('limit', '16');
         }
 
         window.location.search = params.toString();
@@ -27,10 +27,25 @@ document.addEventListener('DOMContentLoaded', () => {
         optionsForm.submit();
     });
 
-    abcToggleBtn.addEventListener('click', () => {
-        const abcValue = document.getElementById('abc-value');
-        abcValue.value = (abcValue.value === 'ASC') ? 'DESC' : 'ASC';
-        optionsForm.submit();
+    sortButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const newOrder = btn.dataset.order;
+
+            const orderValue = document.getElementById('order-value');
+            const directionValue = document.getElementById('direction-value');
+
+            if (orderValue.value === newOrder) {
+                directionValue.value = (directionValue.value === 'ASC') ? 'DESC' : 'ASC';
+            } else {
+                orderValue.value = newOrder;
+                directionValue.value = 'ASC';
+            }
+
+            const pageInput = document.querySelector('[name="page"]');
+            if (pageInput) pageInput.value = 1;
+
+            optionsForm.submit();
+        });
     });
 
     let searchTimeout = null;

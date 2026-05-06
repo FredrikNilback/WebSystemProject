@@ -52,13 +52,14 @@
 
     $page = (int)($_GET['page'] ?? 1);
     $limit = (int)($_GET['limit'] ?? 16);
-    $abc = $_GET['abc'] ?? 'ASC';
+    $order = $_GET['order'] ?? 'uaz';
+    $direction = $_GET['direction'] ?? 'ASC';
     $roleFilter = $_GET['role_filter'] ?? NULL;
     $search = $_GET['search-user'] ?? NULL;
 
-    $allowedAbc = ['ASC', 'DESC'];
-    if (!in_array($abc, $allowedAbc, TRUE)) {
-        $abc = 'ASC';
+    $allowedDirection = ['ASC', 'DESC'];
+    if (!in_array($direction, $allowedDirection, TRUE)) {
+        $direction = 'ASC';
     }
 
     $allowedLimits = [9, 12, 16, 24];
@@ -92,7 +93,7 @@
     }
         
     $offset = ($page - 1) * $limit;
-    $users = getUsers($limit, $offset, $abc, $roleFilter, $search);
+    $users = getUsers($limit, $offset, $order, $direction, $roleFilter, $search);
     $now = time();
 
     function roleQuery($roles) {
@@ -166,55 +167,86 @@
                 </div>
                 <div id='pagination-div'>
                     <nav class='pagination'>
-                        <a href='?page=1&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' id='back-to-start'><<</a>
-                        <a href='?page=<?= max(1, $page - 1); ?>&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' id='next'><</a>
+                        <a href='?page=1&limit=<?= $limit ?>&direction=<?= $direction ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' id='back-to-start'><<</a>
+                        <a href='?page=<?= max(1, $page - 1); ?>&limit=<?= $limit ?>&direction=<?= $direction ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' id='next'><</a>
                         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                            <a href='?page=<?= $i ?>&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' class='<?= $i == $page ? "active" : "" ?>'><?= $i ?></a>
+                            <a href='?page=<?= $i ?>&limit=<?= $limit ?>&direction=<?= $direction ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' class='<?= $i == $page ? "active" : "" ?>'><?= $i ?></a>
                         <?php endfor; ?>
-                        <a href='?page=<?= min($totalPages, $page + 1); ?>&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' id='previous'>></a>
-                        <a href='?page=<?= $totalPages ?>&limit=<?= $limit ?>&abc=<?= $abc ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' id='skip-to-end'>>></a>
+                        <a href='?page=<?= min($totalPages, $page + 1); ?>&limit=<?= $limit ?>&direction=<?= $direction ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' id='previous'>></a>
+                        <a href='?page=<?= $totalPages ?>&limit=<?= $limit ?>&direction=<?= $direction ?><?= roleQuery($roleFilter) . searchQuery($search) ?>' id='skip-to-end'>>></a>
                     </nav>
                 </div>
             </div>
             <div id='options-panel'>
                 <form method='GET' id='options-form'>
-                    <input type='hidden' name='abc' id='abc-value' value="<?= $abc ?>">
-                    <h2>Search & Filter</h2>
+                    <input type='hidden' name='direction' id='direction-value' value="<?= $direction ?>">
+                    <input type='hidden' name='order' id='order-value' value="<?= $order ?>">
+                    <div id='options-panel-header'>
+                        <h2>Search&nbsp;&&nbsp;Filter</h2>
+                        <img src="images/manage-users/filter.png" alt="filter">
+                    </div>
                     <label id='search-input-wrapper'>
-                        <img src='images/magnifying_glass.png' alt='magnifying glass'>
+                        <img src='images/manage-users/magnifying_glass.png' alt='magnifying glass'>
                         <input type="text" id='search-user' name='search-user' value="<?= htmlspecialchars($_GET['search-user'] ?? '') ?>" placeholder="Search users...">
                     </label>
                     <div id='options-filtering-div'>
                         <h3>Role Filtering</h3>
                         <div id='role-filtering'>
                             <label>
-                                <input type='checkbox' name='role_filter[]' value='administrator'
+                                <input class='role-checkbox' type='checkbox' name='role_filter[]' value='administrator'
                                     <?= in_array('administrator', $_GET['role_filter'] ?? []) ? 'checked' : '' ?>>
                                 Administrator
                             </label>
 
                             <label>
-                                <input type='checkbox' name='role_filter[]' value='responder'
+                                <input class='role-checkbox' type='checkbox' name='role_filter[]' value='responder'
                                     <?= in_array('responder', $_GET['role_filter'] ?? []) ? 'checked' : '' ?>>
                                 Responder
                             </label>
 
                             <label>
-                                <input type='checkbox' name='role_filter[]' value='reporter'
+                                <input class='role-checkbox' type='checkbox' name='role_filter[]' value='reporter'
                                     <?= in_array('reporter', $_GET['role_filter'] ?? []) ? 'checked' : '' ?>>
                                 Reporter
                             </label>
                         </div>
                     </div>
                     <div id='options-sorting-div'>
-                    <h3>Sorting</h3>
-                        <button type='button' id='abc-toggle' name='abc-toggle-btn'>
-                            <?php if($abc == 'ASC'): ?>
-                            A-Z
-                            <?php else: ?>
-                            Z-A
-                            <?php endif; ?>
-                        </button>
+                        <h3>Sorting</h3>
+                        <div id='sorting-btns'>
+                            <button type='button' class='sort-btn<?php if ($order == 'uaz') {echo ' active-sort';} ?>' data-order='uaz'>
+                                Username
+                                <?php if ($order == 'uaz' && $direction == 'ASC'): ?>
+                                    <img class='sort-direction-indicator' src="images/manage-users/arrow-down.png" alt="arrow down">
+                                <?php elseif ($order == 'uaz' && $direction == 'DESC'): ?>
+                                    <img class='sort-direction-indicator' src="images/manage-users/arrow-up.png" alt="arrow up">
+                                <?php else: ?>
+                                    <img class='sort-direction-indicator' src="images/manage-users/arrow-right.png" alt="arrow right">
+                                <?php endif; ?>
+                            </button>
+                                
+                            <button type='button' class='sort-btn<?php if ($order == 'naz') {echo ' active-sort';} ?>' data-order='naz'>
+                                Last Name
+                                <?php if ($order == 'naz' && $direction == 'ASC'): ?>
+                                    <img class='sort-direction-indicator' src="images/manage-users/arrow-down.png" alt="arrow down">
+                                <?php elseif ($order == 'naz' && $direction == 'DESC'): ?>
+                                    <img class='sort-direction-indicator' src="images/manage-users/arrow-up.png" alt="arrow up">
+                                <?php else: ?>
+                                    <img class='sort-direction-indicator' src="images/manage-users/arrow-right.png" alt="arrow right">
+                                <?php endif; ?>
+                            </button>
+                                
+                            <button type='button' class='sort-btn<?php if ($order == 'id') {echo ' active-sort';} ?>' data-order='id'>
+                                Employee ID
+                                <?php if ($order == 'id' && $direction == 'ASC'): ?>
+                                    <img class='sort-direction-indicator' src="images/manage-users/arrow-down.png" alt="arrow down">
+                                <?php elseif ($order == 'id' && $direction == 'DESC'): ?>
+                                    <img class='sort-direction-indicator' src="images/manage-users/arrow-up.png" alt="arrow up">
+                                <?php else: ?>
+                                    <img class='sort-direction-indicator' src="images/manage-users/arrow-right.png" alt="arrow right">
+                                <?php endif; ?>
+                            </button>
+                        </div>
                     </div>
                     <div id='options-display-div'>
                         <h3>Display</h3>

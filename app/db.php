@@ -66,10 +66,10 @@
         return $user; 
     }
 
-    function getUsers($limit, $offset, $abc='ASC', $roles=NULL, $search=NULL) {
-        $allowedAbc = ['ASC', 'DESC'];
-        if (!in_array($abc, $allowedAbc, TRUE)) {
-            $abc = 'ASC';
+    function getUsers($limit, $offset, $order='uaz', $direction='ASC', $roles=NULL, $search=NULL) {
+        $allowedDirection = ['ASC', 'DESC'];
+        if (!in_array($direction, $allowedDirection, TRUE)) {
+            $direction = 'ASC';
         }
         $limit = (int)$limit;
         $offset = (int)$offset;
@@ -123,9 +123,22 @@
             $sql .= "(username LIKE ? OR CONCAT(first_name,' ', last_name) LIKE ?) ";
         }
 
-        $sql .= 
-            "ORDER BY username $abc
-             LIMIT $limit OFFSET $offset";
+        $sql .= "ORDER BY ";
+        switch ($order) {
+            case "uaz":
+                $sql .= "username $direction ";
+                break;
+            case "naz":
+                $sql .= "last_name COLLATE utf8mb4_swedish_ci $direction ";
+                break;
+            case "id":
+                $sql .= "user_id $direction ";
+                break;
+            default:
+                $sql .= "username $direction ";
+                break;
+        }
+        $sql .= "LIMIT $limit OFFSET $offset";
 
         $users = NULL;
         if ($search) {

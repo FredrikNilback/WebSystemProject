@@ -31,25 +31,29 @@ header {
     position: sticky;
     top: 0;
     z-index: 999;
-    display: flex;
+
+    display: grid;
+    grid-template-columns: 1fr 8fr 1fr;
+    align-items: center;
+
     background: linear-gradient(to right, #ff933a 0%, #4a0ab9 30%, #0b026c 75%);
     color: white;
-    padding: 4vh 0vw;
+
+    padding: 0.5vh 2vw;
 }
 
 #company-logo {
-    display: inline-block;
-    width: 4vw;
-    min-width: 64px;
-    position: absolute;
-    left: 0;
-    top: 0;
-    margin: 1vh 10vw;
+    height: 8vh;
+    width: auto;
+
+    justify-self: start;
+    margin-left: 8vw;
 }
 
 header h1 {
-    display: inline;
-    margin: auto;
+    justify-self: center;
+    margin: 0;
+    text-align: center;
 }
 
 .content {
@@ -83,12 +87,12 @@ footer {
     display: flex;
     background: linear-gradient(to right, #0b026c 0%, #4a0ab9 35%, #ff933a 95%);
     color: white;
-    padding: 0.5rem 0;
+    padding: 0.5vh 0;
 }
 
 #footer-company-name {
     font-size: clamp(1px, 0.7rem, 9999px);
-    margin: 0.5vh auto auto 2vw;
+    margin: 0.3vh auto auto 2vw;
 }
 
 #footer-developer-names {

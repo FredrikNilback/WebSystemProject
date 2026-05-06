@@ -151,33 +151,53 @@ main {
     flex-direction: column;
 }
 
-#options-panel form {
+#options-form {
     display: flex;
     flex-direction: column;
-    width: 70%;
+    width: 80%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.55);
     border-radius: 6px;
-    padding: 0 1.2vw 2vh 1.2vw;
+    padding: 0.5vh 1.2vw 1.5vh 1.2vw;
     margin: 3vh auto;
     background-color: white;
 }
 
-#options-panel form > div {
+#options-form h3 {
+    margin-top: 0.3vh;
+}
+
+#options-panel-header {
+    display: flex;
+    align-items: center;
+    height: 4vh;
+}
+#options-panel-header > * {
+    margin: 0;
+}
+#options-panel-header img {
+    margin-left: auto;
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+}
+
+#options-panel form > div:not(:first-of-type) {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.55);
     margin-top: 1vh;
     padding: 0 1vw 1vh 1vw;
     border-radius: 6px;
+
 }
 
 #search-input-wrapper {
     display: flex;
     align-items: center;
-    border: 1px solid #cccccc;
+    border: 1px solid #dddddd;
     border-radius: 4px;
-    background: white;
     height: 4vh;
-    margin-top: 3vh;
+    margin-top: 1.5vh;
     cursor: text;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.55);
 }
 
 #search-input-wrapper:focus-within {
@@ -209,6 +229,101 @@ main {
 #role-filtering {
     display: flex;
     flex-direction: column;
+}
+
+.role-checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#role-filtering {
+    display: flex;
+    flex-direction: column;
+}
+
+.role-checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#role-filtering label {
+    display: block;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    border-radius: 6px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+#role-filtering label::before,
+#role-filtering label::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    width: 1.5vw;
+    border-radius: 6px;
+    transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+}
+
+#role-filtering label::before {
+    left: 4px;
+    background: gray;
+}
+
+#role-filtering label::after {
+    right: 4px;
+    background: transparent;
+    opacity: 0;
+}
+
+#role-filtering label:hover::before {
+    transform: translateX(6px);
+}
+
+#role-filtering label:has(input:checked) {
+    background-color: #eae6ff;
+}
+
+#role-filtering label:has(input:checked)::before {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+#role-filtering label:has(input:checked)::after {
+    background: #0b026c;
+    opacity: 1;
+}
+
+#sorting-btns {
+    display: flex;
+    flex-direction: column;
+}
+
+.sort-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1vh;
+    border-radius: 6px;
+    color: #a7a7a7;
+}
+
+.active-sort {
+    border: 3px solid #0b026c;
+    background-color: #eae6ff;
+    color: #0b026c;
+}
+
+.sort-direction-indicator {
+    height: 3.5vh;
+    width: auto;
+    margin-left: 8px;
 }
 
 #open-create-user-panel-btn {
