@@ -7,11 +7,16 @@
     }
 }
 
+body {
+    background-image: url('../images/background.png');
+}
+
 .content {
     grid-template-columns: 2fr 1fr;
     background-color: #ebebeb;
-    margin-top: 5vh;
-    margin-bottom: 2vh;
+    margin: 5vh auto 2vh auto;
+    width: 80%;
+    border-radius: 6px;
 }
 
 main {

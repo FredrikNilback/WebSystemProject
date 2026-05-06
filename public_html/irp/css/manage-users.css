@@ -36,13 +36,7 @@ main {
     display: flex;
     flex-direction: column;
     min-height: 0;
-}
-
-#user-card-area h1 {
-    text-align: center;
-    margin: 0;
-    padding: 1vh 0;
-    border-top-left-radius: 6px;
+    margin-top: 2vh;
 }
 
 #empty-result {
@@ -54,6 +48,7 @@ main {
     display: grid;
     overflow-y: scroll;
     align-content: start;
+    margin-left: 2vw;
 }
 
 .user-card {
@@ -66,7 +61,7 @@ main {
     flex-direction: column;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.55);
     min-height: 152px;
-    max-width: 280px;
+    max-width: 320px;
 }
 
 .you {
@@ -91,12 +86,12 @@ main {
 }
 
 .user-card-header h2 {
-    margin: 0 auto 0 0.2vw;
+    margin: 0 auto 0 1vw;
     font-size: clamp(1px, 1.4rem, 9999px);
 }
 
 .user-card-header p {
-    margin: 0 0.2vw 0 auto;
+    margin: 0 1vw 0 auto;
 }
 
 .user-card-info p {
@@ -110,6 +105,7 @@ main {
 }
 .role-select {
     cursor: pointer;
+    margin-left: 1vw;
 }
 .update-role-btn:disabled {
     cursor: default;
@@ -140,7 +136,8 @@ main {
     color: #0081f2;
 }
 #pagination-div nav .active {
-    background-color: #3BD975;
+    background-color: #eae6ff;
+    color:#0b026c;
     border-radius: 6px;
     text-decoration: underline;
 }
@@ -203,6 +200,7 @@ main {
 #search-input-wrapper:focus-within {
     border: 1px solid #0b026c;
     outline: 3px solid #0b026c;
+    background-color: #eae6ff;
 }
 
 #search-input-wrapper img {

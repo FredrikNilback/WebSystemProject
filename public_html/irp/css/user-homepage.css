@@ -1,3 +1,12 @@
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
 main, aside {
     min-height: 0;
 }
@@ -11,10 +20,19 @@ main {
     grid-column: 1 / -1;
 }
 
-main h2 {
+#welcome-div {
     grid-column: 1/ -1;
-    margin-left: 2vw;
-    font-size: clamp(1px, 2rem, 9999px);
+    overflow: hidden;
+    border-left: solid 2px rgba(50,50,50,0.5);
+    margin: 1vh auto auto 1vw;
+    height: fit-content;
+}
+
+#welcome-div h2 {
+    margin-left: 1vw;
+    font-size: clamp(1px, 3rem, 9999px);
+    transform: translateX(-100%);
+    animation: slideIn 0.75s ease-out forwards;
 }
 
 .main-column {
@@ -91,6 +109,10 @@ main h2 {
 }
 
 #logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     width: 10vw;
     height: 6vh;
     margin: auto auto 2vh 1vw;
@@ -100,10 +122,20 @@ main h2 {
     font-size: clamp(1px, 1.2rem, 9999px);
     color: white;
     filter: brightness(50%);
+    padding-right: 1vw;
 }
 
 #logout-btn:hover {
     filter: none;
+}
+
+#logout-btn img {
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    width: auto;
+    object-fit: contain;
+    margin: auto auto auto 1vw;
 }
 
 #open-aside-btn,
@@ -159,6 +191,7 @@ details[open] .read-more {
     display: flex;
     margin-top: auto;
 }
+
 #minimize-btn {
     
 }

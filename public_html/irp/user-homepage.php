@@ -13,7 +13,9 @@
 <?php require_once 'includes/header.php'?>
     <div class='content'>
         <main class=''>
-            <h2>Welcome, <?= htmlspecialchars($_SESSION['first_name']) ?>!</h2>
+            <div id='welcome-div'>
+                <h2>Welcome, <?= htmlspecialchars($_SESSION['first_name']) ?>!</h2>
+            </div>
             <div class='main-column'>
                 <div id='navigation-buttons'>
                     <button onclick='location.href="new-case.php"' id='create-btn' class='navigation-button'>
@@ -44,7 +46,10 @@
                     <img src='images/placeholder_graph.png' alt='Statistical Overview' id='statistic-graph'>
                 </a>
             </div>
-            <button onclick='location.href="logout.php"' id='logout-btn'>LOGOUT</button>
+            <button onclick='location.href="logout.php"' id='logout-btn'>
+                <img src="images/homepage/exit_sign.png" alt="exit">
+                LOGOUT
+            </button>
             <button id='open-aside-btn' class='hidden'>current events</button>
         </main>
         <aside class=''>

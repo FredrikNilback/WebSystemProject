@@ -20,7 +20,6 @@ body {
     display: flex;
     flex-direction: column;
     margin: 0;
-    background-image: url('../images/background.png');
     background-repeat: no-repeat;
     background-position: center top;
     background-size: cover;
@@ -33,7 +32,7 @@ header {
     z-index: 999;
 
     display: grid;
-    grid-template-columns: 1fr 8fr 1fr;
+    grid-template-columns: 1fr 10fr 1fr;
     align-items: center;
 
     background: linear-gradient(to right, #ff933a 0%, #4a0ab9 30%, #0b026c 75%);
@@ -45,9 +44,8 @@ header {
 #company-logo {
     height: 8vh;
     width: auto;
-
     justify-self: start;
-    margin-left: 8vw;
+    margin-left: 4vw;
 }
 
 header h1 {
@@ -59,10 +57,8 @@ header h1 {
 .content {
     display: grid;
     grid-template-columns: 3fr 1fr;
-    width: 80%;
-    margin: 1vh auto;
+    width: 100%;
     background-color: whitesmoke;
-    border-radius: 6px;
     flex: 1 1 auto;
     min-height: 0;
     box-shadow: -10px 5px 10px rgba(0, 0, 0, 0.55);

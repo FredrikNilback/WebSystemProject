@@ -121,7 +121,6 @@
     <div class='content'>
         <main class='fullscreen'>
             <div id='user-card-area'>
-                <h1>User management</h1>
                     <?php if(!$users): ?>
                         <p id='empty-result'>Your search did not match any users.</p>
                     <?php endif; ?>
