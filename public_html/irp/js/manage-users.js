@@ -9,6 +9,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const main = document.querySelector('main');
     const aside = document.querySelector('aside');
 
+    const params = new URLSearchParams(window.location.search);
+
+    if (!params.has('limit')) {
+        if (window.innerWidth <= 1920) {
+            params.set('limit', '9');
+        } else {
+            params.set('limit', '24');
+        }
+
+        window.location.search = params.toString();
+    }
+
     limitSelect.addEventListener('change', () => {
         const pageInput = document.querySelector('[name="page"]');
         if (pageInput) pageInput.value = 1;

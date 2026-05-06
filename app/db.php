@@ -120,7 +120,7 @@
         }
 
         if ($search) {
-            $sql .= "username LIKE ? ";
+            $sql .= "(username LIKE ? OR CONCAT(first_name,' ', last_name) LIKE ?) ";
         }
 
         $sql .= 
@@ -131,7 +131,7 @@
         if ($search) {
             $search = "%" . $search . "%";
             $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param('s', $search);
+            $stmt->bind_param('ss', $search, $search);
             $stmt->execute();
 
             $result = $stmt->get_result();
@@ -188,10 +188,10 @@
 
         $count = 0;
         if ($search) {
-            $sql .= "username LIKE ? ";
+            $sql .= "(username LIKE ? OR CONCAT(first_name,' ', last_name) LIKE ?) ";
             $search = "%" . $search . "%";
             $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param('s', $search);
+            $stmt->bind_param('ss', $search, $search);
             $stmt->execute();
             $stmt->bind_result($count);
             $stmt->fetch();

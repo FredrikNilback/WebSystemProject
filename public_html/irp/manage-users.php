@@ -51,7 +51,7 @@
     }
 
     $page = (int)($_GET['page'] ?? 1);
-    $limit = (int)($_GET['limit'] ?? 24);
+    $limit = (int)($_GET['limit'] ?? 16);
     $abc = $_GET['abc'] ?? 'ASC';
     $roleFilter = $_GET['role_filter'] ?? NULL;
     $search = $_GET['search-user'] ?? NULL;
@@ -61,9 +61,9 @@
         $abc = 'ASC';
     }
 
-    $allowedLimits = [12, 24, 48];
+    $allowedLimits = [9, 12, 16, 24];
     if (!in_array($limit, $allowedLimits, TRUE)) {
-        $limit = 24;
+        $limit = 9;
     }
 
     if ($roleFilter) {
@@ -136,7 +136,7 @@
                             <?php else: ?>
                                 <div class='user-card-header offline'>
                             <?php endif; ?>
-                                <h2><?= htmlspecialchars($user['username']) ?> <?php if($user['user_id'] == $_SESSION['user_id']) {echo '(me)';} ?></h2>
+                                <h2><?= htmlspecialchars($user['username']) ?><?php if($user['user_id'] == $_SESSION['user_id']) {echo '&nbsp;(me)';} ?></h2>
                                 <p><?= htmlspecialchars($user['user_role']) ?></p>
                             </div>
                             <div class='user-card-info'>
@@ -180,7 +180,10 @@
                 <form method='GET' id='options-form'>
                     <input type='hidden' name='abc' id='abc-value' value="<?= $abc ?>">
                     <h2>Search & Filter</h2>
-                    <input type="text" id='search-user' name='search-user' value="<?= htmlspecialchars($_GET['search-user'] ?? '') ?>" placeholder="Search users...">
+                    <label id='search-input-wrapper'>
+                        <img src='images/magnifying_glass.png' alt='magnifying glass'>
+                        <input type="text" id='search-user' name='search-user' value="<?= htmlspecialchars($_GET['search-user'] ?? '') ?>" placeholder="Search users...">
+                    </label>
                     <div id='options-filtering-div'>
                         <h3>Role Filtering</h3>
                         <div id='role-filtering'>
@@ -217,9 +220,10 @@
                         <h3>Display</h3>
                         <label for='limit'>Users per page:</label>
                         <select name='limit' id='limit'>
+                            <option value='9' <?= $limit == 9 ? 'selected' : '' ?>>9</option>
                             <option value='12' <?= $limit == 12 ? 'selected' : '' ?>>12</option>
+                            <option value='16' <?= $limit == 16 ? 'selected' : '' ?>>16</option>
                             <option value='24' <?= $limit == 24 ? 'selected' : '' ?>>24</option>
-                            <option value='48' <?= $limit == 48 ? 'selected' : '' ?>>48</option>
                         </select>
                     </div>
                 </form>
