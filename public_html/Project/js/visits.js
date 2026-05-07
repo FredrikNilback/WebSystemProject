@@ -1,46 +1,67 @@
+
+
+
 document.addEventListener("DOMContentLoaded", function () {
+
+const labels = visitsData.map(v => v.date);
+const data = visitsData.map(v => v.count);
+console.log(labels);
+console.log(data);
+
 
 new Chart(document.getElementById('Visits_History_lineChart'), {       //linecharten
     type: 'line', 
     data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'],
+        labels: labels,
         datasets: [{
             label: 'Page Visits over time',
-            data: [34, 67, 230, 134, 128, 56, 46, 32, 56, 78, 114, 137]
+            data: data,
         }]
     }
 });
 
+
+const weeklyLabels = weeklyData.map(w => "Week " + w.week.toString().slice(-2));
+const weeklyCounts = weeklyData.map(w => w.count);
 
 new Chart(document.getElementById('Visits_Weekly_barChart'), {       //barcharten
     type: 'bar', 
     data: {
-        labels: ['Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17'],
+        labels: weeklyLabels,
         datasets: [{
             label: 'Page Visits Weekly',
-            data: [48, 34, 23, 25, 78, 45, 36, 23, 25]
+            data: weeklyCounts
         }]
     }
 });
+
+
+const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const dayLabels = dayData.map(d => dayNames[d.day - 1]);
+const dayCounts = dayData.map(d => d.count);
 
 new Chart(document.getElementById('Visits_Daily_barChart'), {       //barcharten
     type: 'bar', 
     data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        labels: dayLabels,
         datasets: [{
             label: 'Page Visits Daily',
-            data: [3, 5, 2, 14, 17, 4, 8]
+            data: dayCounts
         }]
     }
 });
 
+
+const browserLabels = browserData.map(b => b.browser_name);
+const browserCounts = browserData.map(b => b.count);
+
 new Chart(document.getElementById('Browser_Daily_barChart'), {       //barcharten
     type: 'bar', 
     data: {
-        labels: ['Firefox', 'Chrome', 'Safari', 'Microsoft Edge', 'Opera'],
+        labels: browserLabels,
         datasets: [{
             label: 'Page Visits per Browser',
-            data: [28, 32, 12, 45, 17]
+            data: browserCounts
         }]
     }
 });

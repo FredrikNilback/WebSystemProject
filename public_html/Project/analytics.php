@@ -19,8 +19,8 @@
 
         <h3>Analytics Dashboard</h3>
         <nav class="analytics-dashboard">
-            <a href="analytics.html">Incidents</a>
-            <a href="visits.html">Page Visits</a>
+            <a href="analytics.php">Incidents</a>
+            <a href="visits.php">Page Visits</a>
         </nav>
     
         <div class="top-part">

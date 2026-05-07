@@ -215,4 +215,217 @@
         return $events;
     }
 
+    function trackVisit($page, $browser_id, $ip) {
+        $mysqli = getDataBase();
+
+        $stmt = $mysqli->prepare("SELECT page_id FROM page WHERE page_name = ?");
+        $stmt->bind_param("s", $page);
+        $stmt->execute();
+        $stmt->bind_result($pageId);
+        $stmt->fetch();
+        $stmt->close();
+
+        if (!$pageId) {
+            return;
+        }
+
+        $stmt = $mysqli->prepare(
+            "INSERT INTO visit_tracking (page_id, browser_type_id, host_ip)
+            VALUES (?, ?, INET_ATON(?))"
+        );
+
+        $stmt->bind_param("iis", $pageId, $browser_id, $ip);
+        $stmt->execute();
+
+        $stmt->close();
+        $mysqli->close();
+    }
+
+    function getBrowserId($browserName) {
+        $mysqli = getDataBase();
+
+        $stmt = $mysqli->prepare("
+            SELECT browser_type_id
+            FROM browser_type
+            WHERE browser_name = ?
+        ");
+
+        $stmt->bind_param("s", $browserName);
+        $stmt->execute();
+        $stmt->bind_result($browserId);
+
+        if ($stmt->fetch()) {
+            $stmt->close();
+            $mysqli->close();
+            return $browserId;
+        }
+
+        $stmt->close();
+
+        $stmt = $mysqli->prepare("
+            INSERT INTO browser_type (browser_name)
+            VALUES (?)
+        ");
+
+        $stmt->bind_param("s", $browserName);
+        $stmt->execute();
+
+        $browserId = $mysqli->insert_id;
+
+        $stmt->close();
+        $mysqli->close();
+
+        return $browserId;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function getVisits() {
+        $mysqli = getDataBase();
+
+        $result = $mysqli->query("
+        SELECT visit_tracking.tracking_id,
+            page.page_name,
+            browser_type.browser_name,
+            INET_NTOA(visit_tracking.host_ip) AS host_ip,
+            visit_tracking.visited_at
+        FROM visit_tracking
+        JOIN page ON visit_tracking.page_id = page.page_id
+        LEFT JOIN browser_type ON visit_tracking.browser_type_id = browser_type.browser_type_id
+        ORDER BY visit_tracking.visited_at DESC
+        LIMIT 10
+
+        ");
+
+        $visits = $result->fetch_all(MYSQLI_ASSOC);
+        $mysqli->close();
+        return $visits;
+    }
+
+    function getTodayVisits() {
+        $mysqli = getDataBase();
+        $result = $mysqli->query("
+            SELECT COUNT(*) AS count
+            FROM visit_tracking
+            WHERE DATE(visited_at) = CURDATE()
+        ");
+
+        $row = $result->fetch_assoc();
+        $mysqli->close();
+        return $row['count'];
+    }
+
+    function getAvgDailyVisits() {
+        $mysqli = getDataBase();
+        $result = $mysqli->query("
+            SELECT COUNT(*) / COUNT(DISTINCT DATE(visited_at)) AS avg_daily
+            FROM visit_tracking
+        ");
+
+        $row = $result->fetch_assoc();
+        $mysqli->close();
+        return round($row['avg_daily']);
+    } 
+
+    function getAvgWeeklyVisits() {
+        $mysqli = getDataBase();
+        $result = $mysqli->query("
+            SELECT COUNT(*) / COUNT(DISTINCT YEARWEEK(visited_at, 1)) AS avg_weekly
+            FROM visit_tracking
+        ");
+
+        $row = $result->fetch_assoc();
+        $mysqli->close();
+        return $row['avg_weekly'] ? round($row['avg_weekly']) : 0;
+    }
+
+        function getAvgMonthlyVisits() {
+        $mysqli = getDataBase();
+        $result = $mysqli->query("
+            SELECT COUNT(*) / COUNT(DISTINCT YEAR(visited_at), MONTH(visited_at)) AS avg_monthly
+            FROM visit_tracking
+        ");
+
+        $row = $result->fetch_assoc();
+        $mysqli->close();
+        return $row['avg_monthly'] ? round($row['avg_monthly']) : 0;
+    }
+
+    function getVisitsPerDate() {
+        $mysqli = getDataBase();
+        $result = $mysqli->query("
+            SELECT DATE(visited_at) as date, COUNT(*) as count
+            FROM visit_tracking
+            GROUP BY DATE(visited_at)
+            ORDER BY DATE(visited_at)
+        ");
+
+        $data = $result->fetch_all(MYSQLI_ASSOC);
+        $mysqli->close();
+        return $data;
+    }
+
+    function getVisitsPerBrowser() {
+        $mysqli = getDataBase();
+        $result = $mysqli->query("
+            SELECT browser_type.browser_name, COUNT(*) AS count
+            FROM visit_tracking
+            LEFT JOIN browser_type
+            ON visit_tracking.browser_type_id = browser_type.browser_type_id
+            GROUP BY browser_type.browser_name
+        ");
+
+        $data = $result->fetch_all(MYSQLI_ASSOC);
+        $mysqli->close();
+        return $data;
+    }
+
+        function getVisitsPerWeek() {
+        $mysqli = getDataBase();
+        $result = $mysqli->query("
+            SELECT YEARWEEK(visited_at, 1) AS week, COUNT(*) AS count
+            FROM visit_tracking
+            GROUP BY week
+            ORDER BY week
+        ");
+
+        $data = $result->fetch_all(MYSQLI_ASSOC);
+        $mysqli->close();
+        return $data;
+    }
+
+        function getVisitsPerDay() {
+        $mysqli = getDataBase();
+        $result = $mysqli->query("
+            SELECT DAYOFWEEK(visited_at) AS day, COUNT(*) AS count
+            FROM visit_tracking
+            GROUP BY day
+            ORDER BY day
+        ");
+
+        $data = $result->fetch_all(MYSQLI_ASSOC);
+        $mysqli->close();
+        return $data;
+    }
+
 ?>
