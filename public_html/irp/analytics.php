@@ -1,18 +1,42 @@
-<!DOCTYPE html>
-<html>
 
-<head>
-    <title>NFV Analytics Dashboard</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/analytics.css">
-</head>
+<?php 
+    session_start();
+    if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'administrator') {
+        header('Location: unauthorized.php');
+        exit;
+    }
 
-<body>
+    $activePage = 'analytics';
+    require_once '../../app/db.php';
+    updateLastSeen($_SESSION['user_id']);
 
-<header>
-    <img src='images/company_logo.png' alt='company logo' id='company-logo'>
-    <h1>NFV incident report portal</h1>
-</header>
+    $page = basename($_SERVER['PHP_SELF']);
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $userAgent = $_SERVER['HTTP_USER_AGENT'];
+    $browserName = "Unknown";
+
+    if (strpos($userAgent, 'Edg') !== false) {
+        $browserName = "Edge";
+    }   elseif (strpos($userAgent, 'OPR') !== false) {
+        $browserName = "Opera";
+    }   elseif (strpos($userAgent, 'Firefox') !== false) {
+            $browserName = "Firefox";
+    }   elseif (strpos($userAgent, 'Chrome') !== false) {
+            $browserName = "Chrome";
+    }   elseif (strpos($userAgent, 'Safari') !== false) {
+            $browserName = "Safari";
+    }
+
+    $browserId = getBrowserId($browserName);
+    trackVisit($page, $browserId, $ip);
+
+
+?>
+
+
+
+
+<?php require_once "includes/header.php"?>
 
 <div class="content">
     <main>
