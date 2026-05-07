@@ -16,12 +16,12 @@
             <h2>Welcome, <?= htmlspecialchars($_SESSION['first_name']) ?>!</h2>
             <div class='main-column'>
                 <div id='navigation-buttons'>
-                    <button onclick='location.href="new-case.html"' id='create-btn' class='navigation-button'>
+                    <button onclick='location.href="new-case.php"' id='create-btn' class='navigation-button'>
                         <span>New Case</span>
                         <img src='images/homepage/create-btn.png' alt='New'>
                     </button>
 
-                    <button onclick='location.href="cases.html"' id='cases-btn' class='navigation-button'>
+                    <button onclick='location.href="cases.php"' id='cases-btn' class='navigation-button'>
                         <div class='notification-div'>
                             <img src='images/homepage/notification.png' alt='notification'>
                             <span id='cases-update-count' class='update-count'>5</span>
