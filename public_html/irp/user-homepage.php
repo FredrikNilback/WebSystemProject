@@ -20,22 +20,20 @@
                 <div id='navigation-buttons'>
                     <button onclick='location.href="new-case.php"' id='create-btn' class='navigation-button'>
                         <span>New Case</span>
-                        <img src='images/homepage/create-btn.png' alt='New'>
+                        <img class='button-arrow' src='images/homepage/arrow-right.png' alt='arrow right'>
                     </button>
 
-                    <button onclick='location.href="cases.php"' id='cases-btn' class='navigation-button'>
-                        <div class='notification-div'>
-                            <img src='images/homepage/notification.png' alt='notification'>
-                            <span id='cases-update-count' class='update-count'>5</span>
-                        </div>
+                    <button onclick='location.href="cases.html"' id='cases-btn' class='navigation-button'>
+                        <img class='button-icon' src='images/homepage/cases-btn.png' alt='Cases'>
                         <span>Incidents</span>
-                        <img src='images/homepage/cases-btn.png' alt='Cases'>
+                        <img class='button-arrow' src='images/homepage/arrow-right.png' alt='arrow right'>
                     </button>
 
                     <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'administrator'): ?>
                         <button onclick='location.href="manage-users.php"' id='user-btn' class='navigation-button'>
+                            <img class='button-icon' src='images/homepage/user-btn.png' alt='user'>
                             <span>Manage Users</span>
-                            <img src='images/homepage/user-btn.png' alt='user'>
+                            <img class='button-arrow' src='images/homepage/arrow-right.png' alt='arrow right'>
                         </button>
                     <?php endif; ?>
                 </div>
