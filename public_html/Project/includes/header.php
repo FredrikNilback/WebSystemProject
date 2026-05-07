@@ -19,7 +19,11 @@
     <title>NFV incident report portal - <?=$activePage?></title>
     <link rel='icon' type='image/x-icon' href='images/company_logo.png'>
     <link rel='stylesheet' href='css/styles.css'>
+    <?php if ($activePage == "visits"):?>
+        <link rel='stylesheet' href='css/analytics.css'>
+    <?php else:?>
     <link rel='stylesheet' href='css/<?=$activePage?>.css'>
+    <?php endif;?>
     <script src='js/<?=$activePage?>.js' defer></script>
 </head>
 

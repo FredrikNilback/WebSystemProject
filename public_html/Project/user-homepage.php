@@ -40,7 +40,7 @@
             </div>
             <div class='main-column'>
                 <h3 id='incident-title'>Incident Report Overview</h3>
-                <a href='analytics.html'>
+                <a href='analytics.php'>
                     <img src='images/placeholder_graph.png' alt='Statistical Overview' id='statistic-graph'>
                 </a>
             </div>

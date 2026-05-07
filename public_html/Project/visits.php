@@ -1,26 +1,64 @@
-<!DOCTYPE html>
-<html>
+<?php
 
-<head>
-    <title>NFV Visits</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/analytics.css">
-</head>
 
-<body class="analytics-page">
 
-<header>
-    <img src='images/company_logo.png' alt='company logo' id='company-logo'>
-    <h1>NFV incident report portal</h1>
-</header>
+
+session_start();
+
+$activePage = "visits";
+
+require_once '../../app/db.php';
+
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'administrator') {
+    header('Location: unauthorized.php');
+    exit;
+}
+
+$page = basename($_SERVER['PHP_SELF']);
+$ip = $_SERVER['REMOTE_ADDR'];
+
+
+
+$userAgent = $_SERVER['HTTP_USER_AGENT'];
+$browserName = "Unknown";
+
+if (strpos($userAgent, 'Edg') !== false) {
+    $browserName = "Edge";
+}   elseif (strpos($userAgent, 'OPR') !== false) {
+    $browserName = "Opera";
+}   elseif (strpos($userAgent, 'Firefox') !== false) {
+        $browserName = "Firefox";
+}   elseif (strpos($userAgent, 'Chrome') !== false) {
+        $browserName = "Chrome";
+}   elseif (strpos($userAgent, 'Safari') !== false) {
+        $browserName = "Safari";
+}
+
+$browserId = getBrowserId($browserName);
+trackVisit($page, $browserId, $ip);
+
+
+$visits = getVisits();
+$todayVisits = getTodayVisits();
+$avgDaily = getAvgDailyVisits();
+$avgWeekly = getAvgWeeklyVisits();
+$avgMonthly = getAvgMonthlyVisits();
+$visitsPerDate = getVisitsPerDate();
+$visitsPerBrowser = getVisitsPerBrowser();
+$visitsPerWeek = getVisitsPerWeek();
+$visitsPerDay = getVisitsPerDay();
+?>
+
+
+<?php require_once "includes/header.php"?>
     
 <div class="content">
     <main>
 
         <h3>Analytics Dashboard</h3>
         <nav class="analytics-dashboard">
-            <a href="analytics.html">Incidents</a>
-            <a href="visits.html">Page Visits</a>
+            <a href="analytics.php">Incidents</a>
+            <a href="visits.php">Page Visits</a>
         </nav>
     
         <div class="top-part">
@@ -64,10 +102,22 @@
             </div>
 
             <div class="cards">
-                <div class="card">Todays visits</div>
-                <div class="card">Avg Daily Visits</div>
-                <div class="card">Avg Weekly Visits</div>
-                <div class="card">Avg Monthly Visits</div>
+                <div class="card">
+                    <p>Visits today</p>
+                    <h2><?= $todayVisits ?></h2>
+                </div>
+                <div class="card">
+                    <p>Avg Daily Visits</p>
+                    <h2><?= $avgDaily ?></h2>
+                </div>
+                <div class="card">
+                    <p>Avg Weekly Visits</p>
+                    <h2><?= $avgWeekly ?></h2>
+                </div>
+                <div class="card">
+                    <p>Avg Monthly Visits</p>
+                    <h2><?= $avgMonthly ?></h2>
+                </div>
             </div>
         </div>
 
@@ -93,87 +143,39 @@
         <div class="table-container">
             <table>
                 <tr>
-                    <th>Page-ID</th>
+                    <th>Page</th>
                     <th>Tracking-ID</th>
                     <th>Browser Type ID</th>
                     <th>Host IP</th>
                     <th>Time-stamp</th>
                 </tr>
+
+                <?php foreach ($visits as $visit): ?>
                 <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
+                    <td><?= $visit['page_name'] ?></td>
+                    <td><?= $visit['tracking_id']?></td>
+                    <td><?= $visit['browser_name']?></td>
+                    <td><?= $visit['host_ip']?></td>
+                    <td><?= $visit['visited_at']?></td>
                 </tr>
-                <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                </tr>
+                <?php endforeach; ?>
             </table>
         </div>
     </main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="js/visits.js"></script>
+
+<script>
+const visitsData = <?= json_encode($visitsPerDate); ?>;
+const browserData = <?= json_encode($visitsPerBrowser); ?>;
+const weeklyData = <?= json_encode($visitsPerWeek); ?>;
+const dayData = <?= json_encode($visitsPerDay); ?>;
+</script>
 
 
-</body>
 
-</html>
+<?php require_once "includes/footer.php"?>
 
 
 
