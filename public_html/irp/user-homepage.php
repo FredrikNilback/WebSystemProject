@@ -19,11 +19,12 @@
             <div class='main-column'>
                 <div id='navigation-buttons'>
                     <button onclick='location.href="new-case.php"' id='create-btn' class='navigation-button'>
+                        <img class='button-icon' src='images/homepage/create-btn.png' alt='Cases'>
                         <span>New Case</span>
                         <img class='button-arrow' src='images/homepage/arrow-right.png' alt='arrow right'>
                     </button>
 
-                    <button onclick='location.href="cases.html"' id='cases-btn' class='navigation-button'>
+                    <button onclick='location.href="cases.php"' id='cases-btn' class='navigation-button'>
                         <img class='button-icon' src='images/homepage/cases-btn.png' alt='Cases'>
                         <span>Incidents</span>
                         <img class='button-arrow' src='images/homepage/arrow-right.png' alt='arrow right'>
