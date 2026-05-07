@@ -1,12 +1,23 @@
 <?php
     $headerImg = "<img src='images/company_logo.png' alt='company logo' id='company-logo'>";
+    $titleApendage = NULL;
+    switch ($activePage) {
+        case 'user-homepage': 
+            $titleApendage = 'Homepage';
+            break;
+        case 'manage-users':
+            $titleApendage = 'User Management';
+            break;
+        default:
+            $titleApendage = $activePage;
+    }
     $header = 
     <<<HTML
     <header>
         <a href='user-homepage.php'>
             $headerImg
         </a>
-        <h1>NFV incident report portal</h1>
+        <h1>NFV incident report portal - $titleApendage</h1>
     </header>
     HTML;
 ?>

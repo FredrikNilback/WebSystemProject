@@ -30,10 +30,12 @@
 <?php require_once 'includes/header.php' ?>
     <div class='content'>
         <main>
-            <div class='hero' id='login-hero'>
-                <img id='hexagon' src="images/login_hero.png" alt="hexagon">
+            <div class='hero-wrapper'>
+                <div class='hero' id='login-hero'>
+                    <img id='hexagon' src="images/login/login_hero.png" alt="hexagon">
+                </div>
+            <img id='letters' src="images/login/login_hero_letters.png" alt="NFV">
             </div>
-            <img id='letters' src="images/login_hero_letters.png" alt="NFV">
             <div id='hero-text'>
                 <h2>Next Frontier Virtualization</h2>
                 <h3>Software Inc.</h3>
@@ -43,18 +45,18 @@
             <div id='greeting-div'>
                 <div id='greeting-animation-wrapper'>
                     <h1 id='greeting'>Greetings!</h1>
-                    <img src="images/time_of_day/morning.png" id='time-of-day-img' alt="time of day img">
+                    <img src="images/login/time_of_day/morning.png" id='time-of-day-img' alt="time of day img">
                 </div>
             </div>
             <div id='login-div'>
                 <h2>Login to your account!</h2>
                 <form method='POST'>
                     <label class='input-wrapper'>
-                        <img src='images/user.png' alt='password key'>
+                        <img src='images/login/user.png' alt='password key'>
                         <input type='text' name='username' class='login-input' placeholder='Enter your username...'>
                     </label>
                     <label class='input-wrapper'>
-                        <img src='images/key.png' alt='password key'>
+                        <img src='images/login/key.png' alt='password key'>
                         <input type='password' name='password' class='login-input' placeholder='Enter your password...'>
                     </label>
                     <a href='' id='forgot-pwd'>I forgot my password</a>

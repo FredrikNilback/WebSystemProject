@@ -1,3 +1,12 @@
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
 main, aside {
     min-height: 0;
 }
@@ -11,10 +20,19 @@ main {
     grid-column: 1 / -1;
 }
 
-main h2 {
+#welcome-div {
     grid-column: 1/ -1;
-    margin-left: 2vw;
-    font-size: clamp(1px, 2rem, 9999px);
+    overflow: hidden;
+    border-left: solid 2px rgba(50,50,50,0.5);
+    margin: 1vh auto auto 3vw;
+    height: fit-content;
+}
+
+#welcome-div h2 {
+    margin-left: 1vw;
+    font-size: clamp(1px, 3rem, 9999px);
+    transform: translateX(-100%);
+    animation: slideIn 0.75s ease-out forwards;
 }
 
 .main-column {
@@ -24,61 +42,47 @@ main h2 {
     text-align: center;
 }
 
+#navigation-buttons {
+    width: 100%;
+}
+
 .navigation-button {
     display: flex;
-    width: 75%;
-    margin: 1vh 2vw 2vh 1vw;
+    width: 60%;
+    margin: 1vh auto 2vh 3vw;
     height: 10vh;
     align-items: center;
-    background-color: #4a5d74;
+    background-color: white;
     position: relative;
-    outline: 2px solid #000000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.55);
     border: 2px solid #a7a7a7;
-    border-radius: 6px;
-}
-
-.navigation-button:hover {
-    filter: brightness(75%);
-    outline: none;
-}
-
-.notification-div {
-    position: relative;
-    width: 20%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.notification-div img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-.update-count {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
+    border-radius: 8px;
 }
 
 .navigation-button>span {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: clamp(1px, 2rem, 9999px);
-    color: white;
+    font-weight: bold;
+    font-size: clamp(1px, 1.5rem, 9999px);
 }
 
-.navigation-button>img {
+.navigation-button:hover {
+    filter: brightness(85%);
+    outline: #0b026c 2px solid;
+}
+
+.button-icon {
     width: auto;
-    height: 100%;
-    margin-left: auto;
+    height: 75%;
+    margin-right: auto;
+    margin-left: 1vw;
     align-self: center;
+}
+
+.button-arrow {
+    width: auto;
+    height: 50%;
+    margin-left: auto;
+    margin-right: 1vw;
+    align-self: center;   
 }
 
 .update-count {
@@ -91,6 +95,10 @@ main h2 {
 }
 
 #logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     width: 10vw;
     height: 6vh;
     margin: auto auto 2vh 1vw;
@@ -100,10 +108,20 @@ main h2 {
     font-size: clamp(1px, 1.2rem, 9999px);
     color: white;
     filter: brightness(50%);
+    padding-right: 1vw;
 }
 
 #logout-btn:hover {
     filter: none;
+}
+
+#logout-btn img {
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    width: auto;
+    object-fit: contain;
+    margin: auto auto auto 1vw;
 }
 
 #open-aside-btn,
@@ -159,6 +177,7 @@ details[open] .read-more {
     display: flex;
     margin-top: auto;
 }
+
 #minimize-btn {
     
 }
