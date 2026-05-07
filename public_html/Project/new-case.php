@@ -7,7 +7,6 @@ $mysqli = getDataBase();
 $type_result = $mysqli->query("SELECT * FROM incident_type");
 
 $asset_result = $mysqli->query("SELECT * FROM asset");
-
 ?>
 
 <?php require_once 'includes/header.php' ?>
@@ -51,18 +50,22 @@ $asset_result = $mysqli->query("SELECT * FROM asset");
                     </div>
                 
                     <div class="input-group">
-                        <label>Affected Asset</label>
-                        <select name="asset_id" required>
-                            <option value="">-Select Asset-</option>
+                        <label>Affected Assets</label>
+                        <div class="checkbox-container">
                             <?php 
                             if ($asset_result) {
+                                $asset_result->data_seek(0);
                                 while ($row = $asset_result->fetch_assoc()) {
-                                // från databasen asset_id och asset_name 
-                                    echo '<option value="' . $row['asset_id'] . '">' . $row['asset_name'] . '</option>';
+                                    ?>
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox" name="asset_id[]" value="<?php echo $row['asset_id']; ?>">
+                                        <?php echo $row['asset_name']; ?>
+                                    </label>
+                                    <?php
                                 }
                             }
                             ?>
-                        </select>
+                        </div>
                     </div>
                 </div>
 

@@ -65,7 +65,6 @@
         $mysqli->close();
         return $user; 
     }
-<<<<<<< HEAD
 
     function getUsers($limit, $offset, $abc='ASC', $roles=NULL) {
         $allowedAbc = ['ASC', 'DESC'];

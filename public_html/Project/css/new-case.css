@@ -1,4 +1,6 @@
-/* Grundlayout */
+/* ==========================================
+   1. GRUNDLAYOUT & BEHÅLLARE
+   ========================================== */
 .content {
     display: flex;
     justify-content: center;
@@ -16,6 +18,15 @@ main {
     height: auto !important;
 }
 
+main::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+/* ==========================================
+   2. RUBRIKER & TEXT
+   ========================================== */
 main h2 {
     background-color: #00215e;
     color: white;
@@ -26,7 +37,9 @@ main h2 {
 
 main h2:first-of-type { margin-top: 0; }
 
-/* de vanliga raderna (Datum, ID, Beskrivning) */
+/* ==========================================
+   3. STANDARD-RADER (Datum, ID, Beskrivning)
+   ========================================== */
 main form > div:not(.urgency-selection) {
     display: flex;
     margin-bottom: 12px;
@@ -48,8 +61,65 @@ main form > div > textarea {
     font-size: 15px;
 }
 
-/* --- RADIOCIRKLARNA PÅ EN RAD (severity) --- */
+.text-box {
+    resize: none;
+    height: 140px;
+    display: block;
+}
 
+/* ==========================================
+   4. DROPDOWNS (Threats & Assets)
+   ========================================= */
+.form-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    align-items: flex-start;
+}
+
+.form-row .input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.form-row .input-group label {
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+    display: block;
+}
+
+.form-row .input-group select {
+    width: 50%;
+    padding: 2px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    background-color: #fff;
+}
+
+/* ==========================================
+   5. CHECKBOXES (Affected Assets)
+   ========================================== */
+.checkbox-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.custom-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+/* ==========================================
+   6. RADIO BUTTONS (Severity)
+   ========================================== */
 .urgency-selection {
     display: flex !important;
     flex-direction: row;
@@ -68,13 +138,11 @@ main form > div > textarea {
     font-weight: normal !important;
 }
 
-/* original-knappen,gömd */
 .custom-radio input {
     position: absolute;
     opacity: 0;
 }
 
-/* cirkeln */
 .checkmark {
     position: absolute;
     top: 50%;
@@ -87,13 +155,11 @@ main form > div > textarea {
     border-radius: 50%;
 }
 
-/* det som fylls i cirkeln man klickar i */
 .custom-radio input:checked ~ .checkmark {
     background-color: #00215e;
     border-color: #00215e;
 }
 
-/* vita pricken inuti, kanske ska ta bort? */
 .checkmark:after {
     content: "";
     position: absolute;
@@ -113,7 +179,9 @@ main form > div > textarea {
     background: white;
 }
 
-/* --- SUBMIT-KNAPPEN --- */
+/* ==========================================
+   7. KNAPPAR & FEEDBACK
+   ========================================== */
 button[type="submit"] {
     background-color: #00215e;
     color: white;
@@ -126,61 +194,11 @@ button[type="submit"] {
     margin-left: auto; 
 }
 
-/* säkerhetsmarginal för botten */
-main::after {
-    content: "";
-    display: block;
-    clear: both;
-}
-
-/*stora beskrivningsrutan*/
-.text-box {
-    resize: none;
-    height: 140px;
-    display: block;
-}
-
-/* meddelandet som kommer upp (på skärmen) när det är skickat*/
 .success-banner {
-    display: none; /* egentligen dold, visas med js */
+    display: none; 
     background-color: #d4edda;
     color: #155724;
     border: 1px solid #c3e6cb;
     text-align: center;
     border-top: none;
 }
-
-/* behållaren som håller båda listorna */
-.form-row {
-    display: flex;
-    gap: 30px;          /* detta är avstådet mellan listorna */
-    margin-top: 2px;
-    margin-bottom: 2px;
-    align-items: flex-start; /* gör det jämnt */
-}
-
-/* varje box och deras layout */
-.form-row .input-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column; /* texten ligger ovanför */
-    gap: 1px;              /* avstånd med text och rullis*/
-}
-
-/* text o strl */
-.form-row .input-group label {
-    font-weight: bold;
-    font-size: 14px;
-    color: #333;
-    display: block;        /* egen rad till varje rullis */
-}
-
-/* rullisar */
-.form-row .input-group select {
-    width: 100%;
-    padding: 2px;
-    border: 1px solid #ccc;
-    border-radius: 2px;
-    background-color: #fff;
-}
-

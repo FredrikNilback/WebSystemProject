@@ -1,59 +1,90 @@
+/* ==========================================================================
+   LAYOUT & GRID STRUCTURE
+   ========================================================================== */
 .content {
+    display: grid;
     grid-template-columns: 2fr 3fr; 
     gap: 0px;
     align-items: start;
 }
 
-/* vänster, där alla ärenden listas (aside) */
+/* vänster kolumn: ärendelista */
 aside {
     display: flex;
     flex-direction: column;
     grid-column: 1;
     height: 75vh; 
-    overflow-y: auto; 
+    overflow-y: scroll; 
     padding-right: 10px;
-    border-right: none !important; /* Tvinga bort linjen på höger sida */
+    border-right: none !important;
 }
 
-/* incident overview rubrik */
+/* höger kolumn: detaljer & chatt */
+main {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    grid-column: 2;
+    max-height: 75vh;
+    padding-right: 0px;
+    overflow-y: scroll;
+    min-height: 0vh;
+}
+
+/* ==========================================================================
+   INCIDENT OVERVIEW (LEFT SIDE)
+   ========================================================================== */
 aside h2 {
     color: #0b026c;
     margin-top: 0;
     font-size: 1.4rem;
 }
 
-/* Status-korten (behållarna i aside) */
-aside > div:first-of-type {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-/* Varje enskilt status-kort */
-aside > div > div {
+.status-card {
     background: white;
     padding: 15px;
     border-radius: 6px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    border-left: 6px solid grey;
+    border-left: 6px solid #666; /* Standardgrå för alla */
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
     transition: 0.2s ease;
+    margin-bottom: 12px;
 }
 
-aside > div > div:hover { transform: translateX(5px); }
+.status-card:hover { transform: translateX(5px); }
 
-/* Färgerna på kanterna för status-korten */
-aside > div > div:nth-child(1) { border-left-color: #666; } /* Pending */
-aside > div > div:nth-child(2) { border-left-color: #666; } /* In Progress */
-aside > div > div:nth-child(3) { border-left-color: #666; } /* Resolved */
+.status-card h3 { 
+    margin: 0; 
+    font-size: 15px; 
+    color: #666; 
+    text-transform: uppercase; 
+}
 
-aside h3 { margin: 0; font-size: 15px; color: #666; text-transform: uppercase; }
-aside div div div { font-size: 20px; font-weight: bold; color: #0b026c; }
+.status-card div { 
+    font-size: 20px; 
+    font-weight: bold; 
+    color: #0b026c; 
+}
 
-/* Tabellen för incidenter */
+/* aktiva filter-stilar */
+.status-card.active {
+    background-color: #0b026c !important;
+    color: white !important;
+    border-left-color: #0b026c !important;
+}
+
+.status-card.active h3, 
+.status-card.active div {
+    color: white !important;
+}
+
+/* ==========================================================================
+   TABLE STYLES
+   ========================================================================== */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -66,29 +97,35 @@ th, td { padding: 12px; text-align: left; border-bottom: 1px solid white; }
 th { background-color: #0b026c; color: white; }
 
 
-/* --- höger (main) --- */
-main {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
+
+/* assign-sektionen inuti tabellen */
+.assign-form {
+    display: flex; /*centrera knappen och listan */
     gap: 5px;
-    grid-column: 2;
-    max-height: 75vh;
-    padding-right: 0px;
+    align-items: center;
 }
 
-/* Chatt-boxen (article) */
+.assign-select {
+    font-size: 11px;
+    width: 85px;
+    padding: 2px;
+}
+
+.assign-btn {
+    font-size: 11px;
+    padding: 3px 8px;
+    cursor: pointer;
+}
+/* ==========================================================================
+   INCIDENT DETAIL & CHAT (UPPER BOX)
+   ========================================================================== */
 article {
     background: white;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
     min-height: 210px; 
-    
-    
-    /* viktig rad för att inte sabba allt */
-    margin-top: -20px !important; 
-    /* Justera siffran -30 tills den nuddar det blå strecket perfekt */
+    margin-top: -20px !important; /* justering mot det blå strecket */
 }
 
 article h2 {
@@ -97,42 +134,71 @@ article h2 {
     padding: 10px 12px;
     background-color: #0b026c;
     color: white;
-    
 }
 
-/* Meddelandeytan inuti chatten */
-article div:nth-child(2) {
-    flex: 1;
-    padding: 15px;
-    background: #fff;
-}
-
-/* Input-ytan för meddelanden längst ner */
-article div:nth-child(3) {
-    padding: 15px;
-    border-top: 1px solid #eee;
-    display: flex;
-    gap: 10px;
-}
-
-article input[type="text"] {
-    flex: 1;
+/* --- CHAT SECTION --- */
+.chat-log {
+    height: 300px;
+    overflow-y: auto;
     padding: 10px;
-    border: 1px solid #cbd5e1;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column; /* gör att bubblorna staplas på varandra */
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    width: fit-content;
+    max-width: 80%;
+    word-wrap: break-word; /* förhindrar att långa ord förstör layouten */
+}
+
+/* meddelanden från mig själv */
+.my-message {
+    background-color: #e3f2fd;
+    margin-left: auto; /* putta bubblan till höger */
+    border-bottom-right-radius: 2px; /* chattbubblan */
+}
+
+/* meddelanden från andra */
+.other-message {
+    background-color: #ffffff;
+    margin-right: auto; /* håll bubblan till vänster */
+    border-bottom-left-radius: 2px;
+}
+
+.message small {
+    display: block;
+    color: #666;
+    font-size: 0.7em;
+    margin-bottom: 3px;
+}
+
+.message span {
+    font-size: 0.9em;
+}
+
+/* chat-input området */
+.chat-input form {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.chat-input input[type="text"] {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-article button {
-    background: #0b026c;
-    color: white;
-    border: none;
-    padding: 0 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-/* --- Status-kontrollerna (den nedre vita boxen till höger) --- */
+/* ==========================================================================
+   ACTION PANEL (LOWER BOX)
+   ========================================================================== */
 section {
     background: white;
     padding: 10px;
@@ -140,58 +206,50 @@ section {
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-/* Rubrikerna för fälten (Change status, Add comment etc) */
 section span {
     font-size: 11px;
     font-weight: bold;
-    color: #0b026c; /* Ändrat från vit till grå för att synas mot vitt */
+    color: #0b026c;
     text-transform: uppercase;
     display: block;
     margin-bottom: 5px;
     margin-top: 5px;
 }
 
-/* Den grå rutan för prioritet */
-section div:first-of-type {
-    padding: 4px;
-    text-align: center;
-    border-radius: 4px;
-    font-weight: bold;
-    background: #0b026c;
-    color: white;
+/* incident description box inuti sektionen */
+section .case-details-box {
+    background-color: #ffffff !important;
+    border: 1px solid #ccc !important;
+    padding: 10px !important; /* mer padding för läsbarhet */
+    text-align: left !important;
+    color: #333 !important;
     margin-bottom: 15px;
 }
 
-/* Dropdown-menyn för status */
+section .case-details-box strong {
+    color: #0b026c;
+    display: block;
+    text-transform: uppercase;
+    font-size: 11px;
+    margin-bottom: 5px;
+}
+
+/* Dropdown & Form elements */
 section select {
     width: 100%;
-    padding: 2px;
+    padding: 5px;
     border-radius: 4px;
     border: 1px solid #ddd;
     margin-bottom: 8px;
 }
 
-/* rutan där man kan skriva kommentar */
-section textarea {
-    width: 100%;
-    height: 35px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 2px;
-    resize: none; /* Gör rutan fixerad så den inte kan dras ut */
-    box-sizing: border-box; /* Ser till att rutan inte sticker ut utanför boxen */
-    margin-bottom: 10px;
-    font-family: inherit;
-}
-
-/* ladda upp en fil */
 section input[type="file"] {
     display: block;
     margin-bottom: 15px;
     font-size: 13px;
 }
 
-/* knappen "Update Incident" */
+/* Update Button */
 section button {
     background: #0b026c;
     color: white;
@@ -201,14 +259,39 @@ section button {
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    transition: opacity 0.2s;
 }
 
-/* gör så status-korten blir klickbara */
-.status-card {
-    cursor: pointer;
+section button:hover { opacity: 0.9; }
+
+/* ==========================================================================
+   ATTACHMENTS & FILTERS
+   ========================================================================== */
+.existing-attachments {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f4f4f9; 
+    border-radius: 6px;
 }
 
-/* all statuses-länken/knappen */
+.attachments-label {
+    display: block;
+    font-size: 10px;
+    color: #666;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.attachment-link {
+    font-size: 12px;
+    color: #0b026c;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
 .filter-all-btn {
     cursor: pointer;
     border: none;
@@ -216,55 +299,7 @@ section button {
     color: grey;
     text-decoration: underline;
     font-size: 13px;
-    margin-top: 10px;
-    padding: 0; 
-    display: block;      
-    margin-left: 20px;   
-    margin-top: 10px;
-    text-align: left;    
-}
-
-.filter-all-btn:hover {
-    color: #0b026c; 
-}
-/* färgen blå vid klick */
-.status-card.active {
-    background-color: #0b026c !important;
-    color: white !important;
-}
-
-/* texten blir vit när filtret är iklickat */
-.status-card.active h3, 
-.status-card.active div {
-    color: white !important;
-}
-/* detalj-boxen för alla cases som kommer upp */
-section .case-details-box {
-    background-color: #ffffff !important; /*måste ha important för funkat inte annars pga skitsection */
-    border: 1px solid #ccc !important;
-    padding: 1px !important;
-    text-align: left !important;
-    color: #333 !important;
-    background-image: none !important; /* För säkerhets skull */
-}
-
-/* Fixa så rubriken ser bra ut */
-section .case-details-box strong {
-    color: #0b026c;
+    margin: 10px 0 0 20px;
     display: block;
-    padding-top: 0px;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-    font-size: 11px;
-}
-
-/* Fixa texten inuti */
-section .case-details-box p {
-    text-align: left !important;
-    font-weight: normal !important;
-}
-
-/* knappen till alla statusar */
-.status-card.active div {
-border-left-color: #0b026c;
+    text-align: left;
 }

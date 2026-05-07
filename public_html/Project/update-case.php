@@ -20,19 +20,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $new_update_id = $mysqli->insert_id;
 
             // spara kommentaren om det finns någon text 
-            if (!empty($comment_text)) {
-                $stmt_comment = $mysqli->prepare("INSERT INTO comment (incident_update_id, comment_text) VALUES (?, ?)");
-                $stmt_comment->bind_param("is", $new_update_id, $comment_text);
-                $stmt_comment->execute();
-                $stmt_comment->close();
-            }
+            $final_comment = !empty($comment_text) ? $comment_text : "System: Status changed to " . ucfirst($status);
 
-            // här lägger jag in filer sen
+            $stmt_comment = $mysqli->prepare("INSERT INTO comment (incident_update_id, comment_text) VALUES (?, ?)");
+            $stmt_comment->bind_param("is", $new_update_id, $final_comment);
+            $stmt_comment->execute();
+            $stmt_comment->close();
+
+                // här läggs filerna in 
+            if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === 0) {
+                $fileName = $_FILES['attachment']['name'];
+                $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                $uniqueFileName = "update_" . $new_update_id . "_" . time() . "." . $fileExt;
+                
+                // använder den absoluta sökvägen som fungerade 
+                $uploadFolder = "/space1/home/viktha25/uploads/";
+                $destination = $uploadFolder . $uniqueFileName;
+
+                if (move_uploaded_file($_FILES['attachment']['tmp_name'], $destination)) {
+                    $stmt_file = $mysqli->prepare("INSERT INTO attachment (incident_update_id, attachment_file_path) VALUES (?, ?)");
+                    $stmt_file->bind_param("is", $new_update_id, $uniqueFileName);
+                    $stmt_file->execute();
+                    $stmt_file->close();
+                }
+            }
+            // slut på filhantering
 
             $stmt->close();
             $mysqli->close();
 
-            // Skicka tillbaka till cases.php
+            // skicka tillbaka till cases.php
             header("Location: cases.php?view=" . $case_id . "&success=updated");
             exit();
         } else {
