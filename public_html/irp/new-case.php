@@ -1,12 +1,14 @@
 <?php 
-session_start();  
-$activePage="new-case";  
-require_once "../../app/db.php"; 
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: unauthorized.php');
+    }
+    require_once "../../app/db.php";
+    updateLastSeen($_SESSION['user_id']);
+    $activePage="new-case";  
 
-$mysqli = getDataBase();
-$type_result = $mysqli->query("SELECT * FROM incident_type");
-
-$asset_result = $mysqli->query("SELECT * FROM asset");
+    $incidentTypes = getIncidentTypes();
+    $assets = getAssets();
 ?>
 
 <?php require_once 'includes/header.php' ?>
@@ -39,32 +41,21 @@ $asset_result = $mysqli->query("SELECT * FROM asset");
                         <label>Incident type</label>
                         <select name="threats" required>
                             <option value="">-Select-</option>
-                            <?php
-                            if ($type_result) {
-                                while ($row = $type_result->fetch_assoc()) {
-                                    echo '<option value="' . $row['incident_type_id'] . '">' . $row['incident_type_name'] . '</option>';
-                                }
-                            }
-                            ?>
+                            <?php foreach($incidentTypes as $incidentType):?>
+                                <option value="<?= $incidentType['incident_type_id'] ?>"> <?= $incidentType['incident_type_name'] ?> </option>;
+                            <?php endforeach;?>
                         </select>
                     </div>
                 
                     <div class="input-group">
                         <label>Affected Assets</label>
                         <div class="checkbox-container">
-                            <?php 
-                            if ($asset_result) {
-                                $asset_result->data_seek(0);
-                                while ($row = $asset_result->fetch_assoc()) {
-                                    ?>
+                            <?php foreach($assets as $asset): ?>
                                     <label class="custom-checkbox">
-                                        <input type="checkbox" name="asset_id[]" value="<?php echo $row['asset_id']; ?>">
-                                        <?php echo $row['asset_name']; ?>
+                                        <input type="checkbox" name="asset_id[]" value="<?= $asset['asset_id'] ?>">
+                                        <?= $asset['asset_name'] ?>
                                     </label>
-                                    <?php
-                                }
-                            }
-                            ?>
+                            <?php endforeach; ?>
                         </div>
                     </div>
                 </div>
@@ -96,23 +87,3 @@ $asset_result = $mysqli->query("SELECT * FROM asset");
         </main>
     </div>
 <?php require_once 'includes/footer.php' ?>
-
-<script>
-    // kollar ifall adressen innehåller success=true
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    if (urlParams.has('success')) {
-        const incidentId = urlParams.get('id');
-        const message = "Your form has been sent. Incident nr: " + incidentId;
-        
-        // alerten som kommer upp
-        alert(message);
-        
-        // visar ett meddelande
-        const successDiv = document.getElementById('success-message');
-        if (successDiv) {
-            successDiv.style.display = 'block';
-            successDiv.innerHTML = message; // lägger in texten
-        }
-    }
-</script>

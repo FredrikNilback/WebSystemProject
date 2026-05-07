@@ -4,7 +4,7 @@ session_start();
 
 if (isset($_GET['name'])) {
     $fileName = basename($_GET['name']); // basename för säkerhet så man inte kan "backa" ut ur mappen
-    $filePath = "/space1/home/viktha25/uploads/" . $fileName;
+    $filePath = "../../uploads/" . $fileName;
 
     if (file_exists($filePath)) {
         // talar om för webbläsaren vilken typ av fil det är

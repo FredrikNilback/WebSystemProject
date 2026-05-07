@@ -72,7 +72,7 @@ $query = "SELECT i.incident_id, i.description, i.incident_severity, i.occurance,
               FROM incident_update 
               WHERE incident_id = i.incident_id
           )
-          LEFT JOIN affected_assets aa ON i.incident_id = aa.incident_id
+          LEFT JOIN affected_asset aa ON i.incident_id = aa.incident_id
           LEFT JOIN asset a ON aa.asset_id = a.asset_id";
 
 // 3. filtret 

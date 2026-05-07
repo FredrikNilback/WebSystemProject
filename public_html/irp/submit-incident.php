@@ -2,7 +2,6 @@
 session_start();
 require_once "../../app/db.php";
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $mysqli = getDataBase();
 
@@ -69,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // 6. SPARA AFFECTED ASSETS (Many-to-Many loopen)
         if (!empty($selected_assets) && is_array($selected_assets)) {
             foreach ($selected_assets as $asset_id) {
-                $stmt_asset = $mysqli->prepare("INSERT INTO affected_assets (asset_id, incident_id) VALUES (?, ?)");
+                $stmt_asset = $mysqli->prepare("INSERT INTO affected_asset (asset_id, incident_id) VALUES (?, ?)");
                 $stmt_asset->bind_param("ii", $asset_id, $new_incident_id);
                 $stmt_asset->execute();
                 $stmt_asset->close();
