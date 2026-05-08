@@ -308,9 +308,12 @@
 
         $stmt->bind_param("iis", $pageId, $browser_id, $ip);
         $stmt->execute();
+        $trackingId = $mysqli->insert_id;
 
         $stmt->close();
         $mysqli->close();
+
+        return $trackingId;
     }
 
     function getBrowserId($browserName) {
@@ -350,10 +353,77 @@
         return $browserId;
     }
 
-    function getVisits() {
+
+    function trackUserVisit($trackingId, $userId) {
         $mysqli = getDataBase();
 
-        $result = $mysqli->query("
+        $stmt = $mysqli->prepare("
+            INSERT INTO user_tracking (tracking_id, user_id)
+            VALUES (?, ?)
+        ");
+
+        $stmt->bind_param("ii", $trackingId, $userId);
+        $stmt->execute();
+
+        $stmt->close();
+        $mysqli->close();
+    }
+
+    function buildVisitFilters(
+        &$params,
+        &$types,
+        $browserFilter,
+        $dateFilter,
+        $userFilter) {
+       
+        $where = [];
+
+        if ($browserFilter != 'AllBrowsers') {
+            $where[] = "browser_type.browser_name = ?";
+            $params[] = $browserFilter;
+            $types .= "s";
+        }
+
+        if ($userFilter != 'all') {
+            $where[] = "user.username = ?";
+            $params[] = $userFilter;
+            $types .= "s";
+        }
+
+        if ($dateFilter == 'Today') {
+        }
+
+        elseif ($dateFilter == 'Yesterday') {
+            $where[] = "DATE(visited_at) = CURDATE() - INTERVAL 1 DAY";
+        }
+
+        elseif ($dateFilter == 'Current Week') {
+            $where[] = "
+                YEARWEEK(visited_at, 1)
+                = YEARWEEK(CURDATE(),1)
+            ";
+        }
+
+        elseif ($dateFilter == 'Current Month') {
+            $where[] = "
+                MONTH(visited_at) = MONTH(CURDATE())
+                AND YEAR(visited_at) = YEAR(CURDATE())
+            ";
+        }
+
+        return $where;
+        
+    }
+
+
+    function getVisits(
+        $browserFilter = 'AllBrowsers', 
+        $dateFilter = 'Today',
+        $userFilter = 'all') {
+
+        $mysqli = getDataBase();
+
+        $sql = "
             SELECT visit_tracking.tracking_id,
                 page.page_name,
                 browser_type.browser_name,
@@ -362,27 +432,118 @@
             FROM visit_tracking
             JOIN page ON visit_tracking.page_id = page.page_id
             LEFT JOIN browser_type ON visit_tracking.browser_type_id = browser_type.browser_type_id
-            ORDER BY visit_tracking.visited_at DESC
-            LIMIT 10;
-        ");
+            LEFT JOIN user_tracking ON visit_tracking.tracking_id = user_tracking.tracking_id
+            LEFT JOIN user ON user_tracking.user_id = user.user_id
+        ";
 
-        $visits = $result->fetch_all(MYSQLI_ASSOC);
+        $params = [];
+        $types = "";
+
+        $where = buildVisitFilters(
+            $params,
+            $types,
+            $browserFilter,
+            $dateFilter,
+            $userFilter
+        );
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $sql .= "
+            ORDER BY visit_tracking.visited_at DESC
+            LIMIT 10
+        ";
+
+
+        if ($browserFilter != 'AllBrowsers') {
+            $params[] = $browserFilter;
+            $types .= "s";
+        }
+
+        if ($userFilter != 'all') {
+            $params[] = $userFilter;
+            $types .= "s";
+        }
+
+        if (!empty($params)) {
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param($types, ...$params);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $visits = $result->fetch_all(MYSQLI_ASSOC);
+            $stmt->close();
+        }
+
+        else {
+            $result = $mysqli->query($sql);
+            $visits = $result->fetch_all(MYSQLI_ASSOC);
+        }
+
         $mysqli->close();
         return $visits;
     }
 
-    function getTodayVisits() {
+    function getTodayVisits(
+        $browserFilter = 'AllBrowsers',
+        $dateFilter = 'Today',
+        $userFilter = 'all') 
+    {
+
         $mysqli = getDataBase();
-        $result = $mysqli->query("
+
+        $sql = "
             SELECT COUNT(*) AS count
             FROM visit_tracking
-            WHERE DATE(visited_at) = CURDATE();
-        ");
 
-        $row = $result->fetch_assoc();
+            LEFT JOIN browser_type
+            ON visit_tracking.browser_type_id = browser_type.browser_type_id
+            
+            LEFT JOIN user_tracking
+            ON visit_tracking.tracking_id = user_tracking.tracking_id
+
+            LEFT JOIN user
+            ON user_tracking.user_id = user.user_id
+        ";
+
+        $params = [];
+        $types = "";
+
+        $where = buildVisitFilters(
+            $params,
+            $types,
+            $browserFilter,
+            $dateFilter,
+            $userFilter
+        );
+
+        if (!empty($where)) {
+            $sql .= " AND " . implode(" AND ", $where);
+        }
+
+        if (!empty($params)) {
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param($types, ...$params);
+            $stmt->execute();
+
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+
+            $stmt->close();
+
+        } else {
+
+            $result = $mysqli->query($sql);
+            $row = $result->fetch_assoc();
+        }
+
         $mysqli->close();
+
         return $row['count'];
     }
+
+
 
     function getAvgDailyVisits() {
         $mysqli = getDataBase();
