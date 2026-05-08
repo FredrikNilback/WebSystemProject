@@ -14,6 +14,7 @@
         $dbName = $secrets->db_name;
         $password = $secrets->db_pwd;
 
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         $mysqli = new mysqli($host, $username, $password, $dbName);
 
         if ($mysqli->connect_error) {
@@ -554,11 +555,59 @@
         }
     }
 
-    /* submit-incident.php */
+    /* submit-incident.php + incident-service.php*/
+    function insertIncident ($mysqli, $incidentTypeId, $description, $severity, $occurrence) {
+        $incidentTypeId = (int)$incidentTypeId;
 
-    function submitIncident($occurance, $description, $incident_type_id, $incidentSeverity, $affectedAssetIds = []) {
-        $mysqli = getDataBase();
+        $stmt = $mysqli->prepare(
+            "INSERT INTO incident (incident_type_id, description, incident_severity, occurrence) 
+             VALUES ($incidentTypeId, ?, ?, ?);"
+        );
+        $stmt->bind_param("sss", $description, $severity, $occurrence);
+        $stmt->execute();
 
+        $incidentId = $mysqli->insert_id;
+        $stmt->close();
 
+        return $incidentId;
     }
+
+    function insertUpdate($mysqli, $incidentId, $userId) {
+        $incidentId = (int)$incidentId;
+        $userId = (int)$userId;
+
+        $mysqli->query(
+            "INSERT INTO incident_update (incident_id, status, user_id) 
+             VALUES ($incidentId, 'pending', $userId);"
+        );
+
+        return $mysqli->insert_id;
+    }
+
+    function insertAttachment($mysqli, $updateId, $fileName) {
+        $updateId = (int)$updateId;
+                
+        $stmt_file = $mysqli->prepare(
+            "INSERT INTO attachment (incident_update_id, attachment_file_path) 
+             VALUES ($updateId, ?);"
+        );
+        $stmt_file->bind_param("s", $fileName);
+        $stmt_file->execute();
+        $stmt_file->close();
+    }
+
+    function insertAffectedAssets($mysqli, $assets, $incidentId) {
+        $incidentId = (int)$incidentId;
+        $sql = 
+            "INSERT INTO affected_asset (asset_id, incident_id) 
+             VALUES ";
+        foreach ($assets as $asset_id) {
+            $asset_id = (int)$asset_id;
+            $sql .= "($asset_id, $incidentId), ";
+        }
+        $sql = substr($sql, 0, -2);
+
+        $mysqli->query($sql);
+    }
+
 ?>
