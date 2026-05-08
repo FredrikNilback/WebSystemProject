@@ -1,4 +1,10 @@
 <?php
+    /*===========================================================
+                        FREDRIK'S FUNCTIONS
+                                |
+                                V
+    =============================================================*/
+
     function getDataBase() {
         $secretsPath = __DIR__ . '/../secrets.json';
         $secrets = json_decode(file_get_contents($secretsPath));
@@ -8,6 +14,7 @@
         $dbName = $secrets->db_name;
         $password = $secrets->db_pwd;
 
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         $mysqli = new mysqli($host, $username, $password, $dbName);
 
         if ($mysqli->connect_error) {
@@ -24,7 +31,7 @@
 
         $stmt = $mysqli->prepare(
             'INSERT INTO user (username, first_name, last_name, user_email, password_hash, user_role)
-             VALUES (?, ?, ?, ?, ?, ?)'
+             VALUES (?, ?, ?, ?, ?, ?);'
         );
 
         $stmt->bind_param(
@@ -48,7 +55,7 @@
         $stmt = $mysqli->prepare(
             'SELECT * 
              FROM user
-             WHERE username = ?'
+             WHERE username = ?;'
         );
         $stmt->bind_param('s', $username);
         $stmt->execute();
@@ -138,7 +145,7 @@
                 $sql .= "username $direction ";
                 break;
         }
-        $sql .= "LIMIT $limit OFFSET $offset";
+        $sql .= "LIMIT $limit OFFSET $offset;";
 
         $users = NULL;
         if ($search) {
@@ -229,7 +236,7 @@
         $mysqli->query(
             "UPDATE user
              SET user_role = '$role'
-             WHERE user_id = $userId"
+             WHERE user_id = $userId;"
         );
 
         $mysqli->close();
@@ -242,7 +249,7 @@
 
         $mysqli->query(
             "DELETE FROM user
-             WHERE user_id=$userId"
+             WHERE user_id=$userId;"
         );
         $mysqli->close();
     }
@@ -254,7 +261,7 @@
         $mysqli->query(
             "UPDATE user
              SET last_seen = NOW()
-             WHERE user_id = $userId"
+             WHERE user_id = $userId;"
         );
         $mysqli->close();
     }
@@ -266,7 +273,7 @@
             "SELECT event_date, event_title, event_text
              FROM current_event
              ORDER BY event_date DESC
-             LIMIT 5"
+             LIMIT 5;"
         );
         $events = $query->fetch_all(MYSQLI_ASSOC);
         $mysqli->close();
@@ -274,10 +281,16 @@
         return $events;
     }
 
+    /*===========================================================
+                        NIKE'S FUNCTIONS
+                                |
+                                V
+    =============================================================*/
+
     function trackVisit($page, $browser_id, $ip) {
         $mysqli = getDataBase();
 
-        $stmt = $mysqli->prepare("SELECT page_id FROM page WHERE page_name = ?");
+        $stmt = $mysqli->prepare("SELECT page_id FROM page WHERE page_name = ?;");
         $stmt->bind_param("s", $page);
         $stmt->execute();
         $stmt->bind_result($pageId);
@@ -290,7 +303,7 @@
 
         $stmt = $mysqli->prepare(
             "INSERT INTO visit_tracking (page_id, browser_type_id, host_ip)
-            VALUES (?, ?, INET_ATON(?))"
+            VALUES (?, ?, INET_ATON(?));"
         );
 
         $stmt->bind_param("iis", $pageId, $browser_id, $ip);
@@ -306,7 +319,7 @@
         $stmt = $mysqli->prepare("
             SELECT browser_type_id
             FROM browser_type
-            WHERE browser_name = ?
+            WHERE browser_name = ?;
         ");
 
         $stmt->bind_param("s", $browserName);
@@ -323,7 +336,7 @@
 
         $stmt = $mysqli->prepare("
             INSERT INTO browser_type (browser_name)
-            VALUES (?)
+            VALUES (?);
         ");
 
         $stmt->bind_param("s", $browserName);
@@ -337,43 +350,20 @@
         return $browserId;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     function getVisits() {
         $mysqli = getDataBase();
 
         $result = $mysqli->query("
-        SELECT visit_tracking.tracking_id,
-            page.page_name,
-            browser_type.browser_name,
-            INET_NTOA(visit_tracking.host_ip) AS host_ip,
-            visit_tracking.visited_at
-        FROM visit_tracking
-        JOIN page ON visit_tracking.page_id = page.page_id
-        LEFT JOIN browser_type ON visit_tracking.browser_type_id = browser_type.browser_type_id
-        ORDER BY visit_tracking.visited_at DESC
-        LIMIT 10
-
+            SELECT visit_tracking.tracking_id,
+                page.page_name,
+                browser_type.browser_name,
+                INET_NTOA(visit_tracking.host_ip) AS host_ip,
+                visit_tracking.visited_at
+            FROM visit_tracking
+            JOIN page ON visit_tracking.page_id = page.page_id
+            LEFT JOIN browser_type ON visit_tracking.browser_type_id = browser_type.browser_type_id
+            ORDER BY visit_tracking.visited_at DESC
+            LIMIT 10;
         ");
 
         $visits = $result->fetch_all(MYSQLI_ASSOC);
@@ -386,7 +376,7 @@
         $result = $mysqli->query("
             SELECT COUNT(*) AS count
             FROM visit_tracking
-            WHERE DATE(visited_at) = CURDATE()
+            WHERE DATE(visited_at) = CURDATE();
         ");
 
         $row = $result->fetch_assoc();
@@ -398,7 +388,7 @@
         $mysqli = getDataBase();
         $result = $mysqli->query("
             SELECT COUNT(*) / COUNT(DISTINCT DATE(visited_at)) AS avg_daily
-            FROM visit_tracking
+            FROM visit_tracking;
         ");
 
         $row = $result->fetch_assoc();
@@ -410,7 +400,7 @@
         $mysqli = getDataBase();
         $result = $mysqli->query("
             SELECT COUNT(*) / COUNT(DISTINCT YEARWEEK(visited_at, 1)) AS avg_weekly
-            FROM visit_tracking
+            FROM visit_tracking;
         ");
 
         $row = $result->fetch_assoc();
@@ -422,7 +412,7 @@
         $mysqli = getDataBase();
         $result = $mysqli->query("
             SELECT COUNT(*) / COUNT(DISTINCT YEAR(visited_at), MONTH(visited_at)) AS avg_monthly
-            FROM visit_tracking
+            FROM visit_tracking;
         ");
 
         $row = $result->fetch_assoc();
@@ -436,7 +426,7 @@
             SELECT DATE(visited_at) as date, COUNT(*) as count
             FROM visit_tracking
             GROUP BY DATE(visited_at)
-            ORDER BY DATE(visited_at)
+            ORDER BY DATE(visited_at);
         ");
 
         $data = $result->fetch_all(MYSQLI_ASSOC);
@@ -451,7 +441,7 @@
             FROM visit_tracking
             LEFT JOIN browser_type
             ON visit_tracking.browser_type_id = browser_type.browser_type_id
-            GROUP BY browser_type.browser_name
+            GROUP BY browser_type.browser_name;
         ");
 
         $data = $result->fetch_all(MYSQLI_ASSOC);
@@ -459,13 +449,13 @@
         return $data;
     }
 
-        function getVisitsPerWeek() {
+    function getVisitsPerWeek() {
         $mysqli = getDataBase();
         $result = $mysqli->query("
             SELECT YEARWEEK(visited_at, 1) AS week, COUNT(*) AS count
             FROM visit_tracking
             GROUP BY week
-            ORDER BY week
+            ORDER BY week;
         ");
 
         $data = $result->fetch_all(MYSQLI_ASSOC);
@@ -473,18 +463,167 @@
         return $data;
     }
 
-        function getVisitsPerDay() {
+    function getVisitsPerDay() {
         $mysqli = getDataBase();
         $result = $mysqli->query("
             SELECT DAYOFWEEK(visited_at) AS day, COUNT(*) AS count
             FROM visit_tracking
             GROUP BY day
-            ORDER BY day
+            ORDER BY day;
         ");
 
         $data = $result->fetch_all(MYSQLI_ASSOC);
         $mysqli->close();
         return $data;
+    }
+
+    /*===========================================================
+                        VIKTORIA'S FUNCTIONS
+                                |
+                                V
+    =============================================================*/
+
+    /* new-case.php */
+
+    function getIncidentTypes() {
+        $mysqli = getDataBase();
+        $result = $mysqli->query("SELECT * FROM incident_type")->fetch_all(MYSQLI_ASSOC);
+        $mysqli->close();
+
+        return $result;
+    }
+
+    function getAssets() {
+        $mysqli = getDataBase();
+        $result = $mysqli->query("SELECT * FROM asset")->fetch_all(MYSQLI_ASSOC);
+        $mysqli->close();
+
+        return $result;
+    }
+
+    /* cases.php */
+
+    /* send-chat-message.php */
+
+    function sendMessage($incidentId, $message, $userId) {
+        $mysqli = getDataBase();
+
+        $incidentId = (int)$incidentId;
+        $userId = (int)$userId;
+
+        $mysqli->begin_transaction();
+        try {
+            // 1. hämta den nuvarande statusen på ärendet så det inte ändras
+            $query = $mysqli->query(
+                "SELECT status FROM incident_update 
+                 WHERE incident_id = $incidentId 
+                 ORDER BY incident_update_id DESC 
+                 LIMIT 1;"
+            );
+            $status = $query->fetch_assoc()['status'];
+
+            // Fredrik säger: vi kollar att statusen är giltig så behöver vi inte använda ett prepared statement
+            $allowedStatuses = ['pending', 'in progress', 'resolved'];
+            if (!in_array($status, $allowedStatuses)) {
+                throw new Exception("Unexpected status", 1);
+            }
+
+            // 2. skapar en ny incident_update
+            $mysqli->query(
+                "INSERT INTO incident_update (incident_id, status, user_id) 
+                 VALUES ($incidentId, '$status', $userId);"
+            );
+
+            $incidentUpdateId = (int)($mysqli->insert_id);
+
+            // 3. spara själva meddelandet i comment i databasen
+            $stmt = $mysqli->prepare(
+                "INSERT INTO comment (incident_update_id, comment_text)
+                VALUES ($incidentUpdateId, ?);"
+            );
+            $stmt->bind_param('s', $message);
+            $stmt->execute();
+            $stmt->close();
+
+            $mysqli->commit();
+            return TRUE;
+        } catch (Exception $e) {
+            $mysqli->rollback();
+            return FALSE;
+        } finally {
+            $mysqli->close();
+        }
+    }
+
+    /* submit-incident.php + incident-service.php + update-case.php*/
+    function insertIncident ($mysqli, $incidentTypeId, $description, $severity, $occurrence) {
+        $incidentTypeId = (int)$incidentTypeId;
+
+        $stmt = $mysqli->prepare(
+            "INSERT INTO incident (incident_type_id, description, incident_severity, occurrence) 
+             VALUES ($incidentTypeId, ?, ?, ?);"
+        );
+        $stmt->bind_param("sss", $description, $severity, $occurrence);
+        $stmt->execute();
+
+        $incidentId = $mysqli->insert_id;
+        $stmt->close();
+
+        return $incidentId;
+    }
+
+    function insertUpdate($mysqli, $incidentId, $userId, $status = 'pending') {
+        $incidentId = (int)$incidentId;
+        $userId = (int)$userId;
+
+        $stmt = $mysqli->prepare(
+            "INSERT INTO incident_update (incident_id, status, user_id) 
+             VALUES ($incidentId, ?, $userId);"
+        );
+        $stmt->bind_param("s", $status);
+        $stmt->execute();
+
+        $updateId = $mysqli->insert_id;
+        $stmt->close();
+
+        return $updateId;
+    }
+
+    function insertAttachment($mysqli, $updateId, $fileName) {
+        $updateId = (int)$updateId;
+                
+        $stmt_file = $mysqli->prepare(
+            "INSERT INTO attachment (incident_update_id, attachment_file_path) 
+             VALUES ($updateId, ?);"
+        );
+        $stmt_file->bind_param("s", $fileName);
+        $stmt_file->execute();
+        $stmt_file->close();
+    }
+
+    function insertAffectedAssets($mysqli, $assets, $incidentId) {
+        $incidentId = (int)$incidentId;
+        $sql = 
+            "INSERT INTO affected_asset (asset_id, incident_id) 
+             VALUES ";
+        foreach ($assets as $asset_id) {
+            $asset_id = (int)$asset_id;
+            $sql .= "($asset_id, $incidentId), ";
+        }
+        $sql = substr($sql, 0, -2);
+
+        $mysqli->query($sql);
+    }
+
+    function insertComment($mysqli, $updateId, $comment) {
+        $updateId = (int)$updateId;
+        $stmt_comment = $mysqli->prepare(
+            "INSERT INTO comment (incident_update_id, comment_text)
+             VALUES ($updateId, ?)"
+        );
+        $stmt_comment->bind_param("s", $comment);
+        $stmt_comment->execute();
+        $stmt_comment->close();
     }
 
 ?>

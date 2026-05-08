@@ -1,7 +1,11 @@
 <?php
-session_start(); 
-$activePage="cases";  
-require_once "../../app/db.php"; 
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: unauthorized.php');
+}
+require_once '../../app/db.php';
+updateLastSeen($_SESSION['user_id']);
+$activePage="cases";
 
 $mysqli = getDataBase();
 
@@ -60,7 +64,7 @@ $user_id = $_SESSION['user_id'];
 $user_role = $_SESSION['user_role'];
 
 // 2. listar kolumnerna istället för att använda *
-$query = "SELECT i.incident_id, i.description, i.incident_severity, i.occurance,
+$query = "SELECT i.incident_id, i.description, i.incident_severity, i.occurrence,
                  t.incident_type_name, 
                  u.status, 
                  GROUP_CONCAT(DISTINCT a.asset_name SEPARATOR ', ') AS asset_name
@@ -72,7 +76,7 @@ $query = "SELECT i.incident_id, i.description, i.incident_severity, i.occurance,
               FROM incident_update 
               WHERE incident_id = i.incident_id
           )
-          LEFT JOIN affected_assets aa ON i.incident_id = aa.incident_id
+          LEFT JOIN affected_asset aa ON i.incident_id = aa.incident_id
           LEFT JOIN asset a ON aa.asset_id = a.asset_id";
 
 // 3. filtret 
@@ -81,7 +85,7 @@ if ($user_role === 'reporter') {
 }
 
 // 4. grupperingen och sorteringen
-$query .= " GROUP BY i.incident_id, i.description, i.incident_severity, i.occurance, t.incident_type_name, u.status
+$query .= " GROUP BY i.incident_id, i.description, i.incident_severity, i.occurrence, t.incident_type_name, u.status
             ORDER BY i.incident_id DESC";
 
 $result = $mysqli->query($query);
@@ -120,7 +124,8 @@ if ($selectedCase) {
     while ($f = $res_f->fetch_assoc()) {
         $attachments[] = $f;
     }
-    // HÄR HÄMTAS KOMMENTARERNA (Chatten)
+    // HÄR HÄMTAS KOMMENTARERNA (Chatten)  
+    // Fredrik säger: Vi hade kunnat joina in user här och på så sätt få användarnamnet så det kan displayas i chatten istället för user #X
     $query_comments = "SELECT c.comment_text, u.status, u.user_id, DATE_FORMAT(u.incident_update_id, '%H:%i') as time 
                        FROM comment c
                        JOIN incident_update u ON c.incident_update_id = u.incident_update_id
