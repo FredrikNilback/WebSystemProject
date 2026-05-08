@@ -29,13 +29,13 @@
         
         $result = submitIncident($_POST, $_FILES['attachment'] ?? NULL, $_SESSION['user_id']);
         if ($result) {
-            // 7. SKICKA TILLBAKA ANVÄNDAREN 
+            // 6. SKICKA TILLBAKA ANVÄNDAREN 
             header("Location: new-case.php?success=true&id=" . $result);
             exit();
         }
 
         // Om något går fel
-        header("Location: new-case.php?error=" . "true");
+        header("Location: new-case.php?error=true");
         exit();
     }
 ?>

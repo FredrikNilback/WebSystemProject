@@ -555,7 +555,7 @@
         }
     }
 
-    /* submit-incident.php + incident-service.php*/
+    /* submit-incident.php + incident-service.php + update-case.php*/
     function insertIncident ($mysqli, $incidentTypeId, $description, $severity, $occurrence) {
         $incidentTypeId = (int)$incidentTypeId;
 
@@ -572,16 +572,21 @@
         return $incidentId;
     }
 
-    function insertUpdate($mysqli, $incidentId, $userId) {
+    function insertUpdate($mysqli, $incidentId, $userId, $status = 'pending') {
         $incidentId = (int)$incidentId;
         $userId = (int)$userId;
 
-        $mysqli->query(
+        $stmt = $mysqli->prepare(
             "INSERT INTO incident_update (incident_id, status, user_id) 
-             VALUES ($incidentId, 'pending', $userId);"
+             VALUES ($incidentId, ?, $userId);"
         );
+        $stmt->bind_param("s", $status);
+        $stmt->execute();
 
-        return $mysqli->insert_id;
+        $updateId = $mysqli->insert_id;
+        $stmt->close();
+
+        return $updateId;
     }
 
     function insertAttachment($mysqli, $updateId, $fileName) {
@@ -608,6 +613,17 @@
         $sql = substr($sql, 0, -2);
 
         $mysqli->query($sql);
+    }
+
+    function insertComment($mysqli, $updateId, $comment) {
+        $updateId = (int)$updateId;
+        $stmt_comment = $mysqli->prepare(
+            "INSERT INTO comment (incident_update_id, comment_text)
+             VALUES ($updateId, ?)"
+        );
+        $stmt_comment->bind_param("s", $comment);
+        $stmt_comment->execute();
+        $stmt_comment->close();
     }
 
 ?>
