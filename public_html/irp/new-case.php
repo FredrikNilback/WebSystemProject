@@ -23,7 +23,6 @@
                     <input type="datetime-local" name="incident_time" required>
                 </div>
 
-                <input type="hidden" name="id_nr" value="<?= $_SESSION['user_id'] ?>">
                 <input type="hidden" name="reporter_email" value="<?= $_SESSION['user_email'] ?>">
 
                 <div>
@@ -42,7 +41,7 @@
                         <select name="threats" required>
                             <option value="">-Select-</option>
                             <?php foreach($incidentTypes as $incidentType):?>
-                                <option value="<?= $incidentType['incident_type_id'] ?>"> <?= $incidentType['incident_type_name'] ?> </option>;
+                                <option value="<?= $incidentType['incident_type_id'] ?>"><?= $incidentType['incident_type_name'] ?></option>;
                             <?php endforeach;?>
                         </select>
                     </div>

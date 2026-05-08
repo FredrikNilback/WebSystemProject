@@ -10,11 +10,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST['description'];
     $incident_type_id = $_POST['threats'];
     $incident_severity = $_POST['urgency'];
+    $selected_assets = $_POST['asset_id'] ?? []; 
     
     // kollar både fältet och sessionen
-    $user_id = $_POST['id_nr'] ?? ($_SESSION['user_id'] ?? 1);
-
-    $selected_assets = $_POST['asset_id'] ?? []; 
+    $userId = $_SESSION['user_id'] ?? NULL; // Fredrik säger: stor säkerhetsrisk att lita på POST för user_id. vem som helst kan skicka en post med vilket id som helst.
+    if (!$userId) {
+        header('Location: unauthorized.php');
+        exit();
+    }
 
     // 2. KONTROLLERA FILER (Samma logik som förut)
     if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === 0) {
@@ -42,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // 4. SKAPA STATUSUPPDATERING (Viktigt för cases.php!)
         $stmt_status = $mysqli->prepare("INSERT INTO incident_update (incident_id, status, user_id) VALUES (?, 'pending', ?)");
-        $stmt_status->bind_param("ii", $new_incident_id, $user_id);
+        $stmt_status->bind_param("ii", $new_incident_id, $userId);
         $stmt_status->execute();
         
         $new_update_id = $mysqli->insert_id; 

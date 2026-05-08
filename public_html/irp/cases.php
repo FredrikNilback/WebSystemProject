@@ -1,7 +1,11 @@
 <?php
-session_start(); 
-$activePage="cases";  
-require_once "../../app/db.php"; 
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: unauthorized.php');
+}
+require_once '../../app/db.php';
+updateLastSeen($_SESSION['user_id']);
+$activePage="cases";
 
 $mysqli = getDataBase();
 
@@ -120,7 +124,8 @@ if ($selectedCase) {
     while ($f = $res_f->fetch_assoc()) {
         $attachments[] = $f;
     }
-    // HÄR HÄMTAS KOMMENTARERNA (Chatten)
+    // HÄR HÄMTAS KOMMENTARERNA (Chatten)  
+    // Fredrik säger: Vi hade kunnat joina in user här och på så sätt få användarnamnet så det kan displayas i chatten istället för user #X
     $query_comments = "SELECT c.comment_text, u.status, u.user_id, DATE_FORMAT(u.incident_update_id, '%H:%i') as time 
                        FROM comment c
                        JOIN incident_update u ON c.incident_update_id = u.incident_update_id

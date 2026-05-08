@@ -1,5 +1,4 @@
 <?php
-
     /*===========================================================
                         FREDRIK'S FUNCTIONS
                                 |
@@ -483,6 +482,8 @@
                                 V
     =============================================================*/
 
+    /* new-case.php */
+
     function getIncidentTypes() {
         $mysqli = getDataBase();
         $result = $mysqli->query("SELECT * FROM incident_type")->fetch_all(MYSQLI_ASSOC);
@@ -499,7 +500,65 @@
         return $result;
     }
 
-    function submitIncident($occurance, $description, $incident_type_id) {
+    /* cases.php */
+
+    /* send-chat-message.php */
+
+    function sendMessage($incidentId, $message, $userId) {
+        $mysqli = getDataBase();
+
+        $incidentId = (int)$incidentId;
+        $userId = (int)$userId;
+
+        $mysqli->begin_transaction();
+        try {
+            // 1. hämta den nuvarande statusen på ärendet så det inte ändras
+            $query = $mysqli->query(
+                "SELECT status FROM incident_update 
+                 WHERE incident_id = $incidentId 
+                 ORDER BY incident_update_id DESC 
+                 LIMIT 1;"
+            );
+            $status = $query->fetch_assoc()['status'];
+
+            // Fredrik säger: vi kollar att statusen är giltig så behöver vi inte använda ett prepared statement
+            $allowedStatuses = ['pending', 'in progress', 'resolved'];
+            if (!in_array($status, $allowedStatuses)) {
+                throw new Exception("Unexpected status", 1);
+            }
+
+            // 2. skapar en ny incident_update
+            $mysqli->query(
+                "INSERT INTO incident_update (incident_id, status, user_id) 
+                 VALUES ($incidentId, '$status', $userId);"
+            );
+
+            $incidentUpdateId = (int)($mysqli->insert_id);
+
+            // 3. spara själva meddelandet i comment i databasen
+            $stmt = $mysqli->prepare(
+                "INSERT INTO comment (incident_update_id, comment_text)
+                VALUES ($incidentUpdateId, ?);"
+            );
+            $stmt->bind_param('s', $message);
+            $stmt->execute();
+            $stmt->close();
+
+            $mysqli->commit();
+            return TRUE;
+        } catch (Exception $e) {
+            $mysqli->rollback();
+            return FALSE;
+        } finally {
+            $mysqli->close();
+        }
+    }
+
+    /* submit-incident.php */
+
+    function submitIncident($occurance, $description, $incident_type_id, $incidentSeverity, $affectedAssetIds = []) {
+        $mysqli = getDataBase();
+
 
     }
 ?>
