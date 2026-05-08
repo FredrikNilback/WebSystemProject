@@ -288,6 +288,7 @@
     =============================================================*/
 
     function trackVisit($page, $browser_id, $ip) {
+       
         $mysqli = getDataBase();
 
         $stmt = $mysqli->prepare("SELECT page_id FROM page WHERE page_name = ?;");
@@ -296,7 +297,6 @@
         $stmt->bind_result($pageId);
         $stmt->fetch();
         $stmt->close();
-
         if (!$pageId) {
             return;
         }
@@ -309,7 +309,7 @@
         $stmt->bind_param("iis", $pageId, $browser_id, $ip);
         $stmt->execute();
         $trackingId = $mysqli->insert_id;
-
+   
         $stmt->close();
         $mysqli->close();
 
@@ -355,6 +355,7 @@
 
 
     function trackUserVisit($trackingId, $userId) {
+
         $mysqli = getDataBase();
 
         $stmt = $mysqli->prepare("

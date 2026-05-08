@@ -1,5 +1,26 @@
 <?php
+    require_once "../../app/db.php";
     $activePage = 'unauthorized';
+    $page = basename($_SERVER['PHP_SELF']);
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $userAgent = $_SERVER['HTTP_USER_AGENT'];
+    $browserName = "Unknown";
+
+    if (strpos($userAgent, 'Edg') !== false) {
+        $browserName = "Edge";
+    }   elseif (strpos($userAgent, 'OPR') !== false) {
+        $browserName = "Opera";
+    }   elseif (strpos($userAgent, 'Firefox') !== false) {
+            $browserName = "Firefox";
+    }   elseif (strpos($userAgent, 'Chrome') !== false) {
+            $browserName = "Chrome";
+    }   elseif (strpos($userAgent, 'Safari') !== false) {
+            $browserName = "Safari";
+    }
+
+    $browserId = getBrowserId($browserName);
+    trackVisit($page, $browserId, $ip);
+    
 ?>
 <?php require_once 'includes/header.php'?>
 <div class='content'>
