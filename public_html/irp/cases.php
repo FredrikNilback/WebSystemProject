@@ -2,8 +2,9 @@
 session_start();
 if (!isset($_SESSION['user_id'])) {
     header('Location: unauthorized.php');
+    exit();
 }
-require_once '../../app/db.php';
+require_once "../../app/db.php";
 updateLastSeen($_SESSION['user_id']);
 
 $page = basename($_SERVER['PHP_SELF']);
@@ -30,97 +31,41 @@ trackUserVisit($trackingId, $_SESSION['user_id']);
 $activePage="cases";
 
 $mysqli = getDataBase();
-
-// hämta alla användare som kan tilldelas ärenden
-$user_query = "SELECT user_id, username FROM user WHERE user_role IN ('administrator', 'responder') ORDER BY username ASC";
-$user_result = $mysqli->query($user_query);
-$all_users = [];
-if ($user_result) {
-    while($u = $user_result->fetch_assoc()) {
-        $all_users[] = $u;
-    }
-}
-
-// detta är för att assigna ett case   
-if (isset($_POST['assign_submit'])) {
-    $inc_id = 0;
-    
-    // Vi kollar både URL och POST efter ID:t
-    if (isset($_GET['assign_id'])) {
-        $inc_id = intval($_GET['assign_id']);
-    } elseif (isset($_POST['incident_id'])) {
-        $inc_id = intval($_POST['incident_id']);
-    }
-    
-    // om inget id, ett felmed.
-    if ($inc_id === 0) {
-        die("No ID-number found.");
-    }
-
-    $new_owner = !empty($_POST['new_owner_id']) ? intval($_POST['new_owner_id']) : $_SESSION['user_id'];
-    $status = "in progress"; 
-
-    $stmt_upd = $mysqli->prepare("INSERT INTO incident_update (incident_id, status, user_id) VALUES (?, ?, ?)");
-    $stmt_upd->bind_param("isi", $inc_id, $status, $new_owner);
-    
-    if ($stmt_upd->execute()) {
-        $new_update_id = $mysqli->insert_id;
-        
-        $system_msg = "System: Case assigned to user #" . $new_owner;
-        $stmt_com = $mysqli->prepare("INSERT INTO comment (incident_update_id, comment_text) VALUES (?, ?)");
-        $stmt_com->bind_param("is", $new_update_id, $system_msg);
-        $stmt_com->execute();
-        
-        // skicka användaren tillbaka till vyn för det aktuella ärendet
-        header("Location: cases.php?view=" . $inc_id);
-        exit();
-    } else {
-        die("Database Error: " . $stmt_upd->error);
-    }
-}
-
-
-
-// 1. hämta info från sessionen
 $user_id = $_SESSION['user_id']; 
 $user_role = $_SESSION['user_role'];
 
-// 2. listar kolumnerna istället för att använda *
-$query = "SELECT i.incident_id, i.description, i.incident_severity, i.occurrence,
-                 t.incident_type_name, 
-                 u.status, 
-                 GROUP_CONCAT(DISTINCT a.asset_name SEPARATOR ', ') AS asset_name
-          FROM incident i 
-          JOIN incident_type t ON i.incident_type_id = t.incident_type_id 
-          LEFT JOIN incident_update u ON u.incident_id = i.incident_id 
-          AND u.incident_update_id = (
-              SELECT MAX(incident_update_id) 
-              FROM incident_update 
-              WHERE incident_id = i.incident_id
-          )
-          LEFT JOIN affected_asset aa ON i.incident_id = aa.incident_id
-          LEFT JOIN asset a ON aa.asset_id = a.asset_id";
 
-// 3. filtret 
-if ($user_role === 'reporter') {
-    $query .= " WHERE u.user_id = " . intval($user_id);
-}
 
-// 4. grupperingen och sorteringen
-$query .= " GROUP BY i.incident_id, i.description, i.incident_severity, i.occurrence, t.incident_type_name, u.status
-            ORDER BY i.incident_id DESC";
+// --- HANTERA ASSIGN ---
+if (isset($_POST['assign_submit'])) {
+    $inc_id = isset($_POST['incident_id']) ? (int)$_POST['incident_id'] : (int)$_GET['assign_id'];
+    $new_owner = !empty($_POST['new_owner_id']) ? (int)$_POST['new_owner_id'] : $user_id;
 
-$result = $mysqli->query($query);
-
-$incidents = [];
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
-        $incidents[] = $row;
+    if ($inc_id > 0) {
+        $mysqli->begin_transaction();
+        try {
+            // anropar vi Fredriks insert-funktioner från db.php
+            $updId = insertUpdate($mysqli, $inc_id, $new_owner, 'in progress');
+            insertComment($mysqli, $updId, "System: Case assigned to user #" . $new_owner);
+            
+            $mysqli->commit();
+            header("Location: cases.php?view=" . $inc_id);
+            exit();
+        } catch (Exception $e) {
+            $mysqli->rollback();
+            die("Fel vid tilldelning: " . $e->getMessage());
+        }
     }
 }
 
-// kolla om ett specifikt ärende är valt (via URL:en ?view=ID)
+// --- HÄMTA ALL DATA ---
+$all_users = getAllUsers($mysqli);
+$incidents = getAllIncidents($mysqli, $user_role, $user_id);
+
 $selectedCase = null;
+$attachments = [];
+$comments = [];
+
 if (isset($_GET['view'])) {
     $viewId = intval($_GET['view']);
     foreach ($incidents as $i) {
@@ -129,53 +74,27 @@ if (isset($_GET['view'])) {
             break;
         }
     }
-}
-// hämta attachments
-$attachments = [];
-if ($selectedCase) {
-    $case_id = $selectedCase['incident_id'];
-    $query_files = "SELECT a.attachment_file_path 
-                    FROM attachment a
-                    JOIN incident_update u ON a.incident_update_id = u.incident_update_id
-                    WHERE u.incident_id = ?";
     
-    $stmt_f = $mysqli->prepare($query_files);
-    $stmt_f->bind_param("i", $case_id);
-    $stmt_f->execute();
-    $res_f = $stmt_f->get_result();
-    while ($f = $res_f->fetch_assoc()) {
-        $attachments[] = $f;
+    if ($selectedCase) {
+        // hämtar chatt och filer 
+        $attachments = getAttachmentsByIncident($mysqli, $viewId);
+        $comments = getCommentsByIncident($mysqli, $viewId);
     }
-    // HÄR HÄMTAS KOMMENTARERNA (Chatten)  
-    // Fredrik säger: Vi hade kunnat joina in user här och på så sätt få användarnamnet så det kan displayas i chatten istället för user #X
-    $query_comments = "SELECT c.comment_text, u.status, u.user_id, DATE_FORMAT(u.incident_update_id, '%H:%i') as time 
-                       FROM comment c
-                       JOIN incident_update u ON c.incident_update_id = u.incident_update_id
-                       WHERE u.incident_id = ?
-                       ORDER BY u.incident_update_id ASC";
-    
-    $stmt_c = $mysqli->prepare($query_comments);
-    $stmt_c->bind_param("i", $case_id);
-    $stmt_c->execute();
-    $res_c = $stmt_c->get_result();
-    while ($c = $res_c->fetch_assoc()) {
-        $comments[] = $c;
-    }
-    $stmt_f->close();
 }
 
-// räkna statusar för boxarna 
+// --- RÄKNA STATUSAR ---
 $counts = ['pending' => 0, 'in progress' => 0, 'resolved' => 0]; 
 foreach ($incidents as $i) { 
-    if (isset($counts[$i['status']])) { 
-        $counts[$i['status']]++; 
-    } 
+    if (isset($counts[$i['status']])) $counts[$i['status']]++; 
 } 
-?>
+?> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <?php require_once 'includes/header.php' ?>
     <div class="content"> 
         <aside>
             <h2>Incident Overview</h2>
+            <div class="chart-container" style="position: relative; height:200px; width:100%; margin-bottom: 20px;">
+                <canvas id="statusChart"></canvas>
+            </div> 
             <h5>Click on the statuses you want to filter</h5>
 
             <div onclick="filterTable('all')" class="status-card">
@@ -193,8 +112,7 @@ foreach ($incidents as $i) {
             <div onclick="filterTable('resolved')" class="status-card">
                 <h3>Resolved</h3>
                 <div><?php echo $counts['resolved']; ?></div>
-            </div>
-            
+            </div>          
 
             
             <div>
@@ -202,6 +120,7 @@ foreach ($incidents as $i) {
                     <thead>
                         <tr>
                             <th>Incident.nr</th>
+                            <th>Occured</th> 
                             <th>Affected Asset(s)</th>
                             <th>Status</th>
                             <?php if ($user_role !== 'reporter'): ?>
@@ -216,19 +135,21 @@ foreach ($incidents as $i) {
                             <tr><td colspan="5">No incidents found.</td></tr>
                         <?php else: ?>
                             <?php foreach ($incidents as $incident): ?>
-                                <tr class="incident-row <?php echo $incident['status']; ?>">
+                                <tr class="incident-row <?php echo str_replace(' ', '-', $incident['status']); ?>"> 
                                     <!-- Incident.nr -->
                                     <td>
                                         <a href="cases.php?view=<?php echo $incident['incident_id']; ?>">
                                             #<?php echo $incident['incident_id']; ?>
                                         </a>
                                     </td>
+                                    <!--Occurrence--> 
+                                    <td><?php echo $incident['occurrence']; ?></td> 
 
                                     <!-- Affected Asset -->
                                     <td><?php echo htmlspecialchars($incident['asset_name'] ?? 'N/A'); ?></td>
 
                                     <!-- Status -->
-                                    <td><?php echo $incident['status']; ?></td>
+                                    <td><?php echo htmlspecialchars($incident['status']); ?></td>
 
                                     <!-- Assign Case -->
                                     <?php if ($user_role !== 'reporter'): ?>
@@ -237,7 +158,7 @@ foreach ($incidents as $i) {
             
                                                 <?php if ($_SESSION['user_role'] === 'administrator'): ?>
                                                     <select name="new_owner_id" class="assign-select">
-                                                        <option value="">Select...</option>
+                                                        <option value="">Select</option>
                                                         <?php foreach ($all_users as $user_option): ?>
                                                             <option value="<?php echo $user_option['user_id']; ?>">
                                                                 <?php echo htmlspecialchars($user_option['username']); ?>
@@ -254,7 +175,7 @@ foreach ($incidents as $i) {
                                     <?php endif; ?>
 
                                     <!-- Severity -->
-                                    <td><?php echo $incident['incident_severity']; ?></td>
+                                    <td><?php echo htmlspecialchars($incident['incident_severity']); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -266,7 +187,14 @@ foreach ($incidents as $i) {
         <main>
             <article>
                 <div>
-                    <h2>Incident Detail: <?php echo $selectedCase ? "#".$selectedCase['incident_id'] : "Select a case"; ?></h2>
+                    <h2>Incident Detail: <?php echo $selectedCase ? "#".$selectedCase['incident_id'] : "Select a case"; ?>
+                            <!--tiden-->
+                        <?php if ($selectedCase): ?> 
+                            - <?php echo date("Y-m-d H:i", strtotime($selectedCase['occurrence'])); ?> 
+                            <!--incident type--> 
+                            - <?php echo htmlspecialchars($selectedCase['incident_type_name'] ?? 'N/A');?> 
+                        <?php endif; ?> 
+                    </h2>
                 </div>
         
                 <div class="chat-log">
@@ -288,7 +216,7 @@ foreach ($incidents as $i) {
 
                 <div class="chat-input">
                     <form action="send-chat-message.php" method="POST">
-                        <input type="hidden" name="case_id" value="<?php echo $selectedCase['incident_id']; ?>">
+                        <input type="hidden" name="case_id" value="<?php echo htmlspecialchars($selectedCase['incident_id']); ?>">
                         <input type="text" name="chat_message" placeholder="Write..." required>
                         <button type="submit" class="send-btn">Send</button>
                     </form>
@@ -303,7 +231,7 @@ foreach ($incidents as $i) {
             
                     <div class="case-details-box">
                         <?php if ($selectedCase): ?>
-                            <p><strong>Incident Description:</strong> <?php echo $selectedCase['description']; ?></p>
+                            <p><strong>Incident Description:</strong> <?php echo htmlspecialchars($selectedCase['description']); ?></p>
                         <?php else: ?>
                             <p>Select a case in the list to view the report details here.</p>
                         <?php endif; ?>
@@ -378,9 +306,40 @@ foreach ($incidents as $i) {
                     row.style.display = ''; 
                 } else {
                     // om raden har klassen t.ex. pending eller in progress
-                    const matches = activeFilters.some(s => row.classList.contains(s));
+                    const matches = activeFilters.some(s => row.classList.contains(s.replace(' ', '-'))); 
                     row.style.display = matches ? '' : 'none';
                 }
             });
         }
     </script>
+      
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('statusChart').getContext('2d'); //munkdiiagrammet
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'In Progress', 'Resolved'],
+            datasets: [{
+                data: [
+                    <?php echo $counts['pending']; ?>, 
+                    <?php echo $counts['in progress']; ?>, 
+                    <?php echo $counts['resolved']; ?>
+                ],
+                backgroundColor: ['#ff933a','#4a0ab9', '#0b026c'],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { boxWidth: 12, padding: 10 }
+                }
+            }
+        }
+    });
+});
+</script>

@@ -61,7 +61,7 @@
                         <select name="threats" required>
                             <option value="">-Select-</option>
                             <?php foreach($incidentTypes as $incidentType):?>
-                                <option value="<?= $incidentType['incident_type_id'] ?>"><?= $incidentType['incident_type_name'] ?></option>;
+                                <option value="<?= $incidentType['incident_type_id'] ?>"><?= htmlspecialchars($incidentType['incident_type_name']) ?></option>;
                             <?php endforeach;?>
                         </select>
                     </div>
@@ -71,7 +71,7 @@
                         <div class="checkbox-container">
                             <?php foreach($assets as $asset): ?>
                                     <label class="custom-checkbox">
-                                        <input type="checkbox" name="asset_id[]" value="<?= $asset['asset_id'] ?>">
+                                        <input type="checkbox" name="asset_id[]" value="<?= htmlspecialchars($asset['asset_id']) ?>">
                                         <?= $asset['asset_name'] ?>
                                     </label>
                             <?php endforeach; ?>
