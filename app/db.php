@@ -1511,6 +1511,68 @@
 
     /* cases.php */
 
+    // 1. hämta alla incidenter 
+function getAllIncidents($mysqli, $userRole, $userId) {
+    $query = "SELECT i.incident_id, i.description, i.incident_severity, i.occurrence,
+                     t.incident_type_name, 
+                     u.status, 
+                     GROUP_CONCAT(DISTINCT a.asset_name SEPARATOR ', ') AS asset_name
+              FROM incident i 
+              JOIN incident_type t ON i.incident_type_id = t.incident_type_id 
+              LEFT JOIN incident_update u ON u.incident_id = i.incident_id 
+              AND u.incident_update_id = (
+                  SELECT MAX(incident_update_id) 
+                  FROM incident_update 
+                  WHERE incident_id = i.incident_id
+              )
+              LEFT JOIN affected_asset aa ON i.incident_id = aa.incident_id
+              LEFT JOIN asset a ON aa.asset_id = a.asset_id";
+
+    if ($userRole === 'reporter') {
+        $query .= " WHERE u.user_id = " . (int)$userId;
+    }
+
+    $query .= " GROUP BY i.incident_id, i.description, i.incident_severity, i.occurrence, t.incident_type_name, u.status
+                ORDER BY i.incident_id DESC";
+
+    return $mysqli->query($query)->fetch_all(MYSQLI_ASSOC);
+}
+
+// 2. hämta alla användare till dropdownen
+function getAllUsers($mysqli) {
+    $user_query = "SELECT user_id, username FROM user WHERE user_role IN ('administrator', 'responder') ORDER BY username ASC";
+    return $mysqli->query($user_query)->fetch_all(MYSQLI_ASSOC);
+}
+
+// 3. hämta kommentarer/chatt
+function getCommentsByIncident($mysqli, $incidentId) {
+    $incidentId = (int)$incidentId;
+    $query_comments = "SELECT c.comment_text, u.status, u.user_id, DATE_FORMAT(u.incident_update_id, '%H:%i') as time 
+                       FROM comment c
+                       JOIN incident_update u ON c.incident_update_id = u.incident_update_id
+                       WHERE u.incident_id = ?
+                       ORDER BY u.incident_update_id ASC";
+    
+    $stmt = $mysqli->prepare($query_comments);
+    $stmt->bind_param("i", $incidentId);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+// 4. hämta attachments
+function getAttachmentsByIncident($mysqli, $incidentId) {
+    $incidentId = (int)$incidentId;
+    $query_files = "SELECT a.attachment_file_path 
+                    FROM attachment a
+                    JOIN incident_update u ON a.incident_update_id = u.incident_update_id
+                    WHERE u.incident_id = ?";
+    
+    $stmt = $mysqli->prepare($query_files);
+    $stmt->bind_param("i", $incidentId);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
     /* send-chat-message.php */
 
     function sendMessage($incidentId, $message, $userId) {
