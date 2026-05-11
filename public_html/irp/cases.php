@@ -1,94 +1,96 @@
 <?php
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    header('Location: unauthorized.php');
-    exit();
-}
-require_once "../../app/db.php";
-updateLastSeen($_SESSION['user_id']);
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: unauthorized.php');
+        exit();
+    }
+    require_once "../../app/db.php";
+    updateLastSeen($_SESSION['user_id']);
 
-$page = basename($_SERVER['PHP_SELF']);
-$ip = $_SERVER['REMOTE_ADDR'];
-$userAgent = $_SERVER['HTTP_USER_AGENT'];
-$browserName = "Unknown";
+    $page = basename($_SERVER['PHP_SELF']);
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $userAgent = $_SERVER['HTTP_USER_AGENT'];
+    $browserName = "Unknown";
 
-if (strpos($userAgent, 'Edg') !== false) {
-        $browserName = "Edge";
-}   elseif (strpos($userAgent, 'OPR') !== false) {
-        $browserName = "Opera";
-}   elseif (strpos($userAgent, 'Firefox') !== false) {
-        $browserName = "Firefox";
-}   elseif (strpos($userAgent, 'Chrome') !== false) {
-        $browserName = "Chrome";
-}   elseif (strpos($userAgent, 'Safari') !== false) {
-        $browserName = "Safari";
-}
+    if (strpos($userAgent, 'Edg') !== false) {
+            $browserName = "Edge";
+    }   elseif (strpos($userAgent, 'OPR') !== false) {
+            $browserName = "Opera";
+    }   elseif (strpos($userAgent, 'Firefox') !== false) {
+            $browserName = "Firefox";
+    }   elseif (strpos($userAgent, 'Chrome') !== false) {
+            $browserName = "Chrome";
+    }   elseif (strpos($userAgent, 'Safari') !== false) {
+            $browserName = "Safari";
+    }
 
-$browserId = getBrowserId($browserName);
-$trackingId = trackVisit($page, $browserId, $ip);
-trackUserVisit($trackingId, $_SESSION['user_id']);
+    $browserId = getBrowserId($browserName);
+    $trackingId = trackVisit($page, $browserId, $ip);
+    trackUserVisit($trackingId, $_SESSION['user_id']);
 
-$activePage="cases";
+    $activePage="cases";
 
-$mysqli = getDataBase();
-$user_id = $_SESSION['user_id']; 
-$user_role = $_SESSION['user_role'];
+    $mysqli = getDataBase();
+    $user_id = $_SESSION['user_id']; 
+    $user_role = $_SESSION['user_role'];
 
 
+    // --- HANTERA ASSIGN ---
+    if (isset($_POST['assign_submit'])) {
+        $inc_id = isset($_POST['incident_id']) ? (int)$_POST['incident_id'] : (int)$_GET['assign_id'];
+        $new_owner = !empty($_POST['new_owner_id']) ? (int)$_POST['new_owner_id'] : $user_id;
 
-// --- HANTERA ASSIGN ---
-if (isset($_POST['assign_submit'])) {
-    $inc_id = isset($_POST['incident_id']) ? (int)$_POST['incident_id'] : (int)$_GET['assign_id'];
-    $new_owner = !empty($_POST['new_owner_id']) ? (int)$_POST['new_owner_id'] : $user_id;
+        if ($inc_id > 0) {
+            $mysqli->begin_transaction();
+            try {
+                // anropar vi Fredriks insert-funktioner från db.php
+                $updId = insertUpdate($mysqli, $inc_id, $new_owner, 'in progress');
+                insertComment($mysqli, $updId, "System: Case assigned to user #" . $new_owner);
 
-    if ($inc_id > 0) {
-        $mysqli->begin_transaction();
-        try {
-            // anropar vi Fredriks insert-funktioner från db.php
-            $updId = insertUpdate($mysqli, $inc_id, $new_owner, 'in progress');
-            insertComment($mysqli, $updId, "System: Case assigned to user #" . $new_owner);
-            
-            $mysqli->commit();
-            header("Location: cases.php?view=" . $inc_id);
-            exit();
-        } catch (Exception $e) {
-            $mysqli->rollback();
-            die("Fel vid tilldelning: " . $e->getMessage());
+                $mysqli->commit();
+                header("Location: cases.php?view=" . $inc_id);
+                exit();
+            } catch (Exception $e) {
+                $mysqli->rollback();
+                die("Fel vid tilldelning: " . $e->getMessage());
+            }
         }
     }
-}
 
-// --- HÄMTA ALL DATA ---
-$all_users = getAllUsers($mysqli);
-$incidents = getAllIncidents($mysqli, $user_role, $user_id);
+    // --- HÄMTA ALL DATA ---
+    $all_users = getAllUsers($mysqli);
+    $incidents = getAllIncidents($mysqli, $user_role, $user_id);
 
-$selectedCase = null;
-$attachments = [];
-$comments = [];
+    $selectedCase = null;
+    $attachments = [];
+    $comments = [];
 
-if (isset($_GET['view'])) {
-    $viewId = intval($_GET['view']);
-    foreach ($incidents as $i) {
-        if ($i['incident_id'] == $viewId) {
-            $selectedCase = $i;
-            break;
+    if (isset($_GET['view'])) {
+        $viewId = intval($_GET['view']);
+        foreach ($incidents as $i) {
+            if ($i['incident_id'] == $viewId) {
+                $selectedCase = $i;
+                break;
+            }
+        }
+
+        if ($selectedCase) {
+            // hämtar chatt och filer 
+            $attachments = getAttachmentsByIncident($mysqli, $viewId);
+            $comments = getCommentsByIncident($mysqli, $viewId);
         }
     }
-    
-    if ($selectedCase) {
-        // hämtar chatt och filer 
-        $attachments = getAttachmentsByIncident($mysqli, $viewId);
-        $comments = getCommentsByIncident($mysqli, $viewId);
-    }
-}
 
-// --- RÄKNA STATUSAR ---
-$counts = ['pending' => 0, 'in progress' => 0, 'resolved' => 0]; 
-foreach ($incidents as $i) { 
-    if (isset($counts[$i['status']])) $counts[$i['status']]++; 
-} 
-?> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    // --- RÄKNA STATUSAR ---
+    $counts = ['pending' => 0, 'in progress' => 0, 'resolved' => 0]; 
+    foreach ($incidents as $i) { 
+        if (isset($counts[$i['status']])) $counts[$i['status']]++; 
+    } 
+?> 
+
+
 <?php require_once 'includes/header.php' ?>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <div class="content"> 
         <aside>
             <h2>Incident Overview</h2>
@@ -198,7 +200,9 @@ foreach ($incidents as $i) {
                 </div>
         
                 <div class="chat-log">
-                    <?php if (empty($comments)): ?>
+                    <?php if (!isset($viewId)): ?>
+                        <p>No incident selected!</p>
+                    <?php elseif (empty($comments)): ?>
                         <p>No messages yet. Start the conversation!</p>
                     <?php else: ?>
                         <?php foreach ($comments as $msg): ?>
@@ -207,7 +211,7 @@ foreach ($incidents as $i) {
                                 $isMine = ($msg['user_id'] == $_SESSION['user_id']); 
                             ?>
                             <div class="message <?php echo $isMine ? 'my-message' : 'other-message'; ?>">
-                                <small>User #<?php echo $msg['user_id']; ?></small>
+                                <small><?php echo $msg['username']; ?>:</small>
                                 <span><?php echo htmlspecialchars($msg['comment_text']); ?></span>
                             </div>
                         <?php endforeach; ?>
@@ -218,7 +222,7 @@ foreach ($incidents as $i) {
                     <form action="send-chat-message.php" method="POST">
                         <input type="hidden" name="case_id" value="<?php echo htmlspecialchars($selectedCase['incident_id']); ?>">
                         <input type="text" name="chat_message" placeholder="Write..." required>
-                        <button type="submit" class="send-btn">Send</button>
+                        <button type="submit" class="send-btn" <?= !isset($viewId) ? 'disabled' : '' ?>>Send</button>
                     </form>
                 </div>
             </article>
@@ -266,7 +270,7 @@ foreach ($incidents as $i) {
                         <?php endif; ?>
                     </div>
             
-                    <button type="submit" class="update-btn">Update Incident</button>
+                    <button type="submit" class="update-btn" <?= !isset($viewId) ? 'disabled' : '' ?>>Update Incident</button>
                 </form>
             </section>
         </main>

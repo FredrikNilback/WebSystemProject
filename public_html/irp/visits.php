@@ -1,61 +1,64 @@
 <?php
+    session_start();
 
+    $activePage = "visits";
 
+    require_once '../../app/db.php';
 
+    if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'administrator') {
+        header('Location: unauthorized.php');
+        exit;
+    }
 
-session_start();
+    $page = basename($_SERVER['PHP_SELF']);
+    $ip = $_SERVER['REMOTE_ADDR'];
 
-$activePage = "visits";
+    $userAgent = $_SERVER['HTTP_USER_AGENT'];
+    $browserName = "Unknown";
 
-require_once '../../app/db.php';
+    if (strpos($userAgent, 'Edg') !== false) {
+        $browserName = "Edge";
+    }   elseif (strpos($userAgent, 'OPR') !== false) {
+        $browserName = "Opera";
+    }   elseif (strpos($userAgent, 'Firefox') !== false) {
+            $browserName = "Firefox";
+    }   elseif (strpos($userAgent, 'Chrome') !== false) {
+            $browserName = "Chrome";
+    }   elseif (strpos($userAgent, 'Safari') !== false) {
+            $browserName = "Safari";
+    }
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'administrator') {
-    header('Location: unauthorized.php');
-    exit;
-}
+    $browserId = getBrowserId($browserName);
+    $trackingId = trackVisit($page, $browserId, $ip);
+    trackUserVisit($trackingId, $_SESSION['user_id']);
 
-$page = basename($_SERVER['PHP_SELF']);
-$ip = $_SERVER['REMOTE_ADDR'];
+    $allowedDates = ['All','Today','Yesterday','Current Week','Current Month'];
+    $allowedBrowsers = ['AllBrowsers','Chrome','Edge','Opera','Safari'];
 
+    $dateFilter = $_GET['date'] ?? 'All';
+    $browserFilter = $_GET['browser'] ?? 'AllBrowsers';
+    $userFilter = $_GET['user'] ?? 'All';
+    $currentPage = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
+    $currentPage = ($currentPage && $currentPage > 0) ? $currentPage : 1;
+    $limit = 10;
+    $offset = ($currentPage - 1) * $limit;
 
+    if (!in_array($dateFilter, $allowedDates, true)) {
+        $dateFilter = 'All';
+    }
+    if (!in_array($browserFilter, $allowedBrowsers, true)) {
+        $browserFilter = 'AllBrowsers';
+    }
 
-$userAgent = $_SERVER['HTTP_USER_AGENT'];
-$browserName = "Unknown";
-
-if (strpos($userAgent, 'Edg') !== false) {
-    $browserName = "Edge";
-}   elseif (strpos($userAgent, 'OPR') !== false) {
-    $browserName = "Opera";
-}   elseif (strpos($userAgent, 'Firefox') !== false) {
-        $browserName = "Firefox";
-}   elseif (strpos($userAgent, 'Chrome') !== false) {
-        $browserName = "Chrome";
-}   elseif (strpos($userAgent, 'Safari') !== false) {
-        $browserName = "Safari";
-}
-
-$browserId = getBrowserId($browserName);
-$trackingId = trackVisit($page, $browserId, $ip);
-trackUserVisit($trackingId, $_SESSION['user_id']);
-
-$dateFilter = $_GET['date'] ?? 'All';
-$browserFilter = $_GET['browser'] ?? 'AllBrowsers';
-$userFilter = $_GET['user'] ?? 'All';
-$currentPage = $_GET['page'] ?? 1;
-$limit = 10;
-$offset = ($currentPage - 1) * $limit;
-
-
-
-$visits = getVisits($browserFilter, $dateFilter, $userFilter, $limit, $offset);
-$todayVisits = getTodayVisits($browserFilter, $dateFilter, $userFilter);
-$avgDaily = getAvgDailyVisits($browserFilter, $dateFilter, $userFilter);
-$avgWeekly = getAvgWeeklyVisits($browserFilter, $dateFilter, $userFilter);
-$avgMonthly = getAvgMonthlyVisits($browserFilter, $dateFilter,$userFilter);
-$visitsPerDate = getVisitsPerDate($browserFilter, $dateFilter, $userFilter);
-$visitsPerBrowser = getVisitsPerBrowser($browserFilter, $dateFilter, $userFilter);
-$visitsPerWeek = getVisitsPerWeek($browserFilter, $dateFilter, $userFilter);
-$visitsPerDay = getVisitsPerDay($browserFilter, $dateFilter, $userFilter);
+    $visits = getVisits($browserFilter, $dateFilter, $userFilter, $limit, $offset);
+    $todayVisits = getTodayVisits($browserFilter, $dateFilter, $userFilter);
+    $avgDaily = getAvgDailyVisits($browserFilter, $dateFilter, $userFilter);
+    $avgWeekly = getAvgWeeklyVisits($browserFilter, $dateFilter, $userFilter);
+    $avgMonthly = getAvgMonthlyVisits($browserFilter, $dateFilter,$userFilter);
+    $visitsPerDate = getVisitsPerDate($browserFilter, $dateFilter, $userFilter);
+    $visitsPerBrowser = getVisitsPerBrowser($browserFilter, $dateFilter, $userFilter);
+    $visitsPerWeek = getVisitsPerWeek($browserFilter, $dateFilter, $userFilter);
+    $visitsPerDay = getVisitsPerDay($browserFilter, $dateFilter, $userFilter);
 ?>
 
 
@@ -198,11 +201,11 @@ $visitsPerDay = getVisitsPerDay($browserFilter, $dateFilter, $userFilter);
 
                 <?php foreach ($visits as $visit): ?>
                 <tr>
-                    <td><?= $visit['page_name'] ?></td>
-                    <td><?= $visit['tracking_id']?></td>
-                    <td><?= $visit['browser_name']?></td>
-                    <td><?= $visit['host_ip']?></td>
-                    <td><?= $visit['visited_at']?></td>
+                    <td><?= htmlspecialchars($visit['page_name']) ?></td>
+                    <td><?= htmlspecialchars($visit['tracking_id']) ?></td>
+                    <td><?= htmlspecialchars($visit['browser_name']) ?></td>
+                    <td><?= htmlspecialchars($visit['host_ip']) ?></td>
+                    <td><?= htmlspecialchars($visit['visited_at']) ?></td>
                 </tr>
                 <?php endforeach; ?>
             </table>
@@ -228,9 +231,4 @@ const weeklyData = <?= json_encode($visitsPerWeek); ?>;
 const dayData = <?= json_encode($visitsPerDay); ?>;
 </script>
 
-
-
 <?php require_once "includes/footer.php"?>
-
-
-

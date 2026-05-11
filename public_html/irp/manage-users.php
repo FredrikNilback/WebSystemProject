@@ -287,18 +287,36 @@
             <h1>Add new user</h1>
             <form method='POST'>
                 <input type='hidden' name='action' value='create-user'>
-                <input type='text' name='username' placeholder='Username' required />
-                <input type='text' name='firstname' placeholder='First Name' required />
-                <input type='text' name='lastname' placeholder='Last Name' required />
-                <input type='email' name='email' placeholder='Email' required />
-                <input type='password' name='password' placeholder='Password' required />
-                <select name='role' required>
-                    <option value=''>Select role</option>
-                    <option value='reporter'>Reporter</option>
-                    <option value='responder'>Responder</option>
-                    <option value='administrator'>Administrator</option>
-                </select>
-                <button type='submit'>Create User</button>
+                <div>
+                    <label for="username">Enter a username: </label>
+                    <input type='text' name='username' placeholder='Username' required />
+                </div>
+                <div>
+                    <label for="firstname">Enter first name: </label>
+                    <input type='text' name='firstname' placeholder='First Name' required />
+                </div>
+                <div>
+                    <label for="lastname">Enter lastname: </label>
+                    <input type='text' name='lastname' placeholder='Last Name' required />
+                </div>
+                <div>
+                    <label for="email">Enter an email: </label>
+                    <input type='email' name='email' placeholder='Email' required />
+                </div>
+                <div>
+                    <label for="password">Enter a password: </label>
+                    <input type='password' name='password' placeholder='Password' required />
+                </div>
+                <div>
+                    <label for="role">Select a role: </label>
+                    <select name='role' required>
+                        <option value=''>Select role</option>
+                        <option value='reporter'>Reporter</option>
+                        <option value='responder'>Responder</option>
+                        <option value='administrator'>Administrator</option>
+                    </select>
+                </div>
+                <button id='create-user-submit' type='submit'>Create User</button>
             </form>
         </aside>
 

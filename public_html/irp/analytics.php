@@ -1,9 +1,4 @@
-
-<?php 
-
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-
+<?php
     session_start();
     if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'administrator') {
         header('Location: unauthorized.php');
@@ -32,11 +27,26 @@
     }
 
     $browserId = getBrowserId($browserName);
-    trackVisit($page, $browserId, $ip);
+    $trackingId = trackVisit($page, $browserId, $ip);
+    trackUserVisit($trackingId, $_SESSION['user_id']);
 
+    $allowedDates = ['All', 'Today', 'Yesterday', 'Current Week', 'Current Month', 'Custom'];
+    $allowedSeverities = ['All', 'Low', 'Medium', 'High', 'Critical'];
+    $allowedCategories = ['All', 'Denial of Service', 'Insider Threat', 'Man in the Middle', 'Password Attack', 'Phishing Attack', 'Privilege Escalation', 'Ransomware', 'Theft', 'Unauthorized Access Attack'];
     $dateFilter = $_GET['date'] ?? 'All';
     $severityFilter = $_GET['severity'] ?? 'All';
     $categoryFilter = $_GET['category'] ?? 'All';
+
+    if (!in_array($dateFilter, $allowedDates, true)) {
+        $dateFilter = 'All';
+    }
+    if (!in_array($severityFilter, $allowedSeverities, true)) {
+        $severityFilter = 'All';
+    }
+    if (!in_array($categoryFilter, $allowedCategories, true)) {
+        $categoryFilter = 'All';
+    }
+
     $totalIncidents = getIncidentCount ($dateFilter, $severityFilter, $categoryFilter);
     $resolvedIncidents = getResolvedIncidents($dateFilter, $severityFilter, $categoryFilter);
     $avgResolutionTime = getAvgResolutionTime($dateFilter, $severityFilter, $categoryFilter);
@@ -46,9 +56,6 @@
     $incidentSeverityData = getIncidentSeverityData($dateFilter, $severityFilter, $categoryFilter);
     $resolutionTimeData = getResolutionTimeData($dateFilter, $severityFilter, $categoryFilter);
 ?>
-
-
-
 
 <?php require_once "includes/header.php"?>
 
@@ -217,7 +224,6 @@
     </main>
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
@@ -227,13 +233,4 @@
     const resolutionTimeChartData = <?= json_encode($resolutionTimeData); ?>;
 </script>
 
-<script src="js/analytics.js"></script>
-
-
-</body>
-
-</html>
-
-
-
- 
+<?php require_once 'includes/footer.php'?>
