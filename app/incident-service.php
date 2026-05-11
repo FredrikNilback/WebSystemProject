@@ -30,7 +30,23 @@
             // 5. HANTERA FILUPPLADDNING
             if (isset($files) && $files['error'] === 0) {
                 $fileName = $files['name'];
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
+                $allowedMimeTypes = [
+                    'image/jpeg',
+                    'image/png',
+                    'application/pdf'
+                ];
+                
                 $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mimeType = finfo_file($finfo, $files['tmp_name']);
+                finfo_close($finfo);
+                
+                if (!in_array($fileExtension, $allowedExtensions) ||
+                    !in_array($mimeType, $allowedMimeTypes)) {
+                    throw new Exception("Invalid file type");
+                }
                 $uniqueFileName = "update_" . $updateId . "_" . time() . "." . $fileExtension;
 
                 $uploadFolder = __DIR__ . "/../uploads/";
@@ -85,7 +101,23 @@
             // här läggs filerna in 
             if (isset($files) && $files['error'] === 0) {
                 $fileName = $files['name'];
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
+                $allowedMimeTypes = [
+                    'image/jpeg',
+                    'image/png',
+                    'application/pdf'
+                ];
+
                 $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mimeType = finfo_file($finfo, $files['tmp_name']);
+                finfo_close($finfo);
+
+                if (!in_array($fileExtension, $allowedExtensions) ||
+                    !in_array($mimeType, $allowedMimeTypes)) {
+                    throw new Exception("Invalid file type");
+                }
                 $uniqueFileName = "update_" . $updateId . "_" . time() . "." . $fileExtension;
                 
                 $uploadFolder = __DIR__ . "/../uploads/";
