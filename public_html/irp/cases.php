@@ -252,7 +252,7 @@
             
                     <div class="input-group">
                         <span>Attach Document:</span>
-                        <input type="file" name="attachment">
+                        <input type="file" name="attachment[]" multiple>
                     </div>
 
                     <div class="existing-attachments">

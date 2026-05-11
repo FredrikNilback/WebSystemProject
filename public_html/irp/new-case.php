@@ -52,7 +52,7 @@
 
                 <div>
                     <label>File attachments (pdf or image*)</label>
-                    <input type="file" name="attachment" accept=".pdf, image/*">
+                    <input type="file" name="attachment[]" accept=".pdf, image/*" multiple>
                 </div>
 
                 <div class="form-row">
