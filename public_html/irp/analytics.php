@@ -1,6 +1,6 @@
 <?php
     session_start();
-    if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION['user_role'] != 'administrator') {
+    if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role'])) {
         header('Location: unauthorized.php');
         exit;
     }
@@ -61,11 +61,12 @@
 
 <div class="content">
     <main>
-
         <h3>Analytics Dashboard</h3>
         <nav class="analytics-dashboard">
-            <a href="analytics.php">Incidents</a>
-            <a href="visits.php">Page Visits</a>
+            <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'administrator'): ?>
+                <a href="analytics.php">Incidents</a>
+                <a href="visits.php">Page Visits</a>
+            <?php endif; ?>
         </nav>
     
         <div class="top-part">
