@@ -288,6 +288,7 @@
     =============================================================*/
 
     function trackVisit($page, $browser_id, $ip) {
+       
         $mysqli = getDataBase();
 
         $stmt = $mysqli->prepare("SELECT page_id FROM page WHERE page_name = ?;");
@@ -296,7 +297,6 @@
         $stmt->bind_result($pageId);
         $stmt->fetch();
         $stmt->close();
-
         if (!$pageId) {
             return;
         }
@@ -308,9 +308,12 @@
 
         $stmt->bind_param("iis", $pageId, $browser_id, $ip);
         $stmt->execute();
-
+        $trackingId = $mysqli->insert_id;
+   
         $stmt->close();
         $mysqli->close();
+
+        return $trackingId;
     }
 
     function getBrowserId($browserName) {
@@ -350,10 +353,81 @@
         return $browserId;
     }
 
-    function getVisits() {
+
+    function trackUserVisit($trackingId, $userId) {
+
         $mysqli = getDataBase();
 
-        $result = $mysqli->query("
+        $stmt = $mysqli->prepare("
+            INSERT INTO user_tracking (tracking_id, user_id)
+            VALUES (?, ?)
+        ");
+
+        $stmt->bind_param("ii", $trackingId, $userId);
+        $stmt->execute();
+
+        $stmt->close();
+        $mysqli->close();
+    }
+
+    function buildVisitFilters(
+        &$params,
+        &$types,
+        $browserFilter,
+        $dateFilter,
+        $userFilter) {
+       
+        $where = [];
+
+        if ($browserFilter != 'AllBrowsers') {
+            $where[] = "browser_type.browser_name = ?";
+            $params[] = $browserFilter;
+            $types .= "s";
+        }
+
+        if ($userFilter != 'All') {
+            $where[] = "user.username = ?";
+            $params[] = $userFilter;
+            $types .= "s";
+        }
+
+        if ($dateFilter == 'Today') {
+            $where[] = "DATE(visited_at) = CURDATE()";
+        }
+
+        elseif ($dateFilter == 'Yesterday') {
+            $where[] = "DATE(visited_at) = CURDATE() - INTERVAL 1 DAY";
+        }
+
+        elseif ($dateFilter == 'Current Week') {
+            $where[] = "
+                YEARWEEK(visited_at, 1)
+                = YEARWEEK(CURDATE(),1)
+            ";
+        }
+
+        elseif ($dateFilter == 'Current Month') {
+            $where[] = "
+                MONTH(visited_at) = MONTH(CURDATE())
+                AND YEAR(visited_at) = YEAR(CURDATE())
+            ";
+        }
+
+        return $where;
+        
+    }
+            
+
+    function getVisits(
+        $browserFilter = 'AllBrowsers', 
+        $dateFilter = 'All',
+        $userFilter = 'All',
+        $limit = 10,
+        $offset = 0) {
+
+        $mysqli = getDataBase();
+
+        $sql = "
             SELECT visit_tracking.tracking_id,
                 page.page_name,
                 browser_type.browser_name,
@@ -362,120 +436,1054 @@
             FROM visit_tracking
             JOIN page ON visit_tracking.page_id = page.page_id
             LEFT JOIN browser_type ON visit_tracking.browser_type_id = browser_type.browser_type_id
-            ORDER BY visit_tracking.visited_at DESC
-            LIMIT 10;
-        ");
+            LEFT JOIN user_tracking ON visit_tracking.tracking_id = user_tracking.tracking_id
+            LEFT JOIN user ON user_tracking.user_id = user.user_id
+        ";
 
-        $visits = $result->fetch_all(MYSQLI_ASSOC);
+        $params = [];
+        $types = "";
+
+        $where = buildVisitFilters(
+            $params,
+            $types,
+            $browserFilter,
+            $dateFilter,
+            $userFilter
+        );
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $sql .= "
+            ORDER BY visit_tracking.visited_at DESC
+            LIMIT $limit OFFSET $offset
+        ";
+
+        if (!empty($params)) {
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param($types, ...$params);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $visits = $result->fetch_all(MYSQLI_ASSOC);
+            $stmt->close();
+        }
+
+        else {
+            $result = $mysqli->query($sql);
+            $visits = $result->fetch_all(MYSQLI_ASSOC);
+        }
+
         $mysqli->close();
         return $visits;
     }
 
-    function getTodayVisits() {
+    function getTodayVisits(
+        $browserFilter = 'AllBrowsers',
+        $dateFilter = 'All',
+        $userFilter = 'All') 
+    {
+
         $mysqli = getDataBase();
-        $result = $mysqli->query("
+
+        $sql = "
             SELECT COUNT(*) AS count
             FROM visit_tracking
-            WHERE DATE(visited_at) = CURDATE();
-        ");
 
+            LEFT JOIN browser_type
+            ON visit_tracking.browser_type_id = browser_type.browser_type_id
+            
+            LEFT JOIN user_tracking
+            ON visit_tracking.tracking_id = user_tracking.tracking_id
+
+            LEFT JOIN user
+            ON user_tracking.user_id = user.user_id
+        ";
+
+        $params = [];
+        $types = "";
+
+        $where = buildVisitFilters(
+            $params,
+            $types,
+            $browserFilter,
+            $dateFilter,
+            $userFilter
+        );
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        if (!empty($params)) {
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param($types, ...$params);
+            $stmt->execute();
+
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+
+            $stmt->close();
+
+        } else {
+
+            $result = $mysqli->query($sql);
+            $row = $result->fetch_assoc();
+        }
+
+        $mysqli->close();
+
+        return $row['count'];
+    }
+
+
+
+    function getAvgDailyVisits(
+        $browserFilter = 'AllBrowsers',
+        $dateFilter = 'All',
+        $userFilter = 'All'
+    ) {
+        
+        $mysqli = getDataBase();
+
+
+        $sql = "
+            SELECT COUNT(*) / COUNT(DISTINCT DATE(visited_at)) AS avg_daily
+            FROM visit_tracking
+
+            LEFT JOIN browser_type
+            ON visit_tracking.browser_type_id = browser_type.browser_type_id
+            
+            LEFT JOIN user_tracking
+            ON visit_tracking.tracking_id = user_tracking.tracking_id
+        
+            LEFT JOIN user
+            ON user_tracking.user_id = user.user_id
+        
+        ";
+
+        $params = [];
+        $types = "";
+
+        $where = buildVisitFilters(
+            $params,
+            $types,
+            $browserFilter,
+            $dateFilter,
+            $userFilter
+        );
+
+            if (!empty($where)) {
+
+            $sql .= " WHERE " . implode(" AND ", $where);
+
+            $stmt = $mysqli->prepare($sql);
+
+            if (!empty($types)) {
+                $stmt->bind_param($types, ...$params);
+            }
+            
+            $stmt->execute();
+
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+
+            $stmt->close();
+
+        } else {
+
+        $result = $mysqli->query($sql);
         $row = $result->fetch_assoc();
+        }
+
+        $mysqli->close();
+        return round($row['avg_daily']);
+
+    }
+
+ 
+
+    function getAvgWeeklyVisits(
+        $browserFilter = 'AllBrowsers',
+        $dateFilter = 'All',
+        $userFilter = 'All'
+    ) {
+
+        $mysqli = getDataBase();
+
+        $sql = "
+            SELECT COUNT(*) / COUNT(DISTINCT YEARWEEK(visited_at, 1)) AS avg_weekly
+            FROM visit_tracking
+
+            LEFT JOIN browser_type
+            ON visit_tracking.browser_type_id = browser_type.browser_type_id
+            
+            LEFT JOIN user_tracking
+            ON visit_tracking.tracking_id = user_tracking.tracking_id
+            
+            LEFT JOIN user
+            ON user_tracking.user_id = user.user_id
+            ";
+
+        $params =[];
+        $types = "";
+
+        $where = buildVisitFilters(
+            $params,
+            $types,
+            $browserFilter,
+            $dateFilter,
+            $userFilter
+        );
+
+        if (!empty($where)) {
+
+            $sql .= " WHERE " . implode(" AND ", $where);
+
+            $stmt = $mysqli->prepare($sql);
+            if (!empty($types)) {
+                $stmt->bind_param($types, ...$params);
+            }
+            
+            $stmt->execute();
+
+            $result =$stmt->get_result();
+            $row = $result->fetch_assoc();
+            $stmt->close();
+
+        } else {
+
+        $result = $mysqli->query($sql);
+        $row = $result->fetch_assoc();
+        }
+
+        $mysqli->close();
+
+        return $row['avg_weekly'] ? round($row['avg_weekly']) : 0;
+    }
+
+        function getAvgMonthlyVisits(
+            $browserFilter = 'AllBrowsers',
+            $dateFilter = 'All',
+            $userFilter = 'All'
+        ) {
+
+        $mysqli = getDataBase();
+        $sql = "
+            SELECT COUNT(*) / COUNT(DISTINCT YEAR(visited_at), MONTH(visited_at)) AS avg_monthly
+            FROM visit_tracking
+        
+            LEFT JOIN browser_type
+            ON visit_tracking.browser_type_id = browser_type.browser_type_id
+            
+            LEFT JOIN user_tracking
+            ON visit_tracking.tracking_id = user_tracking.tracking_id
+            
+            LEFT JOIN user
+            ON user_tracking.user_id = user.user_id
+        ";
+
+        $params = [];
+        $types = "";
+
+        $where = buildVisitFilters(
+            $params,
+            $types,
+            $browserFilter,
+            $dateFilter,
+            $userFilter
+        );
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+
+            $stmt = $mysqli->prepare($sql);
+        
+            if (!empty($types)) {
+                $stmt->bind_param($types, ...$params);
+            }
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $row = $result->fetch_assoc();
+
+            $stmt->close();
+
+        } else {
+
+            $result = $mysqli->query($sql);
+
+            $row = $result->fetch_assoc();
+        }
+
+        $mysqli->close();
+
+        return $row['avg_monthly'] ? round($row['avg_monthly']) : 0;
+    }
+
+
+    function getVisitsPerDate(
+        $browserFilter = 'AllBrowsers',
+        $dateFilter = 'All',
+        $userFilter = 'All'
+        ) {
+
+        $mysqli = getDataBase();
+        $sql = "
+            SELECT DATE(visited_at) as date,
+            COUNT(*) as count
+
+            FROM visit_tracking
+            
+            LEFT JOIN browser_type
+            ON visit_tracking.browser_type_id = browser_type.browser_type_id
+        
+            LEFT JOIN user_tracking
+            ON visit_tracking.tracking_id = user_tracking.tracking_id
+        
+            LEFT JOIN user
+            ON user_tracking.user_id = user.user_id
+        ";
+
+        $params = [];
+        $types = "";
+
+        $where = buildVisitFilters(
+            $params,
+            $types,
+            $browserFilter,
+            $dateFilter,
+            $userFilter
+        );
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $sql .= "
+            GROUP BY DATE(visited_at)
+            ORDER BY DATE(visited_at);
+        ";
+
+        if (!empty($params)) {
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param($types, ...$params);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $data = $result->fetch_all(MYSQLI_ASSOC);
+
+            $stmt->close();
+
+        } else {
+            
+            $result = $mysqli->query($sql);
+            $data = $result->fetch_all(MYSQLI_ASSOC);
+        }
+
+        $mysqli->close();
+        return $data;
+    }
+
+    function getVisitsPerBrowser(
+        $browserFilter = 'AllBrowsers',
+        $dateFilter = 'All',
+        $userFilter = 'All'
+    ) {
+
+        $mysqli = getDataBase();
+        $sql = "
+            SELECT browser_type.browser_name, 
+            COUNT(*) AS count
+            FROM visit_tracking
+
+            LEFT JOIN browser_type
+            ON visit_tracking.browser_type_id = browser_type.browser_type_id
+            
+            LEFT JOIN user_tracking
+            ON visit_tracking.tracking_id = user_tracking.tracking_id
+            
+            LEFT JOIN user
+            ON user_tracking.user_id = user.user_id
+        ";
+
+        $params = [];
+        $types = "";
+
+        $where = buildVisitFilters(
+            $params,
+            $types,
+            $browserFilter,
+            $dateFilter,
+            $userFilter
+        );
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $sql .= "
+            GROUP BY browser_type.browser_name;
+        ";
+
+        if (!empty($params)) {
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param($types, ...$params);
+
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $data = $result->fetch_all(MYSQLI_ASSOC);
+            $stmt->close();
+
+        } else {
+            $result = $mysqli->query($sql);
+            $data = $result->fetch_all(MYSQLI_ASSOC);
+        }
+
+        
+        $mysqli->close();
+        return $data;
+    }
+
+    function getVisitsPerWeek(
+        $browserFilter = 'AllBrowsers',
+        $dateFilter = 'All',
+        $userFilter = 'All'
+    ) {
+        $mysqli = getDataBase();
+
+        $sql = "
+            SELECT YEARWEEK(visited_at, 1) AS week, COUNT(*) AS count
+            FROM visit_tracking
+            
+            LEFT JOIN browser_type
+            ON visit_tracking.browser_type_id = browser_type.browser_type_id
+            
+            LEFT JOIN user_tracking
+            ON visit_tracking.tracking_id = user_tracking.tracking_id
+
+            LEFT JOIN user
+            ON user_tracking.user_id = user.user_id
+
+        ";
+
+        $params = [];
+        $types = "";
+
+        $where = buildVisitFilters(
+            $params,
+            $types,
+            $browserFilter,
+            $dateFilter,
+            $userFilter
+        );
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $sql .= "
+            GROUP BY week
+            ORDER BY week;
+        ";
+
+        if (!empty($params)) {
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param($types, ...$params);
+            
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $data = $result->fetch_all(MYSQLI_ASSOC);
+
+            $stmt->close();
+
+        } else {
+            $result = $mysqli->query($sql);
+            $data = $result->fetch_all(MYSQLI_ASSOC);
+        }
+
+        $mysqli->close();
+        return $data;
+    }
+
+    function getVisitsPerDay(
+        $browserFilter = 'AllBrowsers',
+        $dateFilter = 'All',
+        $userFilter = 'All'
+    ) {
+        $mysqli = getDataBase();
+        $sql = "
+            SELECT DAYOFWEEK(visited_at) AS day, COUNT(*) AS count
+            FROM visit_tracking
+            
+            LEFT JOIN browser_type
+            ON visit_tracking.browser_type_id = browser_type.browser_type_id
+        
+            LEFT JOIN user_tracking
+            ON visit_tracking.tracking_id = user_tracking.tracking_id
+        
+            LEFT JOIN user
+            ON user_tracking.user_id = user.user_id
+        ";
+
+        $params = [];
+        $types = "";
+
+        $where = buildVisitFilters(
+            $params,
+            $types,
+            $browserFilter,
+            $dateFilter,
+            $userFilter
+        );
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $sql .= "
+            GROUP BY day
+            ORDER BY day;
+        ";
+
+        if (!empty($params)) {
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param($types, ...$params);
+
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $data = $result->fetch_all(MYSQLI_ASSOC);
+
+            $stmt->close();
+
+        } else {
+            $result = $mysqli->query($sql);
+            $data = $result->fetch_all(MYSQLI_ASSOC);
+        }
+
+        $mysqli->close();
+        return $data;
+    }
+
+    
+        function buildIncidentFilters(
+        &$params,
+        &$types,
+        $dateFilter,
+        $severityFilter,
+        $categoryFilter
+    ) {
+
+        $where = [];
+
+        if ($severityFilter != 'All') {
+            $where[] = "incident.incident_severity = ?";
+            $params[] = strtolower($severityFilter);
+            $types .= "s";
+        }
+
+        if ($categoryFilter != 'All') {
+            $where[] = "incident_type.incident_type_name = ?";
+            $params[] = $categoryFilter;
+            $types .= "s";
+        }
+
+        if ($dateFilter == 'Today') {
+            $where[] = "DATE(incident.occurrence) = CURDATE()";
+        }
+
+        elseif ($dateFilter == 'Yesterday') {
+            $where[] = "DATE(incident.occurrence) = CURDATE() - INTERVAL 1 DAY";
+        }
+
+        elseif ($dateFilter == 'Current Week') {
+            $where[] = "
+            YEARWEEK(incident.occurrence, 1) = YEARWEEK(CURDATE(), 1)";
+        }
+
+        elseif ($dateFilter == 'Current Month') {
+            $where[] = "
+                MONTH(incident.occurrence) = MONTH(CURDATE())
+                AND YEAR(incident.occurrence) = YEAR(CURDATE())";
+        }
+
+        return $where;
+
+    }
+
+    function getIncidentCount(
+        $dateFilter = 'All',
+        $severityFilter = 'All',
+        $categoryFilter = 'All'
+    ) {
+        $mysqli = getDataBase();
+
+        $sql = "
+            SELECT COUNT(*) AS count
+            FROM incident
+            
+            LEFT JOIN incident_type
+            ON incident.incident_type_id = incident_type.incident_type_id
+        ";
+
+        $params = [];
+        $types = "";
+
+        $where = buildIncidentFilters(
+            $params,
+            $types,
+            $dateFilter,
+            $severityFilter,
+            $categoryFilter
+        );
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode( " AND ", $where);
+
+            $stmt = $mysqli->prepare($sql);
+
+        if (!empty($types)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+
+        $stmt->close();
+        
+        } else {
+            $result = $mysqli->query($sql);
+            $row = $result->fetch_assoc();
+        }
+
         $mysqli->close();
         return $row['count'];
     }
 
-    function getAvgDailyVisits() {
+    function getResolvedIncidents(
+        $dateFilter = 'All',
+        $severityFilter = 'All',
+        $categoryFilter = 'All'
+    ) {
+        
         $mysqli = getDataBase();
-        $result = $mysqli->query("
-            SELECT COUNT(*) / COUNT(DISTINCT DATE(visited_at)) AS avg_daily
-            FROM visit_tracking;
-        ");
 
+        $sql = "
+            SELECT COUNT(DISTINCT incident.incident_id) AS count
+            FROM incident
+            
+            LEFT JOIN incident_type
+            ON incident.incident_type_id = incident_type.incident_type_id
+            
+            LEFT JOIN incident_update
+            ON incident.incident_id = incident_update.incident_id
+        ";
+
+        $params = [];
+        $types = "";
+
+        $where = buildIncidentFilters(
+            $params,
+            $types,
+            $dateFilter,
+            $severityFilter,
+            $categoryFilter
+        );
+
+        $where[] = "incident_update.status = 'resolved'";
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+            $stmt = $mysqli->prepare($sql);
+
+            if (!empty($types)) {
+                $stmt->bind_param($types, ...$params);
+            }
+
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+
+            $stmt->close();
+
+        } else {
+            $result = $mysqli->query($sql);
+            $row = $result->fetch_assoc();
+        }
+
+        $mysqli->close();
+        return $row['count'];
+
+    }
+
+    function getAvgResolutionTime(
+        $dateFilter = 'All',
+        $severityFilter = 'All',
+        $categoryFilter = 'All'
+    ) {
+
+    $mysqli = getDataBase();
+
+    $sql = "
+        SELECT AVG(
+            TIMESTAMPDIFF(
+                HOUR,
+                incident.occurrence,
+                incident_update.update_at
+            )
+        ) AS avg_resolution
+         
+        FROM incident
+        
+        LEFT JOIN incident_type
+        ON incident.incident_type_id = incident_type.incident_type_id 
+        
+        LEFT JOIN incident_update
+        ON incident.incident_id = incident_update.incident_id 
+    ";
+
+    $params = [];
+    $types = "";
+    
+    $where = buildIncidentFilters(
+        $params,
+        $types,
+        $dateFilter,
+        $severityFilter,
+        $categoryFilter
+    );
+
+    $where[] = "incident_update.status = 'resolved'";
+
+    if (!empty($where)) {
+
+        $sql .= " WHERE " . implode(" AND ", $where);
+        $stmt = $mysqli->prepare($sql);
+
+        if (!empty($types)) {
+
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-        $mysqli->close();
-        return round($row['avg_daily']);
-    } 
 
-    function getAvgWeeklyVisits() {
-        $mysqli = getDataBase();
-        $result = $mysqli->query("
-            SELECT COUNT(*) / COUNT(DISTINCT YEARWEEK(visited_at, 1)) AS avg_weekly
-            FROM visit_tracking;
-        ");
+        $stmt->close();
 
+    } else {
+
+        $result = $mysqli->query($sql);
         $row = $result->fetch_assoc();
-        $mysqli->close();
-        return $row['avg_weekly'] ? round($row['avg_weekly']) : 0;
     }
 
-        function getAvgMonthlyVisits() {
-        $mysqli = getDataBase();
-        $result = $mysqli->query("
-            SELECT COUNT(*) / COUNT(DISTINCT YEAR(visited_at), MONTH(visited_at)) AS avg_monthly
-            FROM visit_tracking;
-        ");
+    $mysqli->close();
+    return round($row['avg_resolution']);
 
-        $row = $result->fetch_assoc();
-        $mysqli->close();
-        return $row['avg_monthly'] ? round($row['avg_monthly']) : 0;
     }
 
-    function getVisitsPerDate() {
-        $mysqli = getDataBase();
-        $result = $mysqli->query("
-            SELECT DATE(visited_at) as date, COUNT(*) as count
-            FROM visit_tracking
-            GROUP BY DATE(visited_at)
-            ORDER BY DATE(visited_at);
-        ");
+    function getIncidentHistory(
+        $dateFilter = 'All',
+        $severityFilter = 'All',
+        $categoryFilter = 'All'
+    ) {
 
-        $data = $result->fetch_all(MYSQLI_ASSOC);
+        $mysqli = getDataBase();
+
+        $sql = "
+            SELECT
+                DATE(incident.occurrence) AS date,
+                COUNT(*) AS count
+                
+            FROM incident
+            
+            LEFT JOIN incident_type
+            ON incident.incident_type_id = incident_type.incident_type_id 
+        ";
+
+        $params = [];
+        $types = "";
+
+        $where = buildIncidentFilters(
+            $params,
+            $types,
+            $dateFilter,
+            $severityFilter,
+            $categoryFilter
+        );
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $sql .= "
+            GROUP BY DATE(incident.occurrence)
+            ORDER BY DATE(incident.occurrence)
+        ";
+
+        if (!empty($params)) {
+            
+            $stmt = $mysqli->prepare($sql);
+
+            if (!empty($types))  {
+                $stmt->bind_param($types, ...$params);
+            }
+
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $data = $result->fetch_all(MYSQLI_ASSOC);
+            
+            $stmt->close();
+
+        } else {
+            $result = $mysqli->query($sql);
+            $data = $result->fetch_all(MYSQLI_ASSOC);
+        }
+
         $mysqli->close();
         return $data;
     }
 
-    function getVisitsPerBrowser() {
+    function getTopIncidentCategories(
+        $dateFilter = 'All',
+        $severityFilter = 'All',
+        $categoryFilter = 'All'
+    ) {
+        
         $mysqli = getDataBase();
-        $result = $mysqli->query("
-            SELECT browser_type.browser_name, COUNT(*) AS count
-            FROM visit_tracking
-            LEFT JOIN browser_type
-            ON visit_tracking.browser_type_id = browser_type.browser_type_id
-            GROUP BY browser_type.browser_name;
-        ");
 
-        $data = $result->fetch_all(MYSQLI_ASSOC);
+        $sql = "
+            SELECT
+                incident_type.incident_type_name AS category,
+                COUNT(*) AS count
+                
+                FROM incident
+
+                LEFT JOIN incident_type
+                ON incident.incident_type_id = incident_type.incident_type_id 
+            ";
+                
+            $params = [];
+            $types = "";
+
+            $where = buildIncidentFilters(
+                $params,
+                $types,
+                $dateFilter,
+                $severityFilter,
+                $categoryFilter
+            );
+
+            if (!empty($where)) {
+                $sql .= " WHERE " . implode(" AND ", $where);
+            }
+
+            $sql .= "
+                GROUP BY incident_type.incident_type_name
+                ORDER BY count DESC
+            ";
+
+            if (!empty($params)) {
+
+                $stmt = $mysqli->prepare($sql);
+
+                if (!empty($types)) {
+                    $stmt->bind_param($types, ...$params);
+                }
+
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $data = $result->fetch_all(MYSQLI_ASSOC);
+
+                $stmt->close();
+
+            } else {
+
+                $result = $mysqli->query($sql);
+                $data = $result->fetch_all(MYSQLI_ASSOC);
+            }
+
+            $mysqli->close();
+            return $data;
+    }
+
+    function getIncidentSeverityData(
+        $dateFilter = 'All',
+        $severityFilter = 'All',
+        $categoryFilter = 'All'
+    ) {
+
+        $mysqli = getDataBase();
+
+        $sql = "
+            SELECT
+                incident.incident_severity AS severity,
+                COUNT(*) AS count
+                
+            FROM incident
+
+            LEFT JOIN incident_type
+            ON incident.incident_type_id = incident_type.incident_type_id
+        ";
+
+        $params = [];
+        $types = "";
+
+        $where = buildIncidentFilters(
+            $params,
+            $types,
+            $dateFilter,
+            $severityFilter,
+            $categoryFilter
+        );
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $sql .= "
+            GROUP BY incident.incident_severity
+        ";
+
+        if (!empty($params)) {
+
+            $stmt = $mysqli->prepare($sql);
+
+            if (!empty($types)) {
+                $stmt->bind_param($types, ...$params);
+            }
+
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $data = $result->fetch_all(MYSQLI_ASSOC);
+
+            $stmt->close();
+
+        } else {
+            $result = $mysqli->query($sql);
+            $data= $result->fetch_all(MYSQLI_ASSOC);
+        }
+
         $mysqli->close();
         return $data;
     }
 
-    function getVisitsPerWeek() {
-        $mysqli = getDataBase();
-        $result = $mysqli->query("
-            SELECT YEARWEEK(visited_at, 1) AS week, COUNT(*) AS count
-            FROM visit_tracking
-            GROUP BY week
-            ORDER BY week;
-        ");
+    function getResolutionTimeData(
+        $dateFilter = 'All',
+        $severityFilter = 'All',
+        $categoryFilter = 'All'
+    ) {
 
-        $data = $result->fetch_all(MYSQLI_ASSOC);
+        $mysqli = getDataBase();
+
+        $sql = "
+            SELECT
+                YEARWEEK(incident.occurrence, 1) AS week,
+                AVG(
+                    TIMESTAMPDIFF(HOUR, incident.occurrence, incident_update.update_at)) AS avg_time
+         
+            FROM incident
+
+            LEFT JOIN incident_type
+            ON incident.incident_type_id = incident_type.incident_type_id
+        
+            LEFT JOIN incident_update
+            ON incident.incident_id = incident_update.incident_id
+        
+        ";
+
+        $params = [];
+        $types = "";
+
+        $where = buildIncidentFilters(
+            $params,
+            $types,
+            $dateFilter,
+            $severityFilter,
+            $categoryFilter
+        );
+
+        $where[] = "incident_update.status = 'resolved'";
+
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $sql .= "
+            GROUP BY YEARWEEK(incident.occurrence, 1)
+            ORDER BY week
+        ";
+
+        if (!empty($params)) {
+
+            $stmt = $mysqli->prepare($sql);
+
+            if (!empty($types)) {
+                $stmt->bind_param($types, ...$params);
+            }
+
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $data = $result->fetch_all(MYSQLI_ASSOC);
+
+            $stmt->close();
+
+        } else {
+            $result = $mysqli->query($sql);
+            $data= $result->fetch_all(MYSQLI_ASSOC);
+        }
+
         $mysqli->close();
         return $data;
     }
 
-    function getVisitsPerDay() {
-        $mysqli = getDataBase();
-        $result = $mysqli->query("
-            SELECT DAYOFWEEK(visited_at) AS day, COUNT(*) AS count
-            FROM visit_tracking
-            GROUP BY day
-            ORDER BY day;
-        ");
 
-        $data = $result->fetch_all(MYSQLI_ASSOC);
-        $mysqli->close();
-        return $data;
-    }
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /*===========================================================
                         VIKTORIA'S FUNCTIONS

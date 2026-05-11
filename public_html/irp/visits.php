@@ -35,18 +35,27 @@ if (strpos($userAgent, 'Edg') !== false) {
 }
 
 $browserId = getBrowserId($browserName);
-trackVisit($page, $browserId, $ip);
+$trackingId = trackVisit($page, $browserId, $ip);
+trackUserVisit($trackingId, $_SESSION['user_id']);
+
+$dateFilter = $_GET['date'] ?? 'All';
+$browserFilter = $_GET['browser'] ?? 'AllBrowsers';
+$userFilter = $_GET['user'] ?? 'All';
+$currentPage = $_GET['page'] ?? 1;
+$limit = 10;
+$offset = ($currentPage - 1) * $limit;
 
 
-$visits = getVisits();
-$todayVisits = getTodayVisits();
-$avgDaily = getAvgDailyVisits();
-$avgWeekly = getAvgWeeklyVisits();
-$avgMonthly = getAvgMonthlyVisits();
-$visitsPerDate = getVisitsPerDate();
-$visitsPerBrowser = getVisitsPerBrowser();
-$visitsPerWeek = getVisitsPerWeek();
-$visitsPerDay = getVisitsPerDay();
+
+$visits = getVisits($browserFilter, $dateFilter, $userFilter, $limit, $offset);
+$todayVisits = getTodayVisits($browserFilter, $dateFilter, $userFilter);
+$avgDaily = getAvgDailyVisits($browserFilter, $dateFilter, $userFilter);
+$avgWeekly = getAvgWeeklyVisits($browserFilter, $dateFilter, $userFilter);
+$avgMonthly = getAvgMonthlyVisits($browserFilter, $dateFilter,$userFilter);
+$visitsPerDate = getVisitsPerDate($browserFilter, $dateFilter, $userFilter);
+$visitsPerBrowser = getVisitsPerBrowser($browserFilter, $dateFilter, $userFilter);
+$visitsPerWeek = getVisitsPerWeek($browserFilter, $dateFilter, $userFilter);
+$visitsPerDay = getVisitsPerDay($browserFilter, $dateFilter, $userFilter);
 ?>
 
 
@@ -62,48 +71,85 @@ $visitsPerDay = getVisitsPerDay();
         </nav>
     
         <div class="top-part">
-            <div class="filters">
+            <form class="filters" method="GET">
                 <div class="filter-group">
                     <label for="dateRange">Date</label>
-                    <select id="dateRange">
-                        <option value="Today">Today</option>
-                        <option value="Yesterday">Yesterday</option>
-                        <option value="Current Week">Current Week</option>
-                        <option value="Current Month">Current Month</option>
-                        <option value="Custom">Custom</option>
+
+                    <select id="dateRange" name="date">
+
+                        <option value="All"
+                            <?= $dateFilter == 'All' ? 'selected' : '' ?>>
+                            All
+                        </option>
+                        <option value="Today"
+                            <?= $dateFilter == 'Today' ? 'selected' : '' ?>>
+                            Today
+                        </option>
+                        <option value="Yesterday"
+                        <?= $dateFilter == 'Yesterday' ? 'selected' : '' ?>>
+                        Yesterday
+                        </option>
+                        <option value="Current Week"
+                        <?= $dateFilter == 'Current Week' ? 'selected' : '' ?>>
+                        Current Week
+                        </option>
+                        <option value="Current Month"
+                            <?= $dateFilter == 'Current Month' ? 'selected' : '' ?>>
+                        Current Month
+                        </option>
+                        
                     </select>
-                    <input type="date" id="Custom" style="display:none;">
+                    <input type="date" id="All" style="display:none;">
                 </div>
 
                 <div class="filter-group">
                     <label for="Browser">Browser</label>
-                    <select id="BrowserUsed">
-                        <option value="AllBrowsers">All</option>
-                        <option value="Chrome">Chrome</option>
-                        <option value="MicrosoftEdge">Microsoft Edge</option>
-                        <option value="Opera">Opera</option>
-                        <option value="Safari">Safari</option>
+
+                    <select id="BrowserUsed" name="browser">
+                        <option value="AllBrowsers"
+                            <?= $browserFilter == 'AllBrowsers' ? 'selected' : '' ?>>All</option>
+                        
+                        <option value="Chrome"
+                            <?= $browserFilter == 'Chrome' ? 'selected' : '' ?>>Chrome</option>
+                        
+                        <option value="Edge"
+                            <?= $browserFilter == 'Edge' ? 'selected' : '' ?>>Microsoft Edge</option>
+                        
+                        <option value="Opera"
+                            <?= $browserFilter == 'Opera' ? 'selected' : '' ?>>Opera</option>
+                        
+                        <option value="Safari"
+                            <?= $browserFilter == 'Safari' ? 'selected' : '' ?>>Safari</option>
                     </select>
                 </div>
 
                 <div class="filter-group">
+                    <label for="UserVisit">User</label>
 
-                <label for="UserVisit">User</label>
-                    <select id="User">
-                        <option value="all">All</option>
-                        <option value="User1">User 1</option>
-                        <option value="User2">User 2</option>
-                        <option value="User3">User 3</option>
-                        <option value="User4">User 4</option>
+                    <select id="User" name="user">
+                        <option value="All"
+                            <?= $userFilter == 'All' ? 'selected' : '' ?>>All</option>
+                        
+                        <?php
+                            $users = getUsers(100,0);
+                            foreach ($users as $user):
+                        ?>
+                        
+                            <option value="<?= $user['username'] ?>"
+                                <?= $userFilter == $user['username'] ? 'selected' : '' ?>>
+                                <?= $user['username'] ?>
+                            </option>
+
+                        <?php endforeach; ?>
                     </select>
                 </div>
 
-                <button id="ApplyFilters">Apply</button>
-            </div>
+                <button type="submit" id="ApplyFilters">Apply</button>
+            </form>
 
             <div class="cards">
                 <div class="card">
-                    <p>Visits today</p>
+                    <p>Total visits</p>
                     <h2><?= $todayVisits ?></h2>
                 </div>
                 <div class="card">
@@ -160,6 +206,15 @@ $visitsPerDay = getVisitsPerDay();
                 </tr>
                 <?php endforeach; ?>
             </table>
+            <div class="pagination">
+                <?php if ($currentPage > 1): ?>
+                    <a href="?page=<?= $currentPage - 1 ?>&date=<?= $dateFilter ?>&browser=<?= $browserFilter ?>&user=<?= $userFilter ?>">
+                        Previous page</a>
+                <?php endif; ?>
+
+                <a href="?page=<?= $currentPage + 1 ?>&date=<?= $dateFilter ?>&browser=<?= $browserFilter ?>&user=<?= $userFilter ?>">
+                        Next Page</a>
+                </div>
         </div>
     </main>
 </div>

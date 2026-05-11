@@ -1,7 +1,27 @@
 <?php
-    session_start();
-    $activePage = 'login';
+
     require_once '../../app/db.php';
+    session_start();
+    $page = basename($_SERVER['PHP_SELF']);
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $userAgent = $_SERVER['HTTP_USER_AGENT'];
+    $browserName = "Unknown";
+
+    if (strpos($userAgent, 'Edg') !== false) {
+        $browserName = "Edge";
+    }   elseif (strpos($userAgent, 'OPR') !== false) {
+        $browserName = "Opera";
+    }   elseif (strpos($userAgent, 'Firefox') !== false) {
+            $browserName = "Firefox";
+    }   elseif (strpos($userAgent, 'Chrome') !== false) {
+            $browserName = "Chrome";
+    }   elseif (strpos($userAgent, 'Safari') !== false) {
+            $browserName = "Safari";
+    }
+
+    $browserId = getBrowserId($browserName);
+    trackVisit($page, $browserId, $ip);
+    $activePage = 'login';
     $error = NULL;
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
