@@ -28,34 +28,67 @@
 
 
             // 5. HANTERA FILUPPLADDNING
-            if (isset($files) && $files['error'] === 0) {
-                $fileName = $files['name'];
+            $uploadedFiles = [];
+
+            if (
+                isset($files['name']) &&
+                is_array($files['name']) &&
+                count($files['name']) > 0
+            ) {
                 $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
                 $allowedMimeTypes = [
                     'image/jpeg',
                     'image/png',
                     'application/pdf'
                 ];
-                
-                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-                
-                $finfo = finfo_open(FILEINFO_MIME_TYPE);
-                $mimeType = finfo_file($finfo, $files['tmp_name']);
-                finfo_close($finfo);
-                
-                if (!in_array($fileExtension, $allowedExtensions) ||
-                    !in_array($mimeType, $allowedMimeTypes)) {
-                    throw new Exception("Invalid file type");
-                }
-                $uniqueFileName = "update_" . $updateId . "_" . time() . "." . $fileExtension;
 
                 $uploadFolder = __DIR__ . "/../uploads/";
-                $destination = $uploadFolder . $uniqueFileName;
 
-                if (move_uploaded_file($files['tmp_name'], $destination)) {
-                    insertAttachment($mysqli, $updateId, $uniqueFileName);
-                } else {
-                    throw new Exception("Attachment upload unsuccessful!", 1);
+                foreach ($files['name'] as $index => $fileName) {
+
+                    if ($files['error'][$index] === UPLOAD_ERR_NO_FILE) {
+                        continue;
+                    }
+
+                    if ($files['error'][$index] !== UPLOAD_ERR_OK) {
+                        throw new Exception("Attachment upload unsuccessful!");
+                    }
+
+                    $tmpName = $files['tmp_name'][$index];
+
+                    $fileExtension = strtolower(
+                        pathinfo($fileName, PATHINFO_EXTENSION)
+                    );
+
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                    $mimeType = finfo_file($finfo, $tmpName);
+                    finfo_close($finfo);
+
+                    if (
+                        !in_array($fileExtension, $allowedExtensions) ||
+                        !in_array($mimeType, $allowedMimeTypes)
+                    ) {
+                        throw new Exception("Invalid file type");
+                    }
+
+                    $uniqueFileName =
+                        "update_" .
+                        $updateId .
+                        "_" .
+                        time() .
+                        "_" .
+                        $index .
+                        "." .
+                        $fileExtension;
+
+                    $destination = $uploadFolder . $uniqueFileName;
+
+                    if (move_uploaded_file($tmpName, $destination)) {
+                        insertAttachment($mysqli, $updateId, $uniqueFileName);
+                        $uploadedFiles[] = $destination;
+                    } else {
+                        throw new Exception("Attachment upload unsuccessful!");
+                    }
                 }
             }
 
@@ -67,8 +100,12 @@
             return $incidentId;
         } catch (Exception $e) {
             $mysqli->rollback();
-            if (isset($destination) && file_exists($destination)) {
-                unlink($destination);
+            if (!empty($uploadedFiles)) {
+                foreach ($uploadedFiles as $file) {
+                    if (file_exists($file)) {
+                        unlink($file);
+                    }
+                }
             }
             return FALSE;
         } finally {
@@ -79,64 +116,77 @@
     function updateIncident($post, $files, $userId) {
         $mysqli = getDataBase();
         $mysqli->begin_transaction();
+        $uploadedFiles = []; 
 
         try {
-            $userId = (int)$userId; // id på den som är inloggad
+            $userId = (int)$userId;
             $caseId = (int)($post['case_id']);
-            $comment = trim($post['admin_comment']); // texten från textarea
-            $status = $post['status']; // 'pending', 'in progress' eller 'resolved'
+            $comment = trim($post['admin_comment'] ?? ''); 
+            $status = $post['status'];
+
             $allowedStatuses = ['pending', 'in progress', 'resolved'];
             if (!in_array($status, $allowedStatuses)) {
-                throw new Exception("Unexpected status", 1);
+                throw new Exception("Unexpected status");
             }
+
             
-            // första är skapa en ny statusuppdatering
-            // fånga upp det nya id för just denna uppdatering
             $updateId = insertUpdate($mysqli, $caseId, $userId, $status);
 
-            // spara kommentaren om det finns någon text 
+            
             $finalComment = !empty($comment) ? $comment : "System: Status changed to " . ucfirst($status);
             insertComment($mysqli, $updateId, $finalComment);
 
-            // här läggs filerna in 
-            if (isset($files) && $files['error'] === 0) {
-                $fileName = $files['name'];
+            
+            if (isset($files['name']) && is_array($files['name'])) {
                 $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
-                $allowedMimeTypes = [
-                    'image/jpeg',
-                    'image/png',
-                    'application/pdf'
-                ];
-
-                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-
-                $finfo = finfo_open(FILEINFO_MIME_TYPE);
-                $mimeType = finfo_file($finfo, $files['tmp_name']);
-                finfo_close($finfo);
-
-                if (!in_array($fileExtension, $allowedExtensions) ||
-                    !in_array($mimeType, $allowedMimeTypes)) {
-                    throw new Exception("Invalid file type");
-                }
-                $uniqueFileName = "update_" . $updateId . "_" . time() . "." . $fileExtension;
-                
+                $allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf'];
                 $uploadFolder = __DIR__ . "/../uploads/";
-                $destination = $uploadFolder . $uniqueFileName;
 
-                if (move_uploaded_file($files['tmp_name'], $destination)) {
-                    insertAttachment($mysqli, $updateId, $uniqueFileName);
-                } else {
-                    throw new Exception("Attachment upload unsuccessful!", 1);
+                foreach ($files['name'] as $index => $fileName) {
+                    // Hoppa över om ingen fil valts på denna index-plats
+                    if ($files['error'][$index] === UPLOAD_ERR_NO_FILE) {
+                        continue;
+                    }
+
+                    if ($files['error'][$index] !== UPLOAD_ERR_OK) {
+                        throw new Exception("Attachment upload unsuccessful!");
+                    }
+
+                    $tmpName = $files['tmp_name'][$index];
+                    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                    
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                    $mimeType = finfo_file($finfo, $tmpName);
+                    finfo_close($finfo);
+
+                    if (!in_array($fileExtension, $allowedExtensions) || !in_array($mimeType, $allowedMimeTypes)) {
+                        throw new Exception("Invalid file type: " . $fileName);
+                    }
+
+                    
+                    $uniqueFileName = "update_" . $updateId . "_" . time() . "_" . $index . "." . $fileExtension;
+                    $destination = $uploadFolder . $uniqueFileName;
+
+                    if (move_uploaded_file($tmpName, $destination)) {
+                        insertAttachment($mysqli, $updateId, $uniqueFileName);
+                        $uploadedFiles[] = $destination; 
+                    } else {
+                        throw new Exception("Could not move uploaded file!");
+                    }
                 }
             }
-            // slut på filhantering
 
             $mysqli->commit();
             return $caseId;
+
         } catch (Exception $e) {
             $mysqli->rollback();
-            if (isset($destination) && file_exists($destination)) {
-                unlink($destination);
+            
+            foreach ($uploadedFiles as $file) {
+                if (file_exists($file)) {
+                    unlink($file);
+                }
             }
             return FALSE;
         } finally {
