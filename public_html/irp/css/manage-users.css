@@ -339,7 +339,33 @@ main {
 
 aside {
     border-left: 2px solid gray;
-    background-color: #b8b8b8;
+    background-color: white;
     display: flex;
     flex-direction: column;
+}
+aside h1 {
+    text-align: center;
+}
+
+aside form {
+    display: flex;
+    flex-direction: column;
+    padding: 0 5vw;
+    gap: 1rem;
+}
+form > div {
+    display: flex;
+    flex-direction: column;
+}
+
+aside form input,
+aside form select {
+    width: 300px;   /* or 100% if you want responsive */
+    padding: 6px;
+    box-sizing: border-box;
+}
+
+#create-user-submit {
+    margin-top: 4vh;
+    justify-self: center;
 }

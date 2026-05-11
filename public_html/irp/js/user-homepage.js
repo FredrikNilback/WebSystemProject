@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const main = document.querySelector('main');
     const aside = document.querySelector('aside');
 
+    const incidentCanvas = document.getElementById('homepageIncidentChart');
+    const visitCanvas = document.getElementById('homepageVisitChart');
+
 
     minimizeButton.addEventListener('click', () => {
         main.classList.add('fullscreen');
@@ -17,4 +20,28 @@ document.addEventListener('DOMContentLoaded', () => {
         aside.classList.remove('hidden');
         openAsideButton.classList.add('hidden');
     })
+
+    if (incidentCanvas && typeof incidentData !== 'undefined') {
+        new Chart(incidentCanvas, {
+            type: 'doughnut',
+            data: {
+                labels: incidentData.map(item => item.severity),
+                datasets: [{
+                    data: incidentData.map(item => item.count)
+                }]
+            }
+        });
+    }
+    
+    if (visitCanvas && typeof visitData !== 'undefined') {
+        new Chart(visitCanvas, {
+            type: 'bar',
+            data: {
+                labels: visitData.map(item => item.browser_name),
+                datasets: [{
+                    data: visitData.map(item => item.count)
+                }]
+            }
+        });
+    }
 });

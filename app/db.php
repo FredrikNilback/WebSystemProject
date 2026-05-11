@@ -417,13 +417,15 @@
         
     }
             
-
-    function getVisits(
+    function getVisits (
         $browserFilter = 'AllBrowsers', 
         $dateFilter = 'All',
         $userFilter = 'All',
         $limit = 10,
         $offset = 0) {
+
+        $limit = (int)$limit;
+        $offset = (int)$offset;
 
         $mysqli = getDataBase();
 
@@ -478,12 +480,7 @@
         return $visits;
     }
 
-    function getTodayVisits(
-        $browserFilter = 'AllBrowsers',
-        $dateFilter = 'All',
-        $userFilter = 'All') 
-    {
-
+    function getTodayVisits($browserFilter = 'AllBrowsers', $dateFilter = 'All', $userFilter = 'All') {
         $mysqli = getDataBase();
 
         $sql = "
@@ -538,14 +535,8 @@
 
 
 
-    function getAvgDailyVisits(
-        $browserFilter = 'AllBrowsers',
-        $dateFilter = 'All',
-        $userFilter = 'All'
-    ) {
-        
+    function getAvgDailyVisits($browserFilter = 'AllBrowsers', $dateFilter = 'All', $userFilter = 'All') {
         $mysqli = getDataBase();
-
 
         $sql = "
             SELECT COUNT(*) / COUNT(DISTINCT DATE(visited_at)) AS avg_daily
@@ -601,13 +592,7 @@
 
     }
 
- 
-
-    function getAvgWeeklyVisits(
-        $browserFilter = 'AllBrowsers',
-        $dateFilter = 'All',
-        $userFilter = 'All'
-    ) {
+    function getAvgWeeklyVisits($browserFilter = 'AllBrowsers', $dateFilter = 'All', $userFilter = 'All') {
 
         $mysqli = getDataBase();
 
@@ -662,23 +647,18 @@
         return $row['avg_weekly'] ? round($row['avg_weekly']) : 0;
     }
 
-        function getAvgMonthlyVisits(
-            $browserFilter = 'AllBrowsers',
-            $dateFilter = 'All',
-            $userFilter = 'All'
-        ) {
-
+    function getAvgMonthlyVisits($browserFilter = 'AllBrowsers', $dateFilter = 'All', $userFilter = 'All') {
         $mysqli = getDataBase();
         $sql = "
             SELECT COUNT(*) / COUNT(DISTINCT YEAR(visited_at), MONTH(visited_at)) AS avg_monthly
             FROM visit_tracking
-        
+                
             LEFT JOIN browser_type
             ON visit_tracking.browser_type_id = browser_type.browser_type_id
-            
+                
             LEFT JOIN user_tracking
             ON visit_tracking.tracking_id = user_tracking.tracking_id
-            
+                
             LEFT JOIN user
             ON user_tracking.user_id = user.user_id
         ";
@@ -698,7 +678,7 @@
             $sql .= " WHERE " . implode(" AND ", $where);
 
             $stmt = $mysqli->prepare($sql);
-        
+                
             if (!empty($types)) {
                 $stmt->bind_param($types, ...$params);
             }
@@ -722,12 +702,7 @@
     }
 
 
-    function getVisitsPerDate(
-        $browserFilter = 'AllBrowsers',
-        $dateFilter = 'All',
-        $userFilter = 'All'
-        ) {
-
+    function getVisitsPerDate($browserFilter = 'AllBrowsers', $dateFilter = 'All', $userFilter = 'All') {
         $mysqli = getDataBase();
         $sql = "
             SELECT DATE(visited_at) as date,
@@ -784,12 +759,7 @@
         return $data;
     }
 
-    function getVisitsPerBrowser(
-        $browserFilter = 'AllBrowsers',
-        $dateFilter = 'All',
-        $userFilter = 'All'
-    ) {
-
+    function getVisitsPerBrowser($browserFilter = 'AllBrowsers', $dateFilter = 'All', $userFilter = 'All') {
         $mysqli = getDataBase();
         $sql = "
             SELECT browser_type.browser_name, 
@@ -844,11 +814,7 @@
         return $data;
     }
 
-    function getVisitsPerWeek(
-        $browserFilter = 'AllBrowsers',
-        $dateFilter = 'All',
-        $userFilter = 'All'
-    ) {
+    function getVisitsPerWeek($browserFilter = 'AllBrowsers', $dateFilter = 'All', $userFilter = 'All') {
         $mysqli = getDataBase();
 
         $sql = "
@@ -905,11 +871,7 @@
         return $data;
     }
 
-    function getVisitsPerDay(
-        $browserFilter = 'AllBrowsers',
-        $dateFilter = 'All',
-        $userFilter = 'All'
-    ) {
+    function getVisitsPerDay($browserFilter = 'AllBrowsers', $dateFilter = 'All', $userFilter = 'All') {
         $mysqli = getDataBase();
         $sql = "
             SELECT DAYOFWEEK(visited_at) AS day, COUNT(*) AS count
@@ -965,14 +927,7 @@
     }
 
     
-        function buildIncidentFilters(
-        &$params,
-        &$types,
-        $dateFilter,
-        $severityFilter,
-        $categoryFilter
-    ) {
-
+    function buildIncidentFilters(&$params, &$types, $dateFilter, $severityFilter, $categoryFilter) {
         $where = [];
 
         if ($severityFilter != 'All') {
@@ -1007,14 +962,9 @@
         }
 
         return $where;
-
     }
 
-    function getIncidentCount(
-        $dateFilter = 'All',
-        $severityFilter = 'All',
-        $categoryFilter = 'All'
-    ) {
+    function getIncidentCount($dateFilter = 'All', $severityFilter = 'All', $categoryFilter = 'All') {
         $mysqli = getDataBase();
 
         $sql = "
@@ -1060,12 +1010,7 @@
         return $row['count'];
     }
 
-    function getResolvedIncidents(
-        $dateFilter = 'All',
-        $severityFilter = 'All',
-        $categoryFilter = 'All'
-    ) {
-        
+    function getResolvedIncidents($dateFilter = 'All', $severityFilter = 'All', $categoryFilter = 'All') {
         $mysqli = getDataBase();
 
         $sql = "
@@ -1116,12 +1061,7 @@
 
     }
 
-    function getAvgResolutionTime(
-        $dateFilter = 'All',
-        $severityFilter = 'All',
-        $categoryFilter = 'All'
-    ) {
-
+    function getAvgResolutionTime($dateFilter = 'All', $severityFilter = 'All', $categoryFilter = 'All') {
     $mysqli = getDataBase();
 
     $sql = "
@@ -1182,12 +1122,7 @@
 
     }
 
-    function getIncidentHistory(
-        $dateFilter = 'All',
-        $severityFilter = 'All',
-        $categoryFilter = 'All'
-    ) {
-
+    function getIncidentHistory($dateFilter = 'All', $severityFilter = 'All', $categoryFilter = 'All') {
         $mysqli = getDataBase();
 
         $sql = "
@@ -1244,12 +1179,7 @@
         return $data;
     }
 
-    function getTopIncidentCategories(
-        $dateFilter = 'All',
-        $severityFilter = 'All',
-        $categoryFilter = 'All'
-    ) {
-        
+    function getTopIncidentCategories($dateFilter = 'All', $severityFilter = 'All', $categoryFilter = 'All') {
         $mysqli = getDataBase();
 
         $sql = "
@@ -1307,12 +1237,7 @@
             return $data;
     }
 
-    function getIncidentSeverityData(
-        $dateFilter = 'All',
-        $severityFilter = 'All',
-        $categoryFilter = 'All'
-    ) {
-
+    function getIncidentSeverityData($dateFilter = 'All', $severityFilter = 'All', $categoryFilter = 'All') {
         $mysqli = getDataBase();
 
         $sql = "
@@ -1368,12 +1293,7 @@
         return $data;
     }
 
-    function getResolutionTimeData(
-        $dateFilter = 'All',
-        $severityFilter = 'All',
-        $categoryFilter = 'All'
-    ) {
-
+    function getResolutionTimeData($dateFilter = 'All', $severityFilter = 'All', $categoryFilter = 'All') {
         $mysqli = getDataBase();
 
         $sql = "
@@ -1437,54 +1357,6 @@
         return $data;
     }
 
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /*===========================================================
                         VIKTORIA'S FUNCTIONS
                                 |
@@ -1512,66 +1384,67 @@
     /* cases.php */
 
     // 1. hämta alla incidenter 
-function getAllIncidents($mysqli, $userRole, $userId) {
-    $query = "SELECT i.incident_id, i.description, i.incident_severity, i.occurrence,
-                     t.incident_type_name, 
-                     u.status, 
-                     GROUP_CONCAT(DISTINCT a.asset_name SEPARATOR ', ') AS asset_name
-              FROM incident i 
-              JOIN incident_type t ON i.incident_type_id = t.incident_type_id 
-              LEFT JOIN incident_update u ON u.incident_id = i.incident_id 
-              AND u.incident_update_id = (
-                  SELECT MAX(incident_update_id) 
-                  FROM incident_update 
-                  WHERE incident_id = i.incident_id
-              )
-              LEFT JOIN affected_asset aa ON i.incident_id = aa.incident_id
-              LEFT JOIN asset a ON aa.asset_id = a.asset_id";
+    function getAllIncidents($mysqli, $userRole, $userId) {
+        $query = "SELECT i.incident_id, i.description, i.incident_severity, i.occurrence,
+                         t.incident_type_name, 
+                         u.status, 
+                         GROUP_CONCAT(DISTINCT a.asset_name SEPARATOR ', ') AS asset_name
+                  FROM incident i 
+                  JOIN incident_type t ON i.incident_type_id = t.incident_type_id 
+                  LEFT JOIN incident_update u ON u.incident_id = i.incident_id 
+                  AND u.incident_update_id = (
+                      SELECT MAX(incident_update_id) 
+                      FROM incident_update 
+                      WHERE incident_id = i.incident_id
+                  )
+                  LEFT JOIN affected_asset aa ON i.incident_id = aa.incident_id
+                  LEFT JOIN asset a ON aa.asset_id = a.asset_id";
 
-    if ($userRole === 'reporter') {
-        $query .= " WHERE u.user_id = " . (int)$userId;
+        if ($userRole === 'reporter') {
+            $query .= " WHERE u.user_id = " . (int)$userId;
+        }
+
+        $query .= " GROUP BY i.incident_id, i.description, i.incident_severity, i.occurrence, t.incident_type_name, u.status
+                    ORDER BY i.incident_id DESC";
+
+        return $mysqli->query($query)->fetch_all(MYSQLI_ASSOC);
     }
 
-    $query .= " GROUP BY i.incident_id, i.description, i.incident_severity, i.occurrence, t.incident_type_name, u.status
-                ORDER BY i.incident_id DESC";
+    // 2. hämta alla användare till dropdownen
+    function getAllUsers($mysqli) {
+        $user_query = "SELECT user_id, username FROM user WHERE user_role IN ('administrator', 'responder') ORDER BY username ASC";
+        return $mysqli->query($user_query)->fetch_all(MYSQLI_ASSOC);
+    }
 
-    return $mysqli->query($query)->fetch_all(MYSQLI_ASSOC);
-}
+    // 3. hämta kommentarer/chatt
+    function getCommentsByIncident($mysqli, $incidentId) {
+        $incidentId = (int)$incidentId;
+        $query_comments = "SELECT c.comment_text, u.status, u.user_id, username, DATE_FORMAT(u.incident_update_id, '%H:%i') as time 
+                           FROM comment c
+                           JOIN incident_update u ON c.incident_update_id = u.incident_update_id
+                           JOIN user ON u.user_id = user.user_id
+                           WHERE u.incident_id = ?
+                           ORDER BY u.incident_update_id ASC";
 
-// 2. hämta alla användare till dropdownen
-function getAllUsers($mysqli) {
-    $user_query = "SELECT user_id, username FROM user WHERE user_role IN ('administrator', 'responder') ORDER BY username ASC";
-    return $mysqli->query($user_query)->fetch_all(MYSQLI_ASSOC);
-}
+        $stmt = $mysqli->prepare($query_comments);
+        $stmt->bind_param("i", $incidentId);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
 
-// 3. hämta kommentarer/chatt
-function getCommentsByIncident($mysqli, $incidentId) {
-    $incidentId = (int)$incidentId;
-    $query_comments = "SELECT c.comment_text, u.status, u.user_id, DATE_FORMAT(u.incident_update_id, '%H:%i') as time 
-                       FROM comment c
-                       JOIN incident_update u ON c.incident_update_id = u.incident_update_id
-                       WHERE u.incident_id = ?
-                       ORDER BY u.incident_update_id ASC";
-    
-    $stmt = $mysqli->prepare($query_comments);
-    $stmt->bind_param("i", $incidentId);
-    $stmt->execute();
-    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-}
+    // 4. hämta attachments
+    function getAttachmentsByIncident($mysqli, $incidentId) {
+        $incidentId = (int)$incidentId;
+        $query_files = "SELECT a.attachment_file_path 
+                        FROM attachment a
+                        JOIN incident_update u ON a.incident_update_id = u.incident_update_id
+                        WHERE u.incident_id = ?";
 
-// 4. hämta attachments
-function getAttachmentsByIncident($mysqli, $incidentId) {
-    $incidentId = (int)$incidentId;
-    $query_files = "SELECT a.attachment_file_path 
-                    FROM attachment a
-                    JOIN incident_update u ON a.incident_update_id = u.incident_update_id
-                    WHERE u.incident_id = ?";
-    
-    $stmt = $mysqli->prepare($query_files);
-    $stmt->bind_param("i", $incidentId);
-    $stmt->execute();
-    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-}
+        $stmt = $mysqli->prepare($query_files);
+        $stmt->bind_param("i", $incidentId);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
 
     /* send-chat-message.php */
 
@@ -1695,5 +1568,4 @@ function getAttachmentsByIncident($mysqli, $incidentId) {
         $stmt_comment->execute();
         $stmt_comment->close();
     }
-
 ?>

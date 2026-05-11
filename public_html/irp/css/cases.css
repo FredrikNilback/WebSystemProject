@@ -6,6 +6,7 @@
     grid-template-columns: 2fr 3fr; 
     gap: 0px;
     align-items: start;
+    padding-top: 1vh;
 }
 
 /* vänster kolumn: ärendelista */
@@ -207,10 +208,15 @@ article h2 {
     transition: background 0.2s;
 }
 
-.send-btn:hover {
+.send-btn:hover:not(:disabled) {
     background-color: #0056b3; /* Mörkare blå när man håller musen över */
 }
 
+.send-btn:disabled {
+    background-color: #888;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
 /* ==========================================================================
    ACTION PANEL (LOWER BOX)
    ========================================================================== */
@@ -265,7 +271,7 @@ section input[type="file"] {
 }
 
 /* Update Button */
-section button {
+.update-btn {
     background: #0b026c;
     color: white;
     border: none;
@@ -277,7 +283,13 @@ section button {
     transition: opacity 0.2s;
 }
 
-section button:hover { opacity: 0.9; }
+.update-btn:hover:not(:disabled) { opacity: 0.9; }
+
+.update-btn:disabled {
+    background-color: #888;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
 
 /* ==========================================================================
    ATTACHMENTS & FILTERS

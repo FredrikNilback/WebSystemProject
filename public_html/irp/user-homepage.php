@@ -28,6 +28,12 @@
     $activePage = 'user-homepage';
 
     $currentEvents = getCurrentEvents();
+
+    $incidentSeverityData = getIncidentSeverityData('All', 'All', 'All');
+    $topIncidentCategories = getTopIncidentCategories('All', 'All', 'All');
+
+    $visitsPerBrowser = getVisitsPerBrowser('AllBrowsers', 'All', 'All');
+    $visitsPerDate = getVisitsPerDate('AllBrowsers', 'All', 'All');
 ?>
 
 <?php require_once 'includes/header.php'?>
@@ -60,10 +66,31 @@
                 </div>
             </div>
             <div class='main-column'>
-                <h3 id='incident-title'>Incident Report Overview</h3>
-                <a href='analytics.php'>
-                    <img src='images/placeholder_graph.png' alt='Statistical Overview' id='statistic-graph'>
-                </a>
+                <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'administrator'): ?>
+                <div id='statistic-overview-wrapper'>
+                    <div id='analytics-overview'>
+                        <a href="analytics.php">
+                            <div class="chart-wrapper">
+                                <h3>Incident Overview</h3>
+                                <canvas id="homepageIncidentChart"></canvas>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div id='visit-overview'>
+                        <a href="visits.php">
+                            <div class="chart-wrapper">
+                                <h3>Visit Overview</h3>
+                                <canvas id="homepageVisitChart"></canvas>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <?php else: ?>
+                    <div id=img-wrapper>
+                        <img id='hexagons' src="images/homepage/hexagons.png" alt="hexagons">
+                    </div>
+                <?php endif; ?>
             </div>
             <button onclick='location.href="logout.php"' id='logout-btn'>
                 <img src="images/homepage/exit_sign.png" alt="exit">
@@ -94,4 +121,10 @@
             </div>
         </aside>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const incidentData = <?= json_encode($incidentSeverityData); ?>;
+        const visitData = <?= json_encode($visitsPerBrowser); ?>;
+    </script>
 <?php require_once 'includes/footer.php'?>

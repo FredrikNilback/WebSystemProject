@@ -25,12 +25,14 @@
     $error = NULL;
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $username = $_POST['username'] ?? '';
+        $username = trim($_POST['username']) ?? '';
         $password = $_POST['password'] ?? '';
 
         $user = login($username, $password);
 
         if ($user) {
+            session_regenerate_id(true);
+
             $_SESSION['user_id'] = $user->user_id;
             $_SESSION['user_role'] = $user->user_role;
             $_SESSION['first_name'] = $user->first_name;

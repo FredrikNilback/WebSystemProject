@@ -19,8 +19,10 @@
     }
 
     $browserId = getBrowserId($browserName);
-    trackVisit($page, $browserId, $ip);
-    
+    $trackingId = trackVisit($page, $browserId, $ip);
+    if (isset($_SESSION['user_id'])) {
+        trackUserVisit($trackingId, $_SESSION['user_id']);
+    }
 ?>
 <?php require_once 'includes/header.php'?>
 <div class='content'>
