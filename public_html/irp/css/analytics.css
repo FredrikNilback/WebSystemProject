@@ -117,7 +117,7 @@ table {
     background-color: whitesmoke;
     border-radius: 5px;
     overflow: hidden;
-    margin-bottom: 100px;
+    margin-bottom: 10px;
 }
 
 th,
@@ -125,4 +125,20 @@ td {
     border: 1px solid #0b026c;
     padding: 12px;
     text-align: left;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+.pagination a {
+    padding: 10px;
+    color: darkblue;
+}
+
+.pagination a:hover {
+    background-color: darkblue;
+    color: whitesmoke;
 }

@@ -12,9 +12,9 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
 $browserName = "Unknown";
 
 if (strpos($userAgent, 'Edg') !== false) {
-    $browserName = "Edge";
+        $browserName = "Edge";
 }   elseif (strpos($userAgent, 'OPR') !== false) {
-    $browserName = "Opera";
+        $browserName = "Opera";
 }   elseif (strpos($userAgent, 'Firefox') !== false) {
         $browserName = "Firefox";
 }   elseif (strpos($userAgent, 'Chrome') !== false) {

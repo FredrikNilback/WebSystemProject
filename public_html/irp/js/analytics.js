@@ -1,12 +1,22 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+const historyLabels = incidentHistoryData.map(item => item.date);
+const historyCounts = incidentHistoryData.map(item => item.count);
+const categoryLabels = topIncidentCategoriesData.map(item => item.category);
+const categoryCounts = topIncidentCategoriesData.map(item => item.count);
+const severityLabels = incidentSeverityChartData.map(item => item.severity);
+const severityCounts = incidentSeverityChartData.map(item => item.count);
+const resolutionLabels = resolutionTimeChartData.map(item => 'Week' + item.week);
+const resolutionCounts = resolutionTimeChartData.map(item => item.avg_time);
+
+
 new Chart(document.getElementById('History_lineChart'), {       //linecharten
     type: 'line', 
     data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'],
+        labels: historyLabels,
         datasets: [{
             label: 'Number of incidents',
-            data: [45, 35, 26, 22, 15, 35, 46, 32, 11, 17, 29, 48]
+            data: historyCounts
         }]
     }
 });
@@ -14,10 +24,10 @@ new Chart(document.getElementById('History_lineChart'), {       //linecharten
 new Chart(document.getElementById('Top_Incidents_pieChart'), {       //piecharten
     type: 'pie', 
     data: {
-        labels: ['Phishing Attacks', 'Malware', 'Ransomware', 'Unautharized Access'],
+        labels: categoryLabels,
         datasets: [{
             label: 'Top Incidents',
-            data: [5, 10, 3, 6]
+            data: categoryCounts
         }]
     }
 });
@@ -25,10 +35,10 @@ new Chart(document.getElementById('Top_Incidents_pieChart'), {       //piecharte
 new Chart(document.getElementById('Incident_Overview_barChart'), {       //barcharten
     type: 'bar', 
     data: {
-        labels: ['Low', 'Medium', 'High', 'Critical'],
+        labels: severityLabels,
         datasets: [{
             label: 'Number of incidents per severity',
-            data: [17, 27, 6, 4]
+            data: severityCounts
         }]
     }
 });
@@ -36,10 +46,10 @@ new Chart(document.getElementById('Incident_Overview_barChart'), {       //barch
 new Chart(document.getElementById('Resolution_Time_barChart'), {       //barcharten
     type: 'bar', 
     data: {
-        labels: ['Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15'],
+        labels: resolutionLabels,
         datasets: [{
             label: 'Avarage Resolution Time',
-            data: [3, 5, 2, 14, 17, 4, 8]
+            data: resolutionCounts
         }]
     }
 });
