@@ -1,6 +1,3 @@
-
-
-
 document.addEventListener("DOMContentLoaded", function () {
 
 const labels = visitsData.map(v => v.date);

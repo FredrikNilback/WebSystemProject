@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             data: {
                 labels: visitData.map(item => item.browser_name),
                 datasets: [{
+                    label: 'Page Visits per Browser',
                     data: visitData.map(item => item.count)
                 }]
             }
