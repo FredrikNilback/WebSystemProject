@@ -9,7 +9,14 @@
             // 2. HÄMTA DATA
             $userId = (int)$userId;
 
-            $occurrence = $post['incident_time']; 
+            $occurrence = $post['incident_time'];
+            $occurrenceDate = new DateTime($occurrence);
+            $now = new DateTime();
+
+            if ($occurrenceDate > $now) {
+                throw new Exception("Incident time cannot be in the future");
+            }
+            
             $description = $post['description'];
             $affectedAssets = $post['asset_id'] ?? []; 
             $incidentTypeId = (int)($post['threats']);
@@ -129,14 +136,11 @@
                 throw new Exception("Unexpected status");
             }
 
-            
             $updateId = insertUpdate($mysqli, $caseId, $userId, $status);
-
             
             $finalComment = !empty($comment) ? $comment : "System: Status changed to " . ucfirst($status);
             insertComment($mysqli, $updateId, $finalComment);
 
-            
             if (isset($files['name']) && is_array($files['name'])) {
                 $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
                 $allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf'];
@@ -179,7 +183,6 @@
 
             $mysqli->commit();
             return $caseId;
-
         } catch (Exception $e) {
             $mysqli->rollback();
             
