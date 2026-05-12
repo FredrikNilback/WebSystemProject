@@ -39,7 +39,6 @@
             $allowed = ['pdf', 'jpg', 'jpeg', 'png'];
         
             foreach ($_FILES['attachment']['name'] as $index => $fileName) {
-        
                 if ($_FILES['attachment']['error'][$index] === UPLOAD_ERR_NO_FILE) {
                     continue;
                 }
