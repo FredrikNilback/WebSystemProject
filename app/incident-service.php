@@ -1,5 +1,6 @@
 <?php
     require_once __DIR__ . "/db.php";
+    date_default_timezone_set('Europe/Stockholm');
 
     function submitIncident($post, $files, $userId) {
         $mysqli = getDataBase();
@@ -16,7 +17,7 @@
             if ($occurrenceDate > $now) {
                 throw new Exception("Incident time cannot be in the future");
             }
-            
+
             $description = $post['description'];
             $affectedAssets = $post['asset_id'] ?? []; 
             $incidentTypeId = (int)($post['threats']);

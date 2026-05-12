@@ -4,6 +4,7 @@
         header('Location: unauthorized.php');
     }
     require_once "../../app/db.php";
+    date_default_timezone_set('Europe/Stockholm');
     updateLastSeen($_SESSION['user_id']);
     $page = basename($_SERVER['PHP_SELF']);
     $ip = $_SERVER['REMOTE_ADDR'];
