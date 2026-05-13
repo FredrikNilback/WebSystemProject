@@ -1387,7 +1387,10 @@
     function getAllIncidents($mysqli, $userRole, $userId) {
         $query = "SELECT i.incident_id, i.description, i.incident_severity, i.occurrence,
                          t.incident_type_name, 
-                         u.status, 
+                         u.status,                         
+                         (SELECT DATE_FORMAT(MIN(update_at), '%Y-%m-%d %H:%i')
+                         FROM incident_update
+                         WHERE incident_id = i.incident_id) AS created_at,
                          GROUP_CONCAT(DISTINCT a.asset_name SEPARATOR ', ') AS asset_name
                   FROM incident i 
                   JOIN incident_type t ON i.incident_type_id = t.incident_type_id 
@@ -1419,7 +1422,8 @@
     // 3. hämta kommentarer/chatt
     function getCommentsByIncident($mysqli, $incidentId) {
         $incidentId = (int)$incidentId;
-        $query_comments = "SELECT c.comment_text, u.status, u.user_id, username, DATE_FORMAT(u.incident_update_id, '%H:%i') as time 
+        $query_comments = "SELECT c.comment_text, u.status, u.user_id, username, 
+                                DATE_FORMAT(u.update_at, '%Y-%m-%d %H:%i') as time 
                            FROM comment c
                            JOIN incident_update u ON c.incident_update_id = u.incident_update_id
                            JOIN user ON u.user_id = user.user_id

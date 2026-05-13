@@ -43,7 +43,7 @@
         if ($inc_id > 0) {
             $mysqli->begin_transaction();
             try {
-                // anropar vi Fredriks insert-funktioner från db.php
+                // anropar Fredriks insert-funktioner från db.php
                 $updId = insertUpdate($mysqli, $inc_id, $new_owner, 'in progress');
                 insertComment($mysqli, $updId, "System: Case assigned to user #" . $new_owner);
 
@@ -192,7 +192,7 @@
                     <h2>Incident Detail: <?php echo $selectedCase ? "#".$selectedCase['incident_id'] : "Select a case"; ?>
                             <!--tiden-->
                         <?php if ($selectedCase): ?> 
-                            - <?php echo date("Y-m-d H:i", strtotime($selectedCase['occurrence'])); ?> 
+                            - Created: <?php echo $selectedCase['created_at']; ?> 
                             <!--incident type--> 
                             - <?php echo htmlspecialchars($selectedCase['incident_type_name'] ?? 'N/A');?> 
                         <?php endif; ?> 
@@ -213,6 +213,9 @@
                             <div class="message <?php echo $isMine ? 'my-message' : 'other-message'; ?>">
                                 <small><?php echo htmlspecialchars($msg['username']); ?>:</small>
                                 <span><?php echo htmlspecialchars($msg['comment_text']); ?></span>
+                                <small class="chat-timestamp">
+                                    <?php echo $msg['time']; ?>
+                                </small>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
