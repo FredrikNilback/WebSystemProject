@@ -52,7 +52,7 @@
                 </div>
 
                 <div>
-                    <label>File attachments (pdf or image*)</label>
+                    <label>File attachments (pdf or image*) Max 5MB</label>
                     <input type="file" name="attachment[]" accept=".pdf, image/*" multiple>
                 </div>
 
