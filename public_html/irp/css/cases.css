@@ -222,7 +222,6 @@ article h2 {
     display: block;
     font-size: 0.7rem;
     opacity: 0.6;
-
     margin-top: 4px; /* Lite extra luft under meddelandetexten */
     font-style: italic; /* Gör det tydligt att det är metadata */
 }
