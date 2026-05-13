@@ -61,12 +61,10 @@
     $visitsPerDay = getVisitsPerDay($browserFilter, $dateFilter, $userFilter);
 ?>
 
-
 <?php require_once "includes/header.php"?>
     
 <div class="content">
     <main>
-
         <h3>Analytics Dashboard</h3>
         <nav class="analytics-dashboard">
             <a href="analytics.php">Incidents</a>
@@ -139,8 +137,8 @@
                         ?>
                         
                             <option value="<?= $user['username'] ?>"
-                                <?= $userFilter == $user['username'] ? 'selected' : '' ?>>
-                                <?= $user['username'] ?>
+                                <?= $userFilter == htmlspecialchars($user['username']) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($user['username']); ?>
                             </option>
 
                         <?php endforeach; ?>

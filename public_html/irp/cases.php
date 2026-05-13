@@ -137,7 +137,7 @@
                             <tr><td colspan="5">No incidents found.</td></tr>
                         <?php else: ?>
                             <?php foreach ($incidents as $incident): ?>
-                                <tr class="incident-row <?php echo str_replace(' ', '-', $incident['status']); ?>"> 
+                                <tr class="incident-row <?php echo str_replace(' ', '-', htmlspecialchars($incident['status'])); ?>"> 
                                     <!-- Incident.nr -->
                                     <td>
                                         <a href="cases.php?view=<?php echo $incident['incident_id']; ?>">
@@ -211,7 +211,7 @@
                                 $isMine = ($msg['user_id'] == $_SESSION['user_id']); 
                             ?>
                             <div class="message <?php echo $isMine ? 'my-message' : 'other-message'; ?>">
-                                <small><?php echo $msg['username']; ?>:</small>
+                                <small><?php echo htmlspecialchars($msg['username']); ?>:</small>
                                 <span><?php echo htmlspecialchars($msg['comment_text']); ?></span>
                             </div>
                         <?php endforeach; ?>
@@ -228,8 +228,6 @@
             </article>
 
             <section class="action-panel">
-
-        
                 <form action="update-case.php" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="case_id" value="<?php echo $selectedCase ? $selectedCase['incident_id'] : ''; ?>">
             
