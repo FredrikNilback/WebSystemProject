@@ -15,11 +15,11 @@
             $now = new DateTime();
 
             if ($occurrenceDate > $now) {
-                throw new Exception("Incident time cannot be in the future");
+                throw new Exception("Incident time cannot be in the future", 1);
             }
 
             $description = $post['description'];
-            $affectedAssets = $post['asset_id'] ?? []; 
+            $affectedAssets = $post['asset_id'] ?? [];
             $incidentTypeId = (int)($post['threats']);
 
             $incidentSeverity = $post['urgency'];
@@ -53,7 +53,6 @@
                 $uploadFolder = __DIR__ . "/../uploads/";
 
                 foreach ($files['name'] as $index => $fileName) {
-
                     if ($files['error'][$index] === UPLOAD_ERR_NO_FILE) {
                         continue;
                     }
